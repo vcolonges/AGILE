@@ -1,7 +1,5 @@
 package controleur;
 
-
-import algorithmes.AlgoParcour;
 import algorithmes.TSP;
 import controleur.etat.*;
 import exceptions.XMLException;
@@ -18,7 +16,6 @@ public class Controler {
     private Plan plan;
     private MainVue mainvue;
     private Etat etat;
-    private AlgoParcour algo;
 
     /**
      * Cree le controleur de l'application
@@ -27,19 +24,16 @@ public class Controler {
         this.mainvue = vue;
         etat = new EtatDebut(this);
         mainvue.setEtat(etat);
-        algo = new AlgoParcour();
     }
 
     public void chargerPlan(String lienPlan){
         try {
-            if(plan != null)
-                plan.getNoeuds().clear();
             plan = XMLParser.parsePlan(lienPlan);
             mainvue.getMapPanel().loadPlan(plan);
             etat = new EtatPlanCharge(this);
             mainvue.setEtat(etat);
         } catch (XMLException e) {
-            e.printStackTrace();
+            mainvue.getMapPanel().loadPlan(plan);
             mainvue.errorMessage(e.getMessage());
         }
     }
@@ -54,6 +48,7 @@ public class Controler {
                 mainvue.getMapPanel().loadPlan(plan);
                 etat = new EtatLivraisonsCharges(this);
                 mainvue.setEtat(etat);
+                mainvue.setLabelHeureDepart(plan.getHeureDepart());
             } catch (XMLException e) {
                 e.printStackTrace();
                 mainvue.errorMessage(e.getMessage());
