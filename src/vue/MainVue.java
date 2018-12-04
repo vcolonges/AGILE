@@ -37,6 +37,7 @@ public class MainVue extends JFrame {
     private final JButton demarrerTournees;
     private final JMenuItem chargerPlanXML;
     private final JMenuItem chargerLivraisonXML;
+    private JLabel zoomLabel;
 
     private Controler controler;
 
@@ -57,8 +58,10 @@ public class MainVue extends JFrame {
 
         //mapPanel.setBackground(Color.BLUE);
 
-        // Création mousePosition Panel
+        // Création Debug Panel
         JPanel debugPanel = new JPanel(new FlowLayout());
+        zoomLabel = new JLabel();
+        debugPanel.add(zoomLabel);
         debugPanel.add(new JLabel("X:"));
         XPosition = new JLabel();
         debugPanel.add(XPosition);
@@ -83,6 +86,7 @@ public class MainVue extends JFrame {
         mapPanel.addMouseListener(ecouteurDeSouris);
         mapPanel.addMouseMotionListener(ecouteurDeSouris);
         mapPanel.addComponentListener(ecouteurDeComposant);
+        mapPanel.addMouseWheelListener(ecouteurDeSouris);
 
         // Crétion toolPanel
         JPanel toolPanel = new JPanel();
@@ -212,6 +216,14 @@ public class MainVue extends JFrame {
     public void deletePoint(Noeud n){
 
         mapPanel.deletePoint(n);
+    }
+
+    public void setZoom(int zoom) {
+        zoomLabel.setText(zoom+"%");
+    }
+
+    public void mouseDragged(Point point) {
+        mapPanel.mouseDragged(point);
     }
 }
 
