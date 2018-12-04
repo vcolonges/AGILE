@@ -6,6 +6,7 @@ import modele.Plan;
 import vue.PopUpMenu;
 
 import javax.swing.*;
+import java.awt.*;
 
 public class EtatClientsAvertis extends Etat {
     public EtatClientsAvertis(Controler c) {
@@ -15,8 +16,7 @@ public class EtatClientsAvertis extends Etat {
 
     @Override
     public PopUpMenu getPopUpMenu(Plan plan, Noeud n) {
-
-        PopUpMenu popUpMenu = new PopUpMenu();
+        PopUpMenu popUpMenu = super.getPopUpMenu(plan,n);
         if(!plan.getLivraisons().containsKey(n.getId()))
         {
             JMenuItem menuItem = new JMenuItem("Ajouter une livraison");
@@ -25,6 +25,7 @@ public class EtatClientsAvertis extends Etat {
         }
         else
         {
+            super.ajoutInfosLivraisonsToPopUpMenu(popUpMenu, plan, n);
             JMenuItem menuItem = new JMenuItem("Supprimer une livraison");
             popUpMenu.add(menuItem);
             menuItem.addActionListener(e -> supprimerLivraisonApresLancement(n));

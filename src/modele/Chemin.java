@@ -23,6 +23,10 @@ public class Chemin {
         this.troncons = new ArrayList<>();
     }
 
+    public void setTroncons(ArrayList<Troncon> troncons) {
+        this.troncons = troncons;
+    }
+
     public Livraison getOrigine() {
         return origine;
     }
