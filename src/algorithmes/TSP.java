@@ -6,6 +6,7 @@ import modele.Tournee;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 
 public class TSP {
@@ -97,66 +98,6 @@ public class TSP {
         System.out.print("}\n\n");
     }
 
-    public static Tournee calculerTournee(Collection<Livraison> livraisonCollection, Livraison entrepot){
-        livraisons = new ArrayList<>(livraisonCollection);
-        livraisons.add(0,entrepot);
-
-        nbLivraisons = livraisons.size();
-        nbEnsemble = (int) Math.pow(2,nbLivraisons);
-
-        cout = new double[nbLivraisons][nbLivraisons];
-        creerCout();
-
-        memD = new double[nbLivraisons][nbEnsemble];
-        memNext = new int[nbLivraisons][nbEnsemble];
-        creerMem();
-
-        int ensemble = arrayListToInt(livraisons);
-
-        calculeD(0,ensemble-1);
-
-        afficheOrdre();
-
-        ArrayList<Chemin> listeChemins = creerListeChemins();
-        HashSet<Livraison> setLivraisons = new HashSet<>(livraisonCollection);
-        Tournee tournee = new Tournee(setLivraisons,listeChemins);
-
-        return tournee;
-    }
-
-    public static ArrayList<Tournee> calculerLesTournees(ArrayList<Livraison> livraisons, int nbrLivreur, Livraison entrepot){
-        AlgoParcour algoParcour = new AlgoParcour();
-
-        if(livraisons.get(0).getChemins().size()==0) {
-            for (Livraison depart : livraisons) {
-                for (Livraison arrive : livraisons) {
-                    if (depart != arrive) {
-                        Chemin chemin = algoParcour.calculChemin(depart, arrive);
-                        depart.addChemin(chemin);
-                    }
-                }
-            }
-            for (Livraison livraison : livraisons) {
-                Chemin cheminEntrepotLivraison = algoParcour.calculChemin(entrepot, livraison);
-                Chemin cheminLivraisonEntrepot = algoParcour.calculChemin(livraison, entrepot);
-
-                entrepot.addChemin(cheminEntrepotLivraison);
-                livraison.addChemin(cheminLivraisonEntrepot);
-            }
-        }
-
-        ArrayList<ArrayList<Livraison>> listeGroupeLivraisons = algoParcour.getLivraisons(livraisons, nbrLivreur);
-
-        ArrayList<Tournee> listeTournee = new ArrayList<>();
-
-        for (ArrayList<Livraison> livraisonTournee: listeGroupeLivraisons){
-            Tournee tournee = TSP.calculerTournee(livraisonTournee, entrepot);
-            listeTournee.add(tournee);
-        }
-
-        return listeTournee;
-    }
-
     private static ArrayList<Chemin> creerListeChemins() {
         int s= arrayListToInt(livraisons)-1;
         int i, sommet;
@@ -190,6 +131,67 @@ public class TSP {
                 memD[i][j] = -1;
             }
         }
+    }
+
+
+    public static Tournee calculerTournee(ArrayList<Livraison> livraisonCollection, Livraison entrepot, Date heureDepart){
+        livraisons = new ArrayList<>(livraisonCollection);
+        livraisons.add(0,entrepot);
+
+        nbLivraisons = livraisons.size();
+        nbEnsemble = (int) Math.pow(2,nbLivraisons);
+
+        cout = new double[nbLivraisons][nbLivraisons];
+        creerCout();
+
+        memD = new double[nbLivraisons][nbEnsemble];
+        memNext = new int[nbLivraisons][nbEnsemble];
+        creerMem();
+
+        int ensemble = arrayListToInt(livraisons);
+
+        calculeD(0,ensemble-1);
+
+        afficheOrdre();
+
+        ArrayList<Chemin> listeChemins = creerListeChemins();
+        ArrayList<Livraison> setLivraisons = new ArrayList<>(livraisonCollection);
+        Tournee tournee = new Tournee(setLivraisons,listeChemins, heureDepart);
+
+        return tournee;
+    }
+
+    public static ArrayList<Tournee> calculerLesTournees(ArrayList<Livraison> livraisons, int nbrLivreur, Livraison entrepot, Date heureDepart){
+        AlgoParcour algoParcour = new AlgoParcour();
+
+        if(livraisons.get(0).getChemins().size()==0) {
+            for (Livraison depart : livraisons) {
+                for (Livraison arrive : livraisons) {
+                    if (depart != arrive) {
+                        Chemin chemin = algoParcour.calculChemin(depart, arrive);
+                        depart.addChemin(chemin);
+                    }
+                }
+            }
+            for (Livraison livraison : livraisons) {
+                Chemin cheminEntrepotLivraison = algoParcour.calculChemin(entrepot, livraison);
+                Chemin cheminLivraisonEntrepot = algoParcour.calculChemin(livraison, entrepot);
+
+                entrepot.addChemin(cheminEntrepotLivraison);
+                livraison.addChemin(cheminLivraisonEntrepot);
+            }
+        }
+
+        ArrayList<ArrayList<Livraison>> listeGroupeLivraisons = algoParcour.getLivraisons(livraisons, nbrLivreur);
+
+        ArrayList<Tournee> listeTournee = new ArrayList<>();
+
+        for (ArrayList<Livraison> livraisonTournee: listeGroupeLivraisons){
+            Tournee tournee = TSP.calculerTournee(livraisonTournee, entrepot, heureDepart);
+            listeTournee.add(tournee);
+        }
+
+        return listeTournee;
     }
 
     /*public static void main(String[] args){
