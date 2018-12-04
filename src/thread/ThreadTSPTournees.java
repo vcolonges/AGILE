@@ -11,7 +11,7 @@ public class ThreadTSPTournees extends ThreadTSP {
 
     protected int nbLivreurs;
 
-    public ThreadTSPTournees(ArrayList<Livraison> livraisons, int nbrLivreur, Livraison entrepot, Date heureDepart) {
+    protected ThreadTSPTournees(ArrayList<Livraison> livraisons, int nbrLivreur, Livraison entrepot, Date heureDepart) {
         super(livraisons,entrepot,heureDepart);
         this.nbLivreurs = nbrLivreur;
     }

@@ -9,7 +9,7 @@ import java.util.Date;
 
 public class ThreadTSPTournee extends ThreadTSP {
 
-    public ThreadTSPTournee(ArrayList<Livraison> livraisonCollection, Livraison entrepot, Date heureDepart) {
+    protected ThreadTSPTournee(ArrayList<Livraison> livraisonCollection, Livraison entrepot, Date heureDepart) {
         super(livraisonCollection,entrepot,heureDepart);
     }
 
