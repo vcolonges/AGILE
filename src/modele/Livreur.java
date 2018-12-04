@@ -1,10 +1,12 @@
 package modele;
 
+import java.awt.*;
+
 public class Livreur {
     private String prenom;
-    private String couleur;
+    private Color couleur;
 
-    public Livreur(String prenom, String couleur) {
+    public Livreur(String prenom, Color couleur) {
         this.prenom = prenom;
         this.couleur = couleur;
     }
@@ -17,11 +19,11 @@ public class Livreur {
         this.prenom = prenom;
     }
 
-    public String getCouleur() {
+    public Color getCouleur() {
         return couleur;
     }
 
-    public void setCouleur(String couleur) {
+    public void setCouleur(Color couleur) {
         this.couleur = couleur;
     }
 }
