@@ -27,7 +27,15 @@ public class EtatClientsAvertis extends Etat {
         {
             super.ajoutInfosLivraisonsToPopUpMenu(popUpMenu, plan, n);
             JMenuItem menuItem = new JMenuItem("Supprimer une livraison");
+
+            JMenu sectionL = new JMenu("Ajouter à");
+
+            for(int j = 0;j<plan.getNbLivreurs();j++) {
+                sectionL.add(new JMenuItem("Livreur " + j));
+            }
+
             popUpMenu.add(menuItem);
+            popUpMenu.add(sectionL);
             menuItem.addActionListener(e -> supprimerLivraisonApresLancement(n));
         }
         return popUpMenu;

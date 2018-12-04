@@ -236,7 +236,7 @@ public class MapVue extends JPanel {
         repaint();
     }
 
-    public void deletePoint(Noeud n){
+    public void supprimerLivraison(Noeud n){
         deletedNodes.add(this.resizePlan.getNoeuds().get(n.getId()));
     }
 }
