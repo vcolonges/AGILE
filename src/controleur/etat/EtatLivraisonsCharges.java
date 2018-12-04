@@ -14,6 +14,7 @@ public class EtatLivraisonsCharges extends Etat {
 
     @Override
     public PopUpMenu getPopUpMenu(Plan plan, Noeud n) {
-        return null;
+        PopUpMenu popUpMenu = super.getPopUpMenu(plan,n);
+        return popUpMenu;
     }
 }

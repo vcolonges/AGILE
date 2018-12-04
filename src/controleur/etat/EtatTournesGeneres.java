@@ -6,6 +6,8 @@ import modele.Plan;
 import vue.PopUpMenu;
 
 import javax.swing.*;
+import javax.swing.text.Position;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -17,10 +19,12 @@ public class EtatTournesGeneres extends Etat{
 
     @Override
     public PopUpMenu getPopUpMenu(Plan plan, Noeud n) {
-        PopUpMenu popUpMenu = new PopUpMenu();
+
+        PopUpMenu popUpMenu = super.getPopUpMenu(plan,n);
 
         if(plan.getLivraisons().containsKey(n.getId()))
         {
+            super.ajoutInfosLivraisonsToPopUpMenu(popUpMenu, plan, n);
             JMenuItem menuItem = new JMenuItem("Changer de livreur");
             popUpMenu.add(menuItem);
             menuItem.addMouseListener(new MouseAdapter() {
@@ -29,9 +33,7 @@ public class EtatTournesGeneres extends Etat{
                     super.mouseClicked(e);
                 }
             });
-            return popUpMenu;
         }
-
-        return null;
+        return popUpMenu;
     }
 }

@@ -1,5 +1,7 @@
 package controleur;
 
+
+import algorithmes.AlgoParcour;
 import algorithmes.TSP;
 import controleur.etat.*;
 import exceptions.XMLException;
@@ -10,12 +12,15 @@ import vue.MainVue;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class Controler {
 
     private Plan plan;
     private MainVue mainvue;
     private Etat etat;
+    private AlgoParcour algo;
+    private Point lastDragMousePosition;
 
     /**
      * Cree le controleur de l'application
@@ -24,6 +29,7 @@ public class Controler {
         this.mainvue = vue;
         etat = new EtatDebut(this);
         mainvue.setEtat(etat);
+        algo = new AlgoParcour();
     }
 
     public void chargerPlan(String lienPlan){
@@ -86,7 +92,7 @@ public class Controler {
         mainvue.setEtat(etat);
         ArrayList<Livraison> livraisons = new ArrayList<>();
         livraisons.addAll(plan.getLivraisons().values());
-        ArrayList<Tournee> tournee = TSP.calculerLesTournees(livraisons,plan.getNbLivreurs(),plan.getEntrepot());
+        ArrayList<Tournee> tournee = TSP.calculerLesTournees(livraisons,plan.getNbLivreurs(),plan.getEntrepot(), plan.getHeureDepart());
         for(Tournee t : tournee){
             System.out.println("\n\nTOURNEE : ");
             for(Chemin c : t.getChemins()){
@@ -107,5 +113,30 @@ public class Controler {
     public void demarrerTournees() {
         etat = new EtatClientsAvertis(this);
         mainvue.setEtat(etat);
+    }
+
+    public Point getLastDragMousePosition() {
+        return lastDragMousePosition;
+    }
+
+    public void setLastDragMousePosition(Point lastDragMousePosition) {
+        this.lastDragMousePosition = lastDragMousePosition;
+    }
+
+    public void wheelMovedUp(int wheelRotation) {
+        mainvue.getMapPanel().wheelMovedUp(wheelRotation);
+    }
+
+    public void setZoom(double zoom) {
+        mainvue.setZoom((int)(zoom*100.0));
+    }
+
+    public void wheelMovedDown(int wheelRotation) {
+        mainvue.getMapPanel().wheelMovedDown(wheelRotation);
+    }
+
+    public void mouseDragged(Point point) {
+        mainvue.mouseDragged(point);
+        lastDragMousePosition = point;
     }
 }
