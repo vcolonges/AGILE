@@ -20,6 +20,7 @@ public class Controler {
     private MainVue mainvue;
     private Etat etat;
     private AlgoParcour algo;
+    private Point lastDragMousePosition;
 
     /**
      * Cree le controleur de l'application
@@ -33,14 +34,12 @@ public class Controler {
 
     public void chargerPlan(String lienPlan){
         try {
-            if(plan != null)
-                plan.getNoeuds().clear();
             plan = XMLParser.parsePlan(lienPlan);
             mainvue.getMapPanel().loadPlan(plan);
             etat = new EtatPlanCharge(this);
             mainvue.setEtat(etat);
         } catch (XMLException e) {
-            e.printStackTrace();
+            mainvue.getMapPanel().loadPlan(plan);
             mainvue.errorMessage(e.getMessage());
         }
     }
@@ -55,6 +54,7 @@ public class Controler {
                 mainvue.getMapPanel().loadPlan(plan);
                 etat = new EtatLivraisonsCharges(this);
                 mainvue.setEtat(etat);
+                mainvue.setLabelHeureDepart(plan.getHeureDepart());
             } catch (XMLException e) {
                 e.printStackTrace();
                 mainvue.errorMessage(e.getMessage());
@@ -113,5 +113,30 @@ public class Controler {
     public void demarrerTournees() {
         etat = new EtatClientsAvertis(this);
         mainvue.setEtat(etat);
+    }
+
+    public Point getLastDragMousePosition() {
+        return lastDragMousePosition;
+    }
+
+    public void setLastDragMousePosition(Point lastDragMousePosition) {
+        this.lastDragMousePosition = lastDragMousePosition;
+    }
+
+    public void wheelMovedUp(int wheelRotation) {
+        mainvue.getMapPanel().wheelMovedUp(wheelRotation);
+    }
+
+    public void setZoom(double zoom) {
+        mainvue.setZoom((int)(zoom*100.0));
+    }
+
+    public void wheelMovedDown(int wheelRotation) {
+        mainvue.getMapPanel().wheelMovedDown(wheelRotation);
+    }
+
+    public void mouseDragged(Point point) {
+        mainvue.mouseDragged(point);
+        lastDragMousePosition = point;
     }
 }
