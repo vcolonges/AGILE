@@ -1,5 +1,6 @@
 package modele;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Objects;
 
@@ -8,6 +9,7 @@ public class Livraison {
     private Noeud noeud;
     private int duree;
     private HashSet<Chemin> chemins;
+    private Date heureArrivee;
 
     public Livraison(Noeud noeud, int duree){
         this.noeud = noeud;
@@ -73,5 +75,13 @@ public class Livraison {
             }
         }
         return  null;
+    }
+
+    public Date getHeureArrivee() {
+        return heureArrivee;
+    }
+
+    public void setHeureArrivee(Date heureArrivee) {
+        this.heureArrivee = heureArrivee;
     }
 }
