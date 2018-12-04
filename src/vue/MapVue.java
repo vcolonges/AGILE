@@ -2,6 +2,7 @@ package vue;
 
 import controleur.Controler;
 import modele.*;
+import utils.ListeLivreurs;
 
 import javax.swing.*;
 import java.awt.*;
@@ -54,7 +55,7 @@ public class MapVue extends JPanel {
             }
             if(!resizePlan.getTournees().isEmpty()){
                 for(Tournee tournee : resizePlan.getTournees()) {
-                    g.setColor(colors[resizePlan.getTournees().indexOf(tournee)]);
+                    g.setColor(tournee.getLivreur().getCouleur());
                     for (Chemin chemin : tournee.getChemins()) {
                         for (Troncon troncon : chemin.getTroncons()) {
                             Noeud start_tournee = troncon.getOrigine();
@@ -185,7 +186,9 @@ public class MapVue extends JPanel {
         Noeud newOriginTroncon = null;
         Noeud newDestinationTroncon = null;
         ArrayList<Tournee> newTournees = new ArrayList<>();
+        int livreur = 0;
         for(Tournee tournee : tournees) {
+            tournee.setLivreur(ListeLivreurs.livreurs[livreur++]);
             for (Chemin chemin : tournee.getChemins()) {
                 for (Troncon troncon : chemin.getTroncons()) {
                         originID = troncon.getOrigine().getId();
@@ -196,15 +199,6 @@ public class MapVue extends JPanel {
 
                         troncon.setOrigine(newOriginTroncon);
                         troncon.setDestination(newDestinationTroncon);
-                }
-            }
-        }
-        for(Tournee tournee : tournees) {
-            for (Chemin chemin : tournee.getChemins()) {
-                for (Troncon troncon : chemin.getTroncons()) {
-                    System.out.println(troncon.getOrigine());
-                    System.out.println(troncon.getDestination());
-                    System.out.println("\n");
                 }
             }
         }

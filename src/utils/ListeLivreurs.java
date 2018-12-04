@@ -1,8 +1,10 @@
+package utils;
+
 import modele.Livreur;
 
 import java.awt.*;
 
-public class ListeLivreurs {
+public final class ListeLivreurs {
 
     public static final Livreur[] livreurs = {
             new Livreur("Robert",new Color(230,25,75)),

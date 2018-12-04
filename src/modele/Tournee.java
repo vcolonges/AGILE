@@ -10,6 +10,7 @@ public class Tournee {
     private Date heureDepart;
     private Date retourEntrepot;
     private static final double VITESSE = 4.17;
+    private Livreur livreur;
 
     public Tournee(ArrayList<Livraison> livraisons, ArrayList<Chemin> chemins, Date heureDepart)
     {
@@ -35,6 +36,14 @@ public class Tournee {
         double dureeChemin = chemins.get(chemins.size()-1).getLongueur()/VITESSE;
         heure.setTime((long) (heure.getTime()+dureeChemin*1000));
         retourEntrepot = new Date(heure.getTime());
+    }
+
+    public Livreur getLivreur() {
+        return livreur;
+    }
+
+    public void setLivreur(Livreur livreur) {
+        this.livreur = livreur;
     }
 
     @Override
