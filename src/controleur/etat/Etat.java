@@ -1,12 +1,15 @@
 package controleur.etat;
 
 import controleur.Controler;
+import modele.Livraison;
 import modele.Noeud;
 import modele.Plan;
 import vue.PopUpMenu;
 
 import javax.swing.*;
 import java.awt.*;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 
 public class Etat {
@@ -20,11 +23,11 @@ public class Etat {
         JLabel label;
         if(!plan.getLivraisons().containsKey(n.getId()))
         {
-            label = new JLabel("Adresse : " + n.getLatitude() + " " + n.getLongitude(),SwingConstants.LEFT);
+            label = new JLabel("Adresse : lat." + n.getLatitude() + " long." + n.getLongitude(),SwingConstants.LEFT);
         }
         else
         {
-            label = new JLabel("Adresse de livraison : " + n.getLatitude() + " " + n.getLongitude(),SwingConstants.LEFT);
+            label = new JLabel("Adresse de livraison : lat." + n.getLatitude() + " long." + n.getLongitude(),SwingConstants.LEFT);
         }
         panel.add(label);
         popUpMenu.add(panel);
@@ -35,17 +38,20 @@ public class Etat {
         return label;
     }
 
-    public PopUpMenu ajoutInfosLivraisonsToPopUpMenu(PopUpMenu popUpMenu){
+    public PopUpMenu ajoutInfosLivraisonsToPopUpMenu(PopUpMenu popUpMenu, Plan p, Noeud n){
+        Livraison livraison = p.getLivraisons().get(n.getId());
         JPanel panelArrivee = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        JLabel heureArrivee = new JLabel("Heure d'arrivee sur place : ");
+        SimpleDateFormat format = new SimpleDateFormat("HH:mm");
+        JLabel heureArrivee = new JLabel("Heure d'arrivee sur place : " + format.format(livraison.getHeureArrivee()));
         panelArrivee.add(heureArrivee);
 
         JPanel panelDuree = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        JLabel heureDuree = new JLabel("Duree sur place : ");
+        JLabel heureDuree = new JLabel("Duree sur place : " + livraison.getDuree()/60 + " min");
         panelDuree.add(heureDuree);
 
         JPanel panelDepart = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        JLabel heureDepart = new JLabel("Heure de depart : ");
+        Date valHeureDepart = new Date(livraison.getHeureArrivee().getTime() + livraison.getDuree()*1000);
+        JLabel heureDepart = new JLabel("Heure de depart : " + format.format(valHeureDepart));
         panelDepart.add(heureDepart);
 
         popUpMenu.add(panelArrivee);

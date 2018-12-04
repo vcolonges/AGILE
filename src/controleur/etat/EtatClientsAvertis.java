@@ -25,7 +25,7 @@ public class EtatClientsAvertis extends Etat {
         }
         else
         {
-            super.ajoutInfosLivraisonsToPopUpMenu(popUpMenu);
+            super.ajoutInfosLivraisonsToPopUpMenu(popUpMenu, plan, n);
             JMenuItem menuItem = new JMenuItem("Supprimer une livraison");
             popUpMenu.add(menuItem);
             menuItem.addActionListener(e -> supprimerLivraisonApresLancement(n));

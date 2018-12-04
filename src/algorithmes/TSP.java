@@ -157,6 +157,7 @@ public class TSP {
         ArrayList<Chemin> listeChemins = creerListeChemins();
         ArrayList<Livraison> setLivraisons = new ArrayList<>(livraisonCollection);
         Tournee tournee = new Tournee(setLivraisons,listeChemins, heureDepart);
+        tournee.calculeHoraire();
 
         return tournee;
     }
