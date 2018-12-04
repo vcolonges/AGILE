@@ -38,14 +38,12 @@ public class Controler {
 
     public void chargerPlan(String lienPlan){
         try {
-            if(plan != null)
-                plan.getNoeuds().clear();
             plan = XMLParser.parsePlan(lienPlan);
             mainvue.getMapPanel().loadPlan(plan);
             etat = new EtatPlanCharge(this);
             mainvue.setEtat(etat);
         } catch (XMLException e) {
-            e.printStackTrace();
+            mainvue.getMapPanel().loadPlan(plan);
             mainvue.errorMessage(e.getMessage());
         }
     }
@@ -60,6 +58,7 @@ public class Controler {
                 mainvue.getMapPanel().loadPlan(plan);
                 etat = new EtatLivraisonsCharges(this);
                 mainvue.setEtat(etat);
+                mainvue.setLabelHeureDepart(plan.getHeureDepart());
             } catch (XMLException e) {
                 e.printStackTrace();
                 mainvue.errorMessage(e.getMessage());

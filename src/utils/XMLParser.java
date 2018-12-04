@@ -26,6 +26,11 @@ public class XMLParser {
 
         doc.getDocumentElement().normalize();
 
+        final Element racine = doc.getDocumentElement();
+        if(!racine.getTagName().equals("reseau")){
+            throw new XMLException("Le fichier n'est pas un fichier de plan");
+        }
+
         NodeList listNoeuds = doc.getElementsByTagName("noeud");
 
         for (int i = 0; i < listNoeuds.getLength(); i++) {
@@ -161,6 +166,11 @@ public class XMLParser {
         plan.getLivraisons().clear();
         plan.getTournees().clear();
         Document doc = ouvrirDocument(lienFichier);
+
+        final Element racine = doc.getDocumentElement();
+        if(!racine.getTagName().equals("demandeDeLivraisons")){
+            throw new XMLException("Le fichier n'est pas un fichier de demande de livraisons");
+        }
 
         // Parse Entrepot
         NodeList listEntrepots = doc.getElementsByTagName("entrepot");

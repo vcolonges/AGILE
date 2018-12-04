@@ -1,19 +1,15 @@
 package vue;
 
 
-import controleur.Controler;
-import controleur.EcouteurDeBoutons;
-import controleur.EcouteurDeComposant;
-import controleur.EcouteurDeSouris;
-import controleur.etat.Etat;
-import controleur.etat.EtatLivraisonsCharges;
-import controleur.etat.EtatPlanCharge;
-import controleur.etat.EtatTournesGeneres;
+import controleur.*;
+import controleur.etat.*;
 import modele.Noeud;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.util.Calendar;
+import java.util.Date;
 
 public class MainVue extends JFrame {
 
@@ -27,11 +23,15 @@ public class MainVue extends JFrame {
     private EcouteurDeBoutons ecouteurDeBoutons;
     private EcouteurDeSouris ecouteurDeSouris;
     private EcouteurDeComposant ecouteurDeComposant;
+    private EcouteurDeSpinner ecouteurDeSpinner;
     private JMenuBar menuBar;
     private MapVue mapPanel;
     private JLabel XPosition;
     private JLabel YPosition;
     private JLabel selectedNode;
+    private JSpinner spinnerLivreur;
+    private JPanel panelHeureDebut;
+    private JLabel labelHeureDepart;
     private final JButton genererTournees;
     private final JLabel etatLabel;
     private final JButton demarrerTournees;
@@ -83,6 +83,7 @@ public class MainVue extends JFrame {
         ecouteurDeBoutons = new EcouteurDeBoutons(controler);
         ecouteurDeSouris = new EcouteurDeSouris(controler);
         ecouteurDeComposant = new EcouteurDeComposant(controler);
+        ecouteurDeSpinner = new EcouteurDeSpinner(controler);
         mapPanel.addMouseListener(ecouteurDeSouris);
         mapPanel.addMouseMotionListener(ecouteurDeSouris);
         mapPanel.addComponentListener(ecouteurDeComposant);
@@ -90,35 +91,32 @@ public class MainVue extends JFrame {
 
         // Crétion toolPanel
         JPanel toolPanel = new JPanel();
-        toolPanel.setLayout(new GridLayout(4,1));
+        toolPanel.setLayout(new GridLayout(1,4));
+
         JPanel nbPersonPanel = new JPanel();
         nbPersonPanel.setLayout(new FlowLayout());
         nbPersonPanel.add(new JLabel("Nombre de livreurs"));
 
-        JComboBox nbLivreurs = new JComboBox();
+        SpinnerModel model = new SpinnerNumberModel(1, 1,15,1);
+        spinnerLivreur = new JSpinner(model);
+        spinnerLivreur.addChangeListener(ecouteurDeSpinner);
+        spinnerLivreur.setEnabled(false);
+        nbPersonPanel.add(spinnerLivreur);
+
+        /*JComboBox nbLivreurs = new JComboBox();
         nbLivreurs.addActionListener(ecouteurDeBoutons);
         for(int i = 1; i < 16; i++)
             nbLivreurs.addItem(""+i);
         nbLivreurs.setMaximumSize( nbLivreurs.getPreferredSize() );
-        nbPersonPanel.add(nbLivreurs);
+        nbPersonPanel.add(nbLivreurs);*/
 
-        JPanel startStimePanel = new JPanel();
-        startStimePanel.setLayout(new FlowLayout());
-
-        JComboBox heureDebut = new JComboBox();
-        for(int i = 1; i < 25; i++)
-            heureDebut.addItem(""+i);
-        heureDebut.setMaximumSize( heureDebut.getPreferredSize() );
-        startStimePanel.add(new JLabel("Heure de début"));
-        startStimePanel.add(heureDebut);
-
-        JComboBox minuteDebut = new JComboBox();
-        for(int i = 1; i < 61; i++)
-            minuteDebut.addItem(""+i);
-        minuteDebut.setMaximumSize( minuteDebut.getPreferredSize() );
-        startStimePanel.add(new JLabel("h"));
-        startStimePanel.add(minuteDebut);
-        startStimePanel.add(new JLabel("min"));
+        panelHeureDebut = new JPanel();
+        panelHeureDebut.setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        panelHeureDebut.add(new JLabel("Heure de début : "),gbc);
+        labelHeureDepart = new JLabel();
+        panelHeureDebut.add(labelHeureDepart,gbc);
+        panelHeureDebut.setVisible(false);
 
         genererTournees = new JButton(GENERER_TOURNEES);
         genererTournees.setEnabled(false);
@@ -136,12 +134,12 @@ public class MainVue extends JFrame {
 
         // Placement des panels sur la fenetre
         toolPanel.add(nbPersonPanel);
-        toolPanel.add(startStimePanel);
+        toolPanel.add(panelHeureDebut);
         toolPanel.add(genererTourneesPanel);
         toolPanel.add(demarrerTourneesPanel);
         this.add(debugPanel,BorderLayout.SOUTH);
         this.add(mapPanel,BorderLayout.CENTER);
-        this.add(toolPanel,BorderLayout.EAST);
+        this.add(toolPanel,BorderLayout.NORTH);
 
 
         //Poptlation de la menubar
@@ -197,19 +195,32 @@ public class MainVue extends JFrame {
         mapPanel.selectNode(point,e);
     }
 
+    public void setLabelHeureDepart(Date heureDepart){
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(heureDepart);
+        int heure = cal.get(Calendar.HOUR_OF_DAY);
+        int minute = cal.get(Calendar.MINUTE);
+        String strHeureDepart = String.format("%02dh%02d", heure, minute);
+        labelHeureDepart.setText(strHeureDepart);
+    }
+
     public void setEtat(Etat etat) {
         etatLabel.setText(etat.getLabel());
-        if(etat.getClass() == EtatPlanCharge.class) {
+        if(etat instanceof EtatPlanCharge) {
             genererTournees.setEnabled(false);
             demarrerTournees.setEnabled(false);
             chargerLivraisonXML.setEnabled(true);
-        }
-        else if(etat.getClass() == EtatLivraisonsCharges.class) {
+        }else if(etat instanceof EtatLivraisonsCharges) {
             genererTournees.setEnabled(true);
             demarrerTournees.setEnabled(false);
-        }
-        else if(etat.getClass() == EtatTournesGeneres.class){
+            panelHeureDebut.setVisible(true);
+            spinnerLivreur.setEnabled(true);
+        }else if(etat instanceof EtatTournesGeneres){
             demarrerTournees.setEnabled(true);
+        }else if(etat instanceof EtatClientsAvertis){
+            genererTournees.setEnabled(false);
+            demarrerTournees.setEnabled(false);
+            spinnerLivreur.setEnabled(false);
         }
     }
 
