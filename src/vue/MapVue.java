@@ -223,15 +223,7 @@ public class MapVue extends JPanel {
                 }
             }
         }
-        for(Tournee tournee : tournees) {
-            for (Chemin chemin : tournee.getChemins()) {
-                for (Troncon troncon : chemin.getTroncons()) {
-                    System.out.println(troncon.getOrigine());
-                    System.out.println(troncon.getDestination());
-                    System.out.println("\n");
-                }
-            }
-        }
+
         resizePlan.setTournees(tournees);
         repaint();
     }

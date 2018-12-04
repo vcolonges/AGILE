@@ -115,7 +115,7 @@ public class TSP {
 
         calculeD(0,ensemble-1);
 
-        afficheOrdre();
+        //afficheOrdre();
 
         ArrayList<Chemin> listeChemins = creerListeChemins();
         HashSet<Livraison> setLivraisons = new HashSet<>(livraisonCollection);
@@ -126,12 +126,11 @@ public class TSP {
 
     public static ArrayList<Tournee> calculerLesTournees(ArrayList<Livraison> livraisons, int nbrLivreur, Livraison entrepot){
         AlgoParcour algoParcour = new AlgoParcour();
-
         ArrayList<Livraison> livraisonsEntrepot = new ArrayList<>(livraisons);
         livraisonsEntrepot.add(entrepot);
 
         for (Livraison depart: livraisons) {
-            ArrayList<Chemin> chemins = algoParcour.calculChemin(depart, livraisonsEntrepot); // entrepot parfois absent
+            ArrayList<Chemin> chemins = algoParcour.calculChemin(depart, livraisonsEntrepot);
             depart.getChemins().addAll(chemins);
 
         }

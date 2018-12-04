@@ -84,10 +84,10 @@ public class AlgoParcour {
             //greyNoeuds.remove(curNoeud); //probablément juste une perte de temps
         }
 
-        for(Livraison livrison : livraisons) {
-            if(livrison!=departLiv) {
-                Troncon sortTroncon = successorDistance.get(livrison.getNoeud().getId()).getPremier();
-                Chemin tmpChemin = new Chemin(departLiv, livrison, successorDistance.get(livrison.getNoeud().getId()).getSecond());
+        for(Livraison livraison : livraisons) {
+            if(livraison!=departLiv) {
+                Troncon sortTroncon = successorDistance.get(livraison.getNoeud().getId()).getPremier();
+                Chemin tmpChemin = new Chemin(departLiv, livraison, successorDistance.get(livraison.getNoeud().getId()).getSecond());
                 tmpChemin.getTroncons().add(sortTroncon);
                 while (sortTroncon.getOrigine() != depart) {
                     sortTroncon = successorDistance.get(sortTroncon.getOrigine().getId()).getPremier();
@@ -114,12 +114,12 @@ public class AlgoParcour {
         ArrayList<Double> circleData = new ArrayList<>();
         circleData.add(circle.get(0).getNoeud().getLatitude());
         circleData.add(circle.get(0).getNoeud().getLongitude());
-        circleData.add(circle.get(1).getNoeud().getLatitude());
-        circleData.add(circle.get(1).getNoeud().getLongitude());
+        circleData.add(circle.get(0).getNoeud().getLatitude());
+        circleData.add(circle.get(0).getNoeud().getLongitude());
         circleData.add((circleData.get(0) + circleData.get(2)) / 2);
         circleData.add((circleData.get(1) + circleData.get(3)) / 2);
 
-        for (int indexCircleNoeud = 2; indexCircleNoeud < circle.size(); indexCircleNoeud++) {
+        for (int indexCircleNoeud = 1; indexCircleNoeud < circle.size(); indexCircleNoeud++) {
             Noeud curNoeud = circle.get(indexCircleNoeud).getNoeud();
             double distanceToCenter = PointsDistance(curNoeud.getLatitude(), curNoeud.getLongitude(), circleData.get(4), circleData.get(5));
             double circleRadius = PointsDistance(circleData.get(0), circleData.get(1), circleData.get(4), circleData.get(5));
