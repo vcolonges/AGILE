@@ -37,6 +37,14 @@ public class Tournee {
         retourEntrepot = new Date(heure.getTime());
     }
 
+    public ArrayList<Livraison> getLivraisons() {
+        return livraisons;
+    }
+
+    public Date getHeureDepart() {
+        return heureDepart;
+    }
+
     @Override
     public String toString() {
         return "Tournee{" +

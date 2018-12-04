@@ -7,6 +7,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Line2D;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Queue;
 import java.util.Random;
@@ -209,8 +210,12 @@ public class MapVue extends JPanel {
         Noeud newOriginTroncon = null;
         Noeud newDestinationTroncon = null;
         ArrayList<Tournee> newTournees = new ArrayList<>();
-        for(Tournee tournee : tournees) {
+
+        for(Tournee tournee : tournees){
+            ArrayList<Chemin> chemins = new ArrayList<>();
             for (Chemin chemin : tournee.getChemins()) {
+                Chemin newChemin = new Chemin(chemin.getOrigine(),chemin.getDestination(),chemin.getLongueur());
+                ArrayList<Troncon> troncons = new ArrayList<>();
                 for (Troncon troncon : chemin.getTroncons()) {
                         originID = troncon.getOrigine().getId();
                         destinationID = troncon.getDestination().getId();
@@ -218,21 +223,17 @@ public class MapVue extends JPanel {
                         newOriginTroncon = this.resizePlan.getNoeuds().get(originID);
                         newDestinationTroncon = this.resizePlan.getNoeuds().get(destinationID);
 
-                        troncon.setOrigine(newOriginTroncon);
-                        troncon.setDestination(newDestinationTroncon);
+                        Troncon newTroncon = new Troncon(newOriginTroncon,newDestinationTroncon,troncon.getLongueur(),troncon.getNomRue());
+                        troncons.add(newTroncon);
                 }
+                newChemin.setTroncons(troncons);
+                chemins.add(newChemin);
             }
+            Tournee newtournee = new Tournee(tournee.getLivraisons(),chemins,tournee.getHeureDepart());
+            newTournees.add(newtournee);
         }
-        for(Tournee tournee : tournees) {
-            for (Chemin chemin : tournee.getChemins()) {
-                for (Troncon troncon : chemin.getTroncons()) {
-                    System.out.println(troncon.getOrigine());
-                    System.out.println(troncon.getDestination());
-                    System.out.println("\n");
-                }
-            }
-        }
-        resizePlan.setTournees(tournees);
+
+        resizePlan.setTournees(newTournees);
         repaint();
     }
 
