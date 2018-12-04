@@ -12,6 +12,7 @@ import vue.MainVue;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class Controler {
 
@@ -91,7 +92,7 @@ public class Controler {
         mainvue.setEtat(etat);
         ArrayList<Livraison> livraisons = new ArrayList<>();
         livraisons.addAll(plan.getLivraisons().values());
-        ArrayList<Tournee> tournee = TSP.calculerLesTournees(livraisons,plan.getNbLivreurs(),plan.getEntrepot());
+        ArrayList<Tournee> tournee = TSP.calculerLesTournees(livraisons,plan.getNbLivreurs(),plan.getEntrepot(), plan.getHeureDepart());
         for(Tournee t : tournee){
             System.out.println("\n\nTOURNEE : ");
             for(Chemin c : t.getChemins()){
