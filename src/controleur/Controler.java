@@ -4,16 +4,16 @@ package controleur;
 import algorithmes.AlgoParcour;
 import algorithmes.TSP;
 import controleur.etat.*;
-import controleur.gestionCommande.CommandeManager;
+import controleur.gestionCommande.*;
 import exceptions.XMLException;
 import modele.*;
 import utils.XMLParser;
 import vue.MainVue;
-import gestionCommande.CommandeManager;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Date;
+
 
 public class Controler {
 
@@ -113,12 +113,15 @@ public class Controler {
 
         mainvue.supprimerLivraison(n);
 
-        ctrlZ.add(new Commande(plan.getLivraisons().get(n.getId()),this));
+        ctrlZ.add(new SupprimerCommande(plan.getLivraisons().get(n.getId()),this));
 
     }
 
     public void revertDeleteLivraison(Noeud n){
-
+        /*
+           mainvue.addLivraison(n);
+           ctrlZ.undo();
+        */
     }
 
     public void demarrerTournees() {

@@ -7,7 +7,8 @@ public class SupprimerCommande implements Commande {
 
     private Livraison livraison;
     private Controler controler;
-    SupprimerCommande(Livraison l,Controler c){
+
+    public SupprimerCommande(Livraison l,Controler c){
         this.livraison = l;
         this.controler = c;
     }
