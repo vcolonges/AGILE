@@ -111,22 +111,34 @@ public class AlgoParcour {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //calculer les données d'un cercle
     private ArrayList<Double> initCircleData(ArrayList<Livraison> circle) {
-        ArrayList<Double> circleData = new ArrayList<>();
-        circleData.add(circle.get(0).getNoeud().getLatitude());
-        circleData.add(circle.get(0).getNoeud().getLongitude());
-        circleData.add(circle.get(0).getNoeud().getLatitude());
-        circleData.add(circle.get(0).getNoeud().getLongitude());
-        circleData.add((circleData.get(0) + circleData.get(2)) / 2);
-        circleData.add((circleData.get(1) + circleData.get(3)) / 2);
 
-        for (int indexCircleNoeud = 1; indexCircleNoeud < circle.size(); indexCircleNoeud++) {
-            Noeud curNoeud = circle.get(indexCircleNoeud).getNoeud();
-            double distanceToCenter = PointsDistance(curNoeud.getLatitude(), curNoeud.getLongitude(), circleData.get(4), circleData.get(5));
-            double circleRadius = PointsDistance(circleData.get(0), circleData.get(1), circleData.get(4), circleData.get(5));
-            //verifier si un noeud n'appartient pas au cercle definit
-            if (distanceToCenter > circleRadius) {
-                circleData = MAJCircleData(curNoeud, circleData);
+        ArrayList<Double> circleData = new ArrayList<>();
+        if(circle.size()>1) {
+            circleData.add(circle.get(0).getNoeud().getLatitude());
+            circleData.add(circle.get(0).getNoeud().getLongitude());
+            circleData.add(circle.get(0).getNoeud().getLatitude());
+            circleData.add(circle.get(0).getNoeud().getLongitude());
+            circleData.add((circleData.get(0) + circleData.get(2)) / 2);
+            circleData.add((circleData.get(1) + circleData.get(3)) / 2);
+
+            for (int indexCircleNoeud = 1; indexCircleNoeud < circle.size(); indexCircleNoeud++) {
+                Noeud curNoeud = circle.get(indexCircleNoeud).getNoeud();
+                double distanceToCenter = PointsDistance(curNoeud.getLatitude(), curNoeud.getLongitude(), circleData.get(4), circleData.get(5));
+                double circleRadius = PointsDistance(circleData.get(0), circleData.get(1), circleData.get(4), circleData.get(5));
+                //verifier si un noeud n'appartient pas au cercle definit
+                if (distanceToCenter > circleRadius) {
+                    circleData = MAJCircleData(curNoeud, circleData);
+                }
             }
+        }
+        else if(circle.size()==1)
+        {
+            circleData.add(circle.get(0).getNoeud().getLatitude());
+            circleData.add(circle.get(0).getNoeud().getLongitude());
+            circleData.add(circle.get(0).getNoeud().getLatitude());
+            circleData.add(circle.get(0).getNoeud().getLongitude());
+            circleData.add((circleData.get(0) + circleData.get(2)) / 2);
+            circleData.add((circleData.get(1) + circleData.get(3)) / 2);
         }
         return circleData;
     }
@@ -154,51 +166,22 @@ public class AlgoParcour {
     }
 
 
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //separer l'ensemble de livraisons en n listes de taille k correspondant au nombre de livraisons
-    //chaque liste represente un cercle avec la plus grande densité des k livraison adjacent
-    private ArrayList<ArrayList<Livraison>> toCircle(ArrayList<Livraison> livraisons, int nbrLivreur, int nLim) {
-        //stocker aleatoirement k livraisons en nbrLivreur listes
-        ArrayList<ArrayList<Livraison>> result = new ArrayList<ArrayList<Livraison>>();
+//optimiser le contenu d'un cercle
+    private ArrayList<ArrayList<Livraison>> circleOpt(ArrayList<ArrayList<Livraison>> result, ArrayList<ArrayList<Double>> circlesData, int nbrLivreur, int nLim)
+    {
         ArrayList<ArrayList<Livraison>> tmpResult = new ArrayList<ArrayList<Livraison>>();
-        int indexLivraison = 0;
         for (int i = 0; i < nbrLivreur; i++)
         {
-            ArrayList<Livraison> tmpList = new ArrayList<Livraison>();
             ArrayList<Livraison> tmpResultList = new ArrayList<Livraison>();
-            for (int j = 0; j < livraisons.size() / nbrLivreur; j++) {
-                tmpList.add(livraisons.get(indexLivraison));
-                indexLivraison++;
-            }
-            result.add(tmpList);
             tmpResult.add(tmpResultList);
         }
-        //si le nombre de livraisons n'est pas divisible par nbrLivreur, repartir le reste
-        // entre les listes
-        for (int p = indexLivraison; p < livraisons.size(); p++) {
-            result.get(livraisons.size() - p).add(livraisons.get(p));
-        }
 
-        //à chaque cercle on attribue un centre se composant de deux coordonnées et deux coordonées de deux noeuds les plus eloignés
-        // pour chaque element de la liste on a:
-        // index 0 : Latitude Noeud 1, index 1 : Longitude Noeud 1
-        // index 2 : Latitude Noeud 2, index 3 : Longitude Noeud 2
-        // index 4 : Latitude centre, index 5 : Longitude centre
-        ArrayList<ArrayList<Double>> circlesData = new ArrayList<>();
-        for (int indexCircle = 0; indexCircle < nbrLivreur; indexCircle++) {
-            circlesData.add(initCircleData(result.get(indexCircle)));
-            //initialiser les données d'un cercle
-        }
-
-        //optimiser le contenu d'un cercle
+        boolean testNoChange = true;
         for(int j=0; j<nbrLivreur; j++) {
             for (int indexCircle = 0; indexCircle < nbrLivreur; indexCircle++) {
-       /* if(result.get(indexCircle).size()==0)
-        {
-            result.remove(indexCircle);
-            indexCircle--;
-            break;
-        }*/
+
                 int lastCircleIndex = 0;
                 if (result.get(indexCircle).size() != 0) {
                     //pour chaque cercle on prend chaque noeud
@@ -211,11 +194,11 @@ public class AlgoParcour {
                         double tmpDistance = 0;
                         for (int tmpIndexCircle = 0; tmpIndexCircle < nbrLivreur; tmpIndexCircle++) {
                             //if (result.get(tmpIndexCircle).size() != 0) {//********************************trouver meilleur condition d'arrêt
-                                tmpDistance = PointsDistance(curNoeud.getLatitude(), curNoeud.getLongitude(), circlesData.get(tmpIndexCircle).get(4), circlesData.get(tmpIndexCircle).get(5));
-                                if (tmpDistance < distanceToCenter) {
-                                    distanceToCenter = tmpDistance;
-                                    lastCircleIndex = tmpIndexCircle;
-                                }
+                            tmpDistance = PointsDistance(curNoeud.getLatitude(), curNoeud.getLongitude(), circlesData.get(tmpIndexCircle).get(4), circlesData.get(tmpIndexCircle).get(5));
+                            if (tmpDistance < distanceToCenter) {
+                                distanceToCenter = tmpDistance;
+                                lastCircleIndex = tmpIndexCircle;
+                            }
                             //}
                         }
                         //si le noeud est plus pres du centre d'un autre cercle que du sien, on le transmet à resultat final du cercle ciblé et on redemarre l'algorithme
@@ -226,11 +209,11 @@ public class AlgoParcour {
                             if (distanceToCenter > PointsDistance(circlesData.get(lastCircleIndex).get(0), circlesData.get(lastCircleIndex).get(1), circlesData.get(lastCircleIndex).get(4), circlesData.get(lastCircleIndex).get(5))) {
                                 circlesData.set(lastCircleIndex, MAJCircleData(curNoeud, circlesData.get(lastCircleIndex)));
                             }
-                            if (((curNoeud.getLatitude() == circlesData.get(indexCircle).get(0) && curNoeud.getLongitude() == circlesData.get(indexCircle).get(1)) || (curNoeud.getLatitude() == circlesData.get(indexCircle).get(2) && curNoeud.getLongitude() == circlesData.get(indexCircle).get(3))) && result.get(indexCircle).size() > 1) {
+                            if (((curNoeud.getLatitude() == circlesData.get(indexCircle).get(0) && curNoeud.getLongitude() == circlesData.get(indexCircle).get(1)) || (curNoeud.getLatitude() == circlesData.get(indexCircle).get(2) && curNoeud.getLongitude() == circlesData.get(indexCircle).get(3))) && result.get(indexCircle).size() > 0) {
                                 circlesData.set(indexCircle, initCircleData(result.get(indexCircle)));
                             }
                             indexCircle = lastCircleIndex - 1;
-
+                            testNoChange = false;
                             break;
                         }
                         //sinon on transmet le noeud au resultat du cercle courant
@@ -242,7 +225,7 @@ public class AlgoParcour {
                     //si on a transmit l'ensemble de noeuds d'un cercle à resultat du cercle et que le cardinal du resultat
                     //est superieur au nombre de livraions / nombre de livreur +1
                     // on redistribue le dernier noeud  du resultat potentiellement erroné entre les cercles restant
-                    if (tmpResult.get(lastCircleIndex).size() > nLim) {
+                    if (tmpResult.get(lastCircleIndex).size() > nLim) {//check for tmpresult nulle
                         int indexToRemove = 0;
                         int indexToMove = indexCircle;
                         for (int indexNoeud = 0; indexNoeud < tmpResult.get(lastCircleIndex).size(); indexNoeud++) {
@@ -282,10 +265,87 @@ public class AlgoParcour {
                 }
 
             }
+
             for(int i=0; i<nbrLivreur; i++)
             {
                 result.get(i).addAll(tmpResult.get(i));
                 tmpResult.get(i).clear();
+            }
+            if(testNoChange)
+            {
+                break;
+            }
+
+        }
+
+        return result;
+    }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //separer l'ensemble de livraisons en n listes de taille k correspondant au nombre de livraisons
+    //chaque liste represente un cercle avec la plus grande densité des k livraison adjacent
+    private ArrayList<ArrayList<Livraison>> toCircle(ArrayList<Livraison> livraisons, int nbrLivreur, int nLim) {
+        //stocker aleatoirement k livraisons en nbrLivreur listes
+        ArrayList<ArrayList<Livraison>> result = new ArrayList<ArrayList<Livraison>>();
+        int indexLivraison = 0;
+        for (int i = 0; i < nbrLivreur; i++)
+        {
+            ArrayList<Livraison> tmpList = new ArrayList<Livraison>();
+            for (int j = 0; j < livraisons.size() / nbrLivreur; j++) {
+                tmpList.add(livraisons.get(indexLivraison));
+                indexLivraison++;
+            }
+            result.add(tmpList);
+        }
+        //si le nombre de livraisons n'est pas divisible par nbrLivreur, repartir le reste
+        // entre les listes
+        for (int p = indexLivraison; p < livraisons.size(); p++) {
+            result.get(livraisons.size() - p).add(livraisons.get(p));
+        }
+
+        //à chaque cercle on attribue un centre se composant de deux coordonnées et deux coordonées de deux noeuds les plus eloignés
+        // pour chaque element de la liste on a:
+        // index 0 : Latitude Noeud 1, index 1 : Longitude Noeud 1
+        // index 2 : Latitude Noeud 2, index 3 : Longitude Noeud 2
+        // index 4 : Latitude centre, index 5 : Longitude centre
+        ArrayList<ArrayList<Double>> circlesData = new ArrayList<>();
+        for (int indexCircle = 0; indexCircle < nbrLivreur; indexCircle++) {
+            circlesData.add(initCircleData(result.get(indexCircle)));
+            //initialiser les données d'un cercle
+        }
+
+        result = circleOpt( result, circlesData, nbrLivreur, nLim);
+
+        //remise des noeuds équitablement
+        if(livraisons.size()%nbrLivreur!=0) {
+            for (int indexCircle = 0; indexCircle < nbrLivreur; indexCircle++) {
+                Livraison tmpLiv = null;
+                int tmpTargetIndexCircle = -1;
+                if (result.get(indexCircle).size() < nLim - 1) {
+                    while (result.get(indexCircle).size() < nLim - 1) {
+                        double tmpDistance = 1000000;
+                        for (int indexTargetCircle = 0; indexTargetCircle < nbrLivreur; indexTargetCircle++) {
+                            if(indexTargetCircle==indexCircle||result.get(indexTargetCircle).size()<nLim)
+                            {
+                                continue;
+                            }
+                            Livraison livTarget = null;
+                            for (int indexTargetNoeud = 0; indexTargetNoeud < result.get(indexTargetCircle).size(); indexTargetNoeud++) {
+                                livTarget = result.get(indexTargetCircle).get(indexTargetNoeud);
+                                double tmpDistance2 = PointsDistance(circlesData.get(indexCircle).get(4), circlesData.get(indexCircle).get(5), circlesData.get(indexTargetCircle).get(4), circlesData.get(indexTargetCircle).get(5));
+                                if (tmpDistance > tmpDistance2) {
+                                    tmpDistance = tmpDistance2;
+                                    tmpLiv = livTarget;
+                                    tmpTargetIndexCircle = indexTargetCircle;
+                                }
+                            }
+                        }
+                        if (tmpTargetIndexCircle != -1) {
+                            result.get(indexCircle).add(tmpLiv);
+                            result.get(tmpTargetIndexCircle).remove(tmpLiv);
+                        }
+                    }
+                }
             }
         }
 
