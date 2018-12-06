@@ -6,6 +6,8 @@ import algorithmes.TSP;
 import controleur.etat.*;
 import exceptions.XMLException;
 import modele.*;
+import thread.ThreadTSP;
+import thread.ThreadTSPFactory;
 import utils.XMLParser;
 import vue.MainVue;
 
@@ -21,6 +23,7 @@ public class Controler {
     private Etat etat;
     private AlgoParcour algo;
     private Point lastDragMousePosition;
+    private EcouteurDeTache ecouteurDeTache;
 
     /**
      * Cree le controleur de l'application
@@ -30,6 +33,7 @@ public class Controler {
         etat = new EtatDebut(this);
         mainvue.setEtat(etat);
         algo = new AlgoParcour();
+        ecouteurDeTache = new EcouteurDeTache(this);
     }
 
     public void chargerPlan(String lienPlan){
@@ -92,18 +96,9 @@ public class Controler {
         mainvue.setEtat(etat);
         ArrayList<Livraison> livraisons = new ArrayList<>();
         livraisons.addAll(plan.getLivraisons().values());
-        ArrayList<Tournee> tournee = TSP.calculerLesTournees(livraisons,plan.getNbLivreurs(),plan.getEntrepot(), plan.getHeureDepart());
-        for(Tournee t : tournee){
-            System.out.println("\n\nTOURNEE : ");
-            for(Chemin c : t.getChemins()){
-                System.out.println("\n"+c);
-                for(Troncon tc : c.getTroncons()){
-                    System.out.println(tc);
-                }
-            }
-        }
-        plan.setTournees(tournee);
-        mainvue.getMapPanel().tracerTournee(tournee);
+        ThreadTSP tsp = ThreadTSPFactory.getTSPThread(livraisons,plan.getNbLivreurs(),plan.getEntrepot(),plan.getHeureDepart());
+        tsp.addThreadListener(ecouteurDeTache);
+        tsp.start();
     }
 
     public void supprimerLivraison(Noeud n){
@@ -138,5 +133,10 @@ public class Controler {
     public void mouseDragged(Point point) {
         mainvue.mouseDragged(point);
         lastDragMousePosition = point;
+    }
+
+    public void tourneesGenerees(ArrayList<Tournee> tournees) {
+        plan.setTournees(tournees);
+        mainvue.getMapPanel().tracerTournee(tournees);
     }
 }
