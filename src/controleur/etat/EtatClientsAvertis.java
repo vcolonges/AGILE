@@ -19,24 +19,40 @@ public class EtatClientsAvertis extends Etat {
         PopUpMenu popUpMenu = super.getPopUpMenu(plan,n);
         if(!plan.getLivraisons().containsKey(n.getId()))
         {
-            JMenuItem menuItem = new JMenuItem("Ajouter une livraison");
-            popUpMenu.add(menuItem);
-            menuItem.addActionListener(e -> ajouterLivraisonApresLancement(n));
+
+            JMenu sectionL = new JMenu("Ajouter à");
+
+            for(long j = 0;j<plan.getNbLivreurs();j++) {
+                JMenuItem temp = new JMenuItem("Livreur " + j);
+                sectionL.add(temp);
+                temp.addActionListener(e->ajouterLivraison(n,j));
+            }
+
+            JMenuItem ctrlz = new JMenuItem("Annuler");
+            popUpMenu.add(ctrlz);
+            popUpMenu.add(sectionL);
+
+            ctrlz.addActionListener(e-> ctrlz());
         }
         else
         {
             super.ajoutInfosLivraisonsToPopUpMenu(popUpMenu, plan, n);
-            JMenuItem menuItem = new JMenuItem("Supprimer une livraison");
+            JMenuItem supprimerLivraison = new JMenuItem("Supprimer une livraison");
+            JMenuItem ctrlz = new JMenuItem("Annuler");
 
             JMenu sectionL = new JMenu("Ajouter à");
 
-            for(int j = 0;j<plan.getNbLivreurs();j++) {
-                sectionL.add(new JMenuItem("Livreur " + j));
+            for(long j = 0;j<plan.getNbLivreurs();j++) {
+                JMenuItem temp = new JMenuItem("Livreur " + j);
+                sectionL.add(temp);
+                temp.addActionListener(e->ajouterLivraison(n,j));
             }
 
-            popUpMenu.add(menuItem);
+            popUpMenu.add(supprimerLivraison);
             popUpMenu.add(sectionL);
-            menuItem.addActionListener(e -> supprimerLivraisonApresLancement(n));
+            popUpMenu.add(ctrlz);
+            supprimerLivraison.addActionListener(e -> supprimerLivraisonApresLancement(n));
+            ctrlz.addActionListener(e-> ctrlz());
         }
         return popUpMenu;
     }
@@ -44,9 +60,10 @@ public class EtatClientsAvertis extends Etat {
     private void supprimerLivraisonApresLancement(Noeud n) {
         controler.supprimerLivraison(n);
     }
+    private void ajouterLivraison(Noeud n,long j){
 
-    public void ajouterLivraisonApresLancement(Noeud n){
-        System.out.println("Ajout du noeud "+n.getId()+" au trajets.");
-        System.out.println("test");
+    }
+    public void ctrlz(){
+        controler.ctrlZ();
     }
 }

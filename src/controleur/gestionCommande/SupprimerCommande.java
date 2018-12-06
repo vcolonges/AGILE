@@ -14,6 +14,7 @@ public class SupprimerCommande implements Commande {
     }
     public void undo(){
         controler.getPlan().getLivraisons().put(livraison.getNoeud().getId(),livraison);
+        controler.ajouterLivraison(livraison);
     }
 
 

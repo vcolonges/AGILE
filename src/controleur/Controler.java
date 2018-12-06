@@ -110,18 +110,18 @@ public class Controler {
     }
 
     public void supprimerLivraison(Noeud n){
-
+        this.plan.getLivraisons().remove(n.getId()); // Suppression dans la structure de donnée.
         mainvue.supprimerLivraison(n);
-
         ctrlZ.add(new SupprimerCommande(plan.getLivraisons().get(n.getId()),this));
-
     }
 
-    public void revertDeleteLivraison(Noeud n){
-        /*
-           mainvue.addLivraison(n);
-           ctrlZ.undo();
-        */
+    public void ajouterLivraison(Livraison l){
+        this.plan.getLivraisons().put(l.getNoeud().getId(),l);
+        mainvue.ajouterLivraison(l);
+    }
+
+    public void ctrlZ(){
+        ctrlZ.getCommandes().get(0).undo();
     }
 
     public void demarrerTournees() {

@@ -20,7 +20,8 @@ public class CommandeManager {
 
     public void undo(){
         if(i>= 0){
-            commandes.get(i--).undo();
+            commandes.get(i).undo();
+            commandes.remove(i--);
         }
     }
 }
