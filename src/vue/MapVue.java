@@ -61,9 +61,9 @@ public class MapVue extends JPanel {
                             Noeud start_tournee = troncon.getOrigine();
                             Noeud end_tournee = troncon.getDestination();
                             drawLine(new Point((int)start_tournee.getLongitude(),(int)start_tournee.getLatitude()),new Point((int)end_tournee.getLongitude(),(int)end_tournee.getLatitude()),g);
-                            if(resizePlan.getLivraisons().containsKey(start_tournee.getId())){
+                            if(tournee.getLivraisons().contains(resizePlan.getLivraisons().get(start_tournee.getId()))){
                                 drawNode(new Point((int)start_tournee.getLongitude(),(int)start_tournee.getLatitude()),g);
-                            }else if(resizePlan.getLivraisons().containsKey(end_tournee.getId())){
+                            }else if(tournee.getLivraisons().contains(resizePlan.getLivraisons().get(end_tournee.getId()))){
                                 drawNode(new Point((int)end_tournee.getLongitude(),(int)end_tournee.getLatitude()),g);
                             }
                         }
