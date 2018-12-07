@@ -1,5 +1,5 @@
 package controleur.etat;
-
+import java.awt.event.KeyEvent;
 import controleur.Controler;
 import modele.Noeud;
 import modele.Plan;
@@ -25,14 +25,17 @@ public class EtatClientsAvertis extends Etat {
             for(long j = 0;j<plan.getNbLivreurs();j++) {
                 JMenuItem temp = new JMenuItem("Livreur " + j);
                 sectionL.add(temp);
-                temp.addActionListener(e->ajouterLivraison(n,j));
+                temp.addActionListener(e->ajouterLivraison(n));
             }
 
             JMenuItem ctrlz = new JMenuItem("Annuler");
+            ctrlz.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z,KeyEvent.CTRL_MASK));
+
             popUpMenu.add(ctrlz);
             popUpMenu.add(sectionL);
 
             ctrlz.addActionListener(e-> ctrlz());
+
         }
         else
         {
@@ -42,12 +45,12 @@ public class EtatClientsAvertis extends Etat {
 
             JMenu sectionL = new JMenu("Ajouter à");
 
-            for(long j = 0;j<plan.getNbLivreurs();j++) {
+            for(int j = 0;j<plan.getNbLivreurs();j++) {
                 JMenuItem temp = new JMenuItem("Livreur " + j);
                 sectionL.add(temp);
-                temp.addActionListener(e->ajouterLivraison(n,j));
+                temp.addActionListener(e->ajouterLivraison(n));
             }
-
+            ctrlz.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z,KeyEvent.CTRL_MASK));
             popUpMenu.add(supprimerLivraison);
             popUpMenu.add(sectionL);
             popUpMenu.add(ctrlz);
@@ -60,8 +63,8 @@ public class EtatClientsAvertis extends Etat {
     private void supprimerLivraisonApresLancement(Noeud n) {
         controler.supprimerLivraison(n);
     }
-    private void ajouterLivraison(Noeud n,long j){
-
+    private void ajouterLivraison(Noeud n){
+        //controler.revertAjouterLivraison(n);
     }
     public void ctrlz(){
         controler.ctrlZ();
