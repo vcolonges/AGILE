@@ -45,9 +45,9 @@ public class MapVue extends JPanel {
         super.paintComponent(g);
         g.setColor(Color.BLACK);
         if(resizePlan != null) {
-            for (Noeud n : resizePlan.getNoeuds().values()) {
+            /*for (Noeud n : resizePlan.getNoeuds().values()) {
                 drawNode(new Point((int)n.getLongitude(),(int)n.getLatitude()),g);
-            }
+            }*/
             for (Troncon t : resizePlan.getTroncons()) {
                 Point start = new Point((int)t.getOrigine().getLongitude(),(int)t.getOrigine().getLatitude());
                 Point stop = new Point((int)t.getDestination().getLongitude(),(int)t.getDestination().getLatitude());
@@ -61,9 +61,9 @@ public class MapVue extends JPanel {
                             Noeud start_tournee = troncon.getOrigine();
                             Noeud end_tournee = troncon.getDestination();
                             drawLine(new Point((int)start_tournee.getLongitude(),(int)start_tournee.getLatitude()),new Point((int)end_tournee.getLongitude(),(int)end_tournee.getLatitude()),g);
-                            if(resizePlan.getLivraisons().containsKey(start_tournee.getId())){
+                            if(tournee.getLivraisons().contains(resizePlan.getLivraisons().get(start_tournee.getId()))){
                                 drawNode(new Point((int)start_tournee.getLongitude(),(int)start_tournee.getLatitude()),g);
-                            }else if(resizePlan.getLivraisons().containsKey(end_tournee.getId())){
+                            }else if(tournee.getLivraisons().contains(resizePlan.getLivraisons().get(end_tournee.getId()))){
                                 drawNode(new Point((int)end_tournee.getLongitude(),(int)end_tournee.getLatitude()),g);
                             }
                         }
