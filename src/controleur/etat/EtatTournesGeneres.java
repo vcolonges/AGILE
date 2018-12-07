@@ -48,19 +48,18 @@ public class EtatTournesGeneres extends Etat{
 
                     if(name != null && name.length() > 0) {
                         Livraison livraison = plan.getLivraisons().get(n.getId());
-                        for(Tournee tournee : plan.getTournees()){
-                            if(tournee.getLivraisons().get(0) == livraison){
-                                plan.removeTournee(tournee);
-                                tournee.removeLivraison(livraison);
 
-                                ThreadTSP t = ThreadTSPFactory.getTSPThread(tournee.getLivraisons(),plan.getEntrepot(),plan.getHeureDepart(), tournee.getLivreur());
-                                t.addThreadListener(controler.getEcouteurDeTache());
-                                t.start();
-                                break;
-                            }
+                        Tournee tournee = plan.getTourneeParLivraison(livraison);
+                        if(tournee != null){
+                            plan.removeTournee(tournee);
+                            tournee.removeLivraison(livraison);
+
+                            ThreadTSP t = ThreadTSPFactory.getTSPThread(tournee.getLivraisons(),plan.getEntrepot(),plan.getHeureDepart(), tournee.getLivreur());
+                            t.addThreadListener(controler.getEcouteurDeTache());
+                            t.start();
                         }
                         Livreur nouveauLivreur = ListeLivreurs.getLivreurParPrenom(name);
-                        Tournee tournee = plan.getTourneeParLivreur(nouveauLivreur);
+                        tournee = plan.getTourneeParLivreur(nouveauLivreur);
                         if(tournee != null){
                             plan.removeTournee(tournee);
                             tournee.addLivraison(livraison);

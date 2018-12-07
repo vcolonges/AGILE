@@ -197,4 +197,13 @@ public class Plan {
         }
         return livreursCourants;
     }
+
+    public Tournee getTourneeParLivraison(Livraison livraison){
+        for(Tournee tournee : tournees) {
+            for(Livraison liv : tournee.getLivraisons())
+                if (liv == livraison)
+                    return tournee;
+        }
+        return null;
+    }
 }
