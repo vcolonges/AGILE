@@ -51,18 +51,29 @@ public class MapVue extends JPanel {
 
     @Override
     protected void paintComponent(Graphics g) {
+       // boolean flag=false;
         super.paintComponent(g);
+
         g.setColor(Color.BLACK);
+
         if(resizePlan != null) {
-            for (Noeud n : resizePlan.getNoeuds().values()) {
-                g.fillOval((int) n.getLongitude() - WIDTH_DOT / 2, (int) n.getLatitude() - WIDTH_DOT / 2, WIDTH_DOT, WIDTH_DOT);
+           /* if(resizePlan.getTournees().isEmpty() && flag==false)
+            {
+                for (Noeud n : resizePlan.getNoeuds().values()) {
+                    g.fillOval((int) n.getLongitude() - WIDTH_DOT / 2, (int) n.getLatitude() - WIDTH_DOT / 2, WIDTH_DOT, WIDTH_DOT);
+                }
             }
+            */
+
             for (Troncon t : resizePlan.getTroncons()) {
                 Noeud start = t.getOrigine();
                 Noeud end = t.getDestination();
                 g.drawLine((int) start.getLongitude(), (int) start.getLatitude(), (int) end.getLongitude(), (int) end.getLatitude());
             }
+
+
             if(!resizePlan.getTournees().isEmpty()){
+         //       flag=true;
                 for(Tournee tournee : resizePlan.getTournees()) {
                     Random rand = new Random();
                     g.setColor(colors[resizePlan.getTournees().indexOf(tournee)]);
@@ -96,11 +107,11 @@ public class MapVue extends JPanel {
                 g.fillOval((int)resizePlan.getEntrepot().getNoeud().getLongitude()-WIDTH_DOT/2,(int)resizePlan.getEntrepot().getNoeud().getLatitude()-WIDTH_DOT/2,WIDTH_DOT,WIDTH_DOT);
             }
 
-            g.setColor(Color.yellow);
+            g.setColor(Color.YELLOW);
             while(!hoveredNodes.isEmpty())
             {
                 Noeud hoveredNode = hoveredNodes.poll();
-                g.fillOval((int)hoveredNode.getLongitude() - WIDTH_DOT/2,(int)hoveredNode.getLatitude()-WIDTH_DOT/2,WIDTH_DOT,WIDTH_DOT);
+                g.fillOval((int)hoveredNode.getLongitude()- WIDTH_DOT/2,(int)hoveredNode.getLatitude()- WIDTH_DOT/2,WIDTH_DOT,WIDTH_DOT);
             }
             if(deletedNodes!= null){
                 for(Noeud n : deletedNodes){
@@ -235,6 +246,8 @@ public class MapVue extends JPanel {
         resizePlan.setTournees(tournees);
         repaint();
     }
+
+
 
     public void deletePoint(Noeud n){
         deletedNodes.add(this.resizePlan.getNoeuds().get(n.getId()));
