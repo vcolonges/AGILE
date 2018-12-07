@@ -207,7 +207,7 @@ public class TSP {
 
         Livraison l1 = new Livraison(noeudl1, 1);
         Livraison l2 = new Livraison(noeudl2, 2);
-        Livraison l3 = new Livraison(noeudl3, 3);
+        Livraison l3 = new Livraison(noexudl3, 3);
         Livraison entrepot = new Livraison(noeudEntrepot, 0);
 
         Chemin cheminEntrepotL1 = new Chemin(entrepot,l1,4);

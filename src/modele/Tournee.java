@@ -61,6 +61,11 @@ public class Tournee {
                 '}';
     }
 
+    public boolean isModifiable(Date heureActuelle)
+    {
+        return heureActuelle.compareTo(heureDepart)<0;
+    }
+
     public Date getRetourEntrepot() {
         return retourEntrepot;
     }
