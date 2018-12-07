@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Queue;
 import java.util.Random;
 import java.util.concurrent.LinkedBlockingDeque;
+import java.awt.BasicStroke;
 
 public class MapVue extends JPanel {
 
@@ -29,43 +30,14 @@ public class MapVue extends JPanel {
         deletedNodes = new ArrayList<>();
     }
 
-    double phi = Math.toRadians(40);
-    int barb = 10;
-
-    private void drawArrowHead(Graphics g, Point tip, Point tail)
-    {
-        Graphics2D g2 = (Graphics2D)g;
-        double dy = tip.y - tail.y;
-        double dx = tip.x - tail.x;
-        double theta = Math.atan2(dy, dx);
-        //System.out.println("theta = " + Math.toDegrees(theta));
-        double x, y, rho = theta + phi;
-        for(int j = 0; j < 2; j++)
-        {
-            x = tip.x - barb * Math.cos(rho);
-            y = tip.y - barb * Math.sin(rho);
-            g2.draw(new Line2D.Double(tip.x, tip.y, x, y));
-            rho = theta - phi;
-        }
-    }
-
     @Override
     protected void paintComponent(Graphics g) {
-       // boolean flag=false;
         super.paintComponent(g);
 
         g.setColor(Color.BLACK);
 
         if(resizePlan != null) {
-           /* if(resizePlan.getTournees().isEmpty() && flag==false)
-            {
-                for (Noeud n : resizePlan.getNoeuds().values()) {
-                    g.fillOval((int) n.getLongitude() - WIDTH_DOT / 2, (int) n.getLatitude() - WIDTH_DOT / 2, WIDTH_DOT, WIDTH_DOT);
-                }
-            }
-            */
-
-            for (Troncon t : resizePlan.getTroncons()) {
+                for (Troncon t : resizePlan.getTroncons()) {
                 Noeud start = t.getOrigine();
                 Noeud end = t.getDestination();
                 g.drawLine((int) start.getLongitude(), (int) start.getLatitude(), (int) end.getLongitude(), (int) end.getLatitude());
@@ -73,7 +45,7 @@ public class MapVue extends JPanel {
 
 
             if(!resizePlan.getTournees().isEmpty()){
-         //       flag=true;
+
                 for(Tournee tournee : resizePlan.getTournees()) {
                     Random rand = new Random();
                     g.setColor(colors[resizePlan.getTournees().indexOf(tournee)]);
@@ -81,16 +53,13 @@ public class MapVue extends JPanel {
                         for (Troncon troncon : chemin.getTroncons()) {
                             Noeud start_tournee = troncon.getOrigine();
                             Noeud end_tournee = troncon.getDestination();
-                            g.drawLine((int) start_tournee.getLongitude(), (int) start_tournee.getLatitude(), (int) end_tournee.getLongitude(), (int) end_tournee.getLatitude());
+                            Graphics2D g2 = (Graphics2D) g;
+                            g2.setStroke(new BasicStroke(3));
+                            g2.drawLine((int) start_tournee.getLongitude(), (int) start_tournee.getLatitude(), (int) end_tournee.getLongitude(), (int) end_tournee.getLatitude());
                             if(resizePlan.getLivraisons().containsKey(start_tournee.getId())){
                                 g.fillOval((int)start_tournee.getLongitude()-WIDTH_DOT/2,(int)start_tournee.getLatitude()-WIDTH_DOT/2,WIDTH_DOT,WIDTH_DOT);
-                            }else if(resizePlan.getLivraisons().containsKey(end_tournee.getId())){
-                                g.fillOval((int)end_tournee.getLongitude()-WIDTH_DOT/2,(int)end_tournee.getLatitude()-WIDTH_DOT/2,WIDTH_DOT,WIDTH_DOT);
-                            }
-                            if(troncon.getLongueur()>10){
-                                Point sw = new Point((int)((end_tournee.getLongitude()*3+start_tournee.getLongitude()*2)/5), (int)((end_tournee.getLatitude()*3+start_tournee.getLatitude()*2)/5));
-                                Point ne = new Point((int)(end_tournee.getLongitude()*2+start_tournee.getLongitude()*3)/5, (int)(end_tournee.getLatitude()*2+start_tournee.getLatitude()*3)/5);
-                                drawArrowHead(g,sw,ne);
+                            }else if(resizePlan.getLivraisons().containsKey(end_tournee.getId())) {
+                                g.fillOval((int) end_tournee.getLongitude() - WIDTH_DOT / 2, (int) end_tournee.getLatitude() - WIDTH_DOT / 2, WIDTH_DOT, WIDTH_DOT);
                             }
                         }
                     }
