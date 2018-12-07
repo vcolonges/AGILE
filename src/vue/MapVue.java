@@ -40,15 +40,14 @@ public class MapVue extends JPanel {
     double phi = Math.toRadians(40);
     int barb = 10;
 
-
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         g.setColor(Color.BLACK);
         if(resizePlan != null) {
-            for (Noeud n : resizePlan.getNoeuds().values()) {
+            /*for (Noeud n : resizePlan.getNoeuds().values()) {
                 drawNode(new Point((int)n.getLongitude(),(int)n.getLatitude()),g);
-            }
+            }*/
             for (Troncon t : resizePlan.getTroncons()) {
                 Point start = new Point((int)t.getOrigine().getLongitude(),(int)t.getOrigine().getLatitude());
                 Point stop = new Point((int)t.getDestination().getLongitude(),(int)t.getDestination().getLatitude());
@@ -167,6 +166,7 @@ public class MapVue extends JPanel {
         }
 
         repaint();
+
     }
 
     public void selectNode(Point point, MouseEvent e){
