@@ -232,6 +232,17 @@ public class MapVue extends JPanel {
     }
 
     public void deletePoint(Noeud n){
+    public void supprimerLivraison(Noeud n){
+        resizePlan.getLivraisons().remove(n.getId()); //Suppression de la livraison dans le resize.
+        /*
+        *
+        *
+        *
+        * A réflechir sur l'implémentation
+        *
+        *
+        * */
+
         deletedNodes.add(this.resizePlan.getNoeuds().get(n.getId()));
     }
 
@@ -288,5 +299,21 @@ public class MapVue extends JPanel {
         Point start = resizedNodeToZoom(p1);
         Point end = resizedNodeToZoom(p2);
         g.drawLine(start.x, start.y, end.x, end.y);
+    }
+
+    public void ajouterLivraison(Livraison l){
+        /*
+        *
+        *
+        *
+        * Faut-il convertir les coordonées de la livraison ?
+        *
+        *
+        * Comment implémenter ? Retirer de la liste de delete? Changer de couleur ?
+        *
+        * */
+
+        resizePlan.getLivraisons().put(l.getNoeud().getId(),l);
+
     }
 }

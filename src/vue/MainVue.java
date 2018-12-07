@@ -4,6 +4,7 @@ package vue;
 import controleur.*;
 import controleur.etat.*;
 import modele.Noeud;
+import modele.Livraison;
 
 import javax.swing.*;
 import java.awt.*;
@@ -224,9 +225,20 @@ public class MainVue extends JFrame {
         }
     }
 
-    public void deletePoint(Noeud n){
+    public void supprimerLivraison(Noeud n){
+        mapPanel.supprimerLivraison(n);
+    }
 
-        mapPanel.deletePoint(n);
+    public void ajouterLivraison(Livraison l){
+        mapPanel.ajouterLivraison(l);
+    }
+
+    public void setZoom(int zoom) {
+        zoomLabel.setText(zoom+"%");
+    }
+
+    public void mouseDragged(Point point) {
+        mapPanel.mouseDragged(point);
     }
 
     public void setZoom(int zoom) {

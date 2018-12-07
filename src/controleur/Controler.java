@@ -4,17 +4,18 @@ package controleur;
 import algorithmes.AlgoParcour;
 import algorithmes.TSP;
 import controleur.etat.*;
+import controleur.gestionCommande.*;
 import exceptions.XMLException;
 import modele.*;
 import thread.ThreadTSP;
 import thread.ThreadTSPFactory;
 import utils.XMLParser;
 import vue.MainVue;
-
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Date;
+
 
 public class Controler {
 
@@ -25,6 +26,8 @@ public class Controler {
     private Point lastDragMousePosition;
     private EcouteurDeTache ecouteurDeTache;
 
+    private Point lastDragMousePosition;
+    private CommandeManager ctrlZ;
     /**
      * Cree le controleur de l'application
      */
@@ -34,6 +37,7 @@ public class Controler {
         mainvue.setEtat(etat);
         algo = new AlgoParcour();
         ecouteurDeTache = new EcouteurDeTache(this);
+        this.ctrlZ = new CommandeManager();
     }
 
     public void chargerPlan(String lienPlan){
@@ -65,6 +69,7 @@ public class Controler {
             }
         }
     }
+
 
     public void mouseMoved(Point point) {
         mainvue.updateMousePosition(point);
@@ -102,9 +107,20 @@ public class Controler {
     }
 
     public void supprimerLivraison(Noeud n){
-
-        mainvue.deletePoint(n);
+        this.plan.getLivraisons().remove(n.getId()); // Suppression dans la structure de donnée.
+        mainvue.supprimerLivraison(n);
+        ctrlZ.add(new SupprimerCommande(plan.getLivraisons().get(n.getId()),this));
     }
+
+    public void ajouterLivraison(Livraison l){
+        this.plan.getLivraisons().put(l.getNoeud().getId(),l);
+        mainvue.ajouterLivraison(l);
+    }
+
+    public void ctrlZ(){
+        ctrlZ.getCommandes().get(0).undo();
+    }
+
     public void demarrerTournees() {
         etat = new EtatClientsAvertis(this);
         mainvue.setEtat(etat);
@@ -138,5 +154,30 @@ public class Controler {
     public void tourneesGenerees(ArrayList<Tournee> tournees) {
         plan.setTournees(tournees);
         mainvue.getMapPanel().tracerTournee(tournees);
+    }
+
+    public Point getLastDragMousePosition() {
+        return lastDragMousePosition;
+    }
+
+    public void setLastDragMousePosition(Point lastDragMousePosition) {
+        this.lastDragMousePosition = lastDragMousePosition;
+    }
+
+    public void wheelMovedUp(int wheelRotation) {
+        mainvue.getMapPanel().wheelMovedUp(wheelRotation);
+    }
+
+    public void setZoom(double zoom) {
+        mainvue.setZoom((int)(zoom*100.0));
+    }
+
+    public void wheelMovedDown(int wheelRotation) {
+        mainvue.getMapPanel().wheelMovedDown(wheelRotation);
+    }
+
+    public void mouseDragged(Point point) {
+        mainvue.mouseDragged(point);
+        lastDragMousePosition = point;
     }
 }
