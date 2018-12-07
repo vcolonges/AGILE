@@ -8,11 +8,15 @@ import exceptions.XMLException;
 import modele.*;
 import thread.ThreadTSP;
 import thread.ThreadTSPFactory;
+import utils.ListeLivreurs;
 import utils.XMLParser;
 import vue.MainVue;
 
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -147,5 +151,38 @@ public class Controler {
 
     public EcouteurDeTache getEcouteurDeTache() {
         return ecouteurDeTache;
+    }
+
+    public void drawLegende(){
+        int i = 0;
+        if(plan!=null)
+        {
+            for (Livreur livreur : plan.getLivreursEnCours()){
+                JPanel livreurPan = new JPanel();
+                mainvue.getConstraints().gridy = i++;
+                JLabel nomLivreur = new JLabel(livreur.getPrenom());
+                nomLivreur.setBorder(new EmptyBorder(0, 20, 0, 0));
+                BufferedImage bImg = new BufferedImage(10, 10, BufferedImage.TYPE_INT_RGB);
+                Graphics2D graphics = bImg.createGraphics();
+
+                graphics.setPaint(livreur.getCouleur());
+                graphics.fillRect(0, 0, bImg.getWidth(), bImg.getHeight());
+
+                ImageIcon imageIcon = new ImageIcon(bImg);
+
+
+                livreurPan.add(new JLabel(imageIcon));
+                livreurPan.add(nomLivreur);
+                mainvue.getLivreursPanel().add(livreurPan,mainvue.getConstraints());
+            }
+        }
+
+        mainvue.validate();
+
+
+    }
+
+    public void updateNbLivreur(int value) {
+        plan.setNbLivreurs(value);
     }
 }

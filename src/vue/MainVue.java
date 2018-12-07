@@ -3,11 +3,15 @@ package vue;
 
 import controleur.*;
 import controleur.etat.*;
+import modele.Livreur;
 import modele.Noeud;
+import utils.ListeLivreurs;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -38,6 +42,8 @@ public class MainVue extends JFrame {
     private final JMenuItem chargerPlanXML;
     private final JMenuItem chargerLivraisonXML;
     private JLabel zoomLabel;
+    private JPanel livreursPanel;
+    private GridBagConstraints constraints;
 
     private Controler controler;
 
@@ -57,6 +63,14 @@ public class MainVue extends JFrame {
         this.setLayout(mainLayout);
 
         //mapPanel.setBackground(Color.BLUE);
+
+        // Ajout panel legende livreurs
+        livreursPanel = new JPanel();
+        livreursPanel.setBorder(new EmptyBorder(0, 10, 0, 10));
+        livreursPanel.setLayout(new GridBagLayout());
+        constraints = new GridBagConstraints();
+        constraints.gridx = 0;
+        constraints.anchor = GridBagConstraints.WEST;
 
         // Création Debug Panel
         JPanel debugPanel = new JPanel(new FlowLayout());
@@ -139,6 +153,7 @@ public class MainVue extends JFrame {
         toolPanel.add(demarrerTourneesPanel);
         this.add(debugPanel,BorderLayout.SOUTH);
         this.add(mapPanel,BorderLayout.CENTER);
+        this.add(livreursPanel,BorderLayout.EAST);
         this.add(toolPanel,BorderLayout.NORTH);
 
 
@@ -235,6 +250,15 @@ public class MainVue extends JFrame {
 
     public void mouseDragged(Point point) {
         mapPanel.mouseDragged(point);
+    }
+
+
+    public JPanel getLivreursPanel() {
+        return livreursPanel;
+    }
+
+    public GridBagConstraints getConstraints() {
+        return constraints;
     }
 }
 

@@ -5,9 +5,11 @@ import modele.*;
 import utils.ListeLivreurs;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Line2D;
+import java.awt.image.BufferedImage;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Queue;
@@ -222,6 +224,7 @@ public class MapVue extends JPanel {
         }
 
         resizePlan.setTournees(newTournees);
+        controler.drawLegende();
         repaint();
     }
 
