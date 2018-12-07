@@ -41,6 +41,7 @@ public class MapVue extends JPanel {
     double phi = Math.toRadians(40);
     int barb = 10;
 
+
     @Override
     protected void paintComponent(Graphics g) {
        // boolean flag=false;
@@ -178,7 +179,6 @@ public class MapVue extends JPanel {
         }
 
         repaint();
-
     }
 
     public void selectNode(Point point, MouseEvent e){
@@ -242,21 +242,20 @@ public class MapVue extends JPanel {
         return null;
     }
 
-    public void deletePoint(Noeud n){
     public void supprimerLivraison(Noeud n){
         resizePlan.getLivraisons().remove(n.getId()); //Suppression de la livraison dans le resize.
-        /*
-        *
-        *
-        *
-        * A réflechir sur l'implémentation
-        *
-        *
-        * */
 
         deletedNodes.add(this.resizePlan.getNoeuds().get(n.getId()));
     }
 
+    public void revertAjouterLivraison(Livraison l){
+        resizePlan.getLivraisons().put(l.getNoeud().getId(),l);
+        for(int index=0;index<deletedNodes.size();index++){
+            if(deletedNodes.get(index).getId()==l.getNoeud().getId()){
+                deletedNodes.remove(index);
+                System.out.println("Deleted");
+            }
+        }
     public void wheelMovedUp(int wheelRotation) {
         zoom+=0.1;
         if(zoom>ZOOM_MAX) zoom = ZOOM_MAX;
@@ -288,7 +287,6 @@ public class MapVue extends JPanel {
         updateZoomArea();
         controler.setZoom(zoom);
     }
-
     public void mouseDragged(Point point) {
         Point oldPosition = controler.getLastDragMousePosition();
         Point newPosition = point;

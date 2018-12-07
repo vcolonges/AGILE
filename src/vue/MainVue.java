@@ -229,9 +229,11 @@ public class MainVue extends JFrame {
         mapPanel.supprimerLivraison(n);
     }
 
-    public void ajouterLivraison(Livraison l){
-        mapPanel.ajouterLivraison(l);
+    public void revertAjouterLivraison(Livraison l){
+        mapPanel.revertAjouterLivraison(l);
     }
+
+
 
     public void setZoom(int zoom) {
         zoomLabel.setText(zoom+"%");

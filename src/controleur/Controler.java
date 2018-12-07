@@ -26,7 +26,7 @@ public class Controler {
     private Point lastDragMousePosition;
     private EcouteurDeTache ecouteurDeTache;
 
-    private Point lastDragMousePosition;
+
     private CommandeManager ctrlZ;
     /**
      * Cree le controleur de l'application
@@ -107,18 +107,20 @@ public class Controler {
     }
 
     public void supprimerLivraison(Noeud n){
-        this.plan.getLivraisons().remove(n.getId()); // Suppression dans la structure de donnée.
         mainvue.supprimerLivraison(n);
+        System.out.println(plan.getLivraisons().get(n.getId()));
         ctrlZ.add(new SupprimerCommande(plan.getLivraisons().get(n.getId()),this));
+        this.plan.getLivraisons().remove(n.getId()); // Suppression dans la structure de donnée.
     }
 
-    public void ajouterLivraison(Livraison l){
+    public void revertAjouterLivraison(Livraison l){
         this.plan.getLivraisons().put(l.getNoeud().getId(),l);
-        mainvue.ajouterLivraison(l);
+        mainvue.revertAjouterLivraison(l);
     }
 
     public void ctrlZ(){
-        ctrlZ.getCommandes().get(0).undo();
+
+        ctrlZ.undo();
     }
 
     public void demarrerTournees() {
@@ -126,30 +128,6 @@ public class Controler {
         mainvue.setEtat(etat);
     }
 
-    public Point getLastDragMousePosition() {
-        return lastDragMousePosition;
-    }
-
-    public void setLastDragMousePosition(Point lastDragMousePosition) {
-        this.lastDragMousePosition = lastDragMousePosition;
-    }
-
-    public void wheelMovedUp(int wheelRotation) {
-        mainvue.getMapPanel().wheelMovedUp(wheelRotation);
-    }
-
-    public void setZoom(double zoom) {
-        mainvue.setZoom((int)(zoom*100.0));
-    }
-
-    public void wheelMovedDown(int wheelRotation) {
-        mainvue.getMapPanel().wheelMovedDown(wheelRotation);
-    }
-
-    public void mouseDragged(Point point) {
-        mainvue.mouseDragged(point);
-        lastDragMousePosition = point;
-    }
 
     public void tourneesGenerees(ArrayList<Tournee> tournees) {
         plan.setTournees(tournees);
