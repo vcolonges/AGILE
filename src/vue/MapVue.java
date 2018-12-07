@@ -187,7 +187,6 @@ public class MapVue extends JPanel {
         Noeud newOriginTroncon = null;
         Noeud newDestinationTroncon = null;
         ArrayList<Tournee> newTournees = new ArrayList<>();
-        int livreur = 0;
         for(Tournee tournee : tournees) {
             ArrayList<Chemin> chemins = new ArrayList<>();
             for (Chemin chemin : tournee.getChemins()) {
@@ -206,8 +205,7 @@ public class MapVue extends JPanel {
                 newChemin.setTroncons(troncons);
                 chemins.add(newChemin);
             }
-            Tournee newtournee = new Tournee(tournee.getLivraisons(),chemins,tournee.getHeureDepart());
-            newtournee.setLivreur(ListeLivreurs.livreurs[livreur++]);
+            Tournee newtournee = new Tournee(tournee.getLivraisons(),chemins,tournee.getHeureDepart(),tournee.getLivreur());
             newTournees.add(newtournee);
         }
 

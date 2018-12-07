@@ -12,11 +12,12 @@ public class Tournee {
     private static final double VITESSE = 4.17;
     private Livreur livreur;
 
-    public Tournee(ArrayList<Livraison> livraisons, ArrayList<Chemin> chemins, Date heureDepart)
+    public Tournee(ArrayList<Livraison> livraisons, ArrayList<Chemin> chemins, Date heureDepart, Livreur livreur)
     {
         this.livraisons = livraisons;
         this.chemins = chemins;
         this.heureDepart = heureDepart;
+        this.livreur = livreur;
     }
 
     public ArrayList<Chemin> getChemins(){
@@ -48,6 +49,14 @@ public class Tournee {
 
     public Livreur getLivreur() {
         return livreur;
+    }
+
+    public void addLivraison(Livraison livraison){
+        livraisons.add(livraison);
+    }
+
+    public void removeLivraison(Livraison livraison){
+        livraisons.remove(livraison);
     }
 
     public void setLivreur(Livreur livreur) {
