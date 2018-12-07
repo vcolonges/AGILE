@@ -115,10 +115,15 @@ public class MapVue extends JPanel {
         double maxLatPlan = controler.getPlan().getMaxLat();
         double maxLongPlan = controler.getPlan().getMaxLong();
 
+        double ratioLong = (widthMap-2*PADDING)/(maxLongPlan-minLongPlan);
+        double ratioLat = (heightMap-2*PADDING)/(maxLatPlan-minLatPlan);
+
+        double ratioMin = ratioLong < ratioLat ? ratioLong : ratioLat;
+
 
         for (Noeud n : controler.getPlan().getNoeuds().values()){
-            double newlatitude = ((n.getLatitude()-minLatPlan)*(heightMap-2*PADDING)/(maxLatPlan-minLatPlan)) + PADDING;
-            double newLongitude = (n.getLongitude()-minLongPlan)*(widthMap-2*PADDING)/(maxLongPlan-minLongPlan) + PADDING;
+            double newlatitude = (n.getLatitude()-minLatPlan)*ratioMin + PADDING;
+            double newLongitude = (n.getLongitude()-minLongPlan)*ratioMin + PADDING;
             this.resizePlan.addNoeud(new Noeud(n.getId(),newlatitude,newLongitude));
         }
 
@@ -239,10 +244,21 @@ public class MapVue extends JPanel {
         controler.setZoom(zoom);
     }
 
-    private void updateZoomArea() {
+    private void updateZoomAreaLocation(int x, int y)
+    {
+        x = x < 0 ? 0 : x;
+        x = x+zoomArea.getWidth() > getWidth() ? getWidth()-(int)zoomArea.getWidth() : x;
+        y = y < 0 ? 0 : y;
+        y = y+zoomArea.getHeight() > getHeight() ? getHeight()-(int)zoomArea.getHeight() : y;
+        zoomArea.setLocation(x,y);
+    }
+
+    private void updateZoomArea()
+    {
         int widthZoomArea = (int)(getWidth()*(ZOOM_MAX-zoom));
         int heightZoomArea = (int)(getHeight()*(ZOOM_MAX-zoom));
-        zoomArea.setSize(widthZoomArea,heightZoomArea);
+        zoomArea.setSize(new Dimension(widthZoomArea,heightZoomArea));
+        updateZoomAreaLocation(zoomArea.x,zoomArea.y);
         repaint();
     }
 
@@ -259,8 +275,7 @@ public class MapVue extends JPanel {
         Point vectorInZoom = new Point(newPosition.x-oldPosition.x,newPosition.y-oldPosition.y);
         Point vectorReal = new Point(-vectorInZoom.x*(this.getWidth()/(int)zoomArea.getWidth()),-vectorInZoom.y*(this.getHeight()/(int)zoomArea.getHeight()));
         Point newOrigineZoomAreaPosition = new Point(zoomArea.getLocation().x+vectorReal.x,zoomArea.getLocation().y+vectorReal.y);
-        System.out.println(newOrigineZoomAreaPosition);
-        zoomArea.setLocation(newOrigineZoomAreaPosition.x,newOrigineZoomAreaPosition.y);
+        updateZoomAreaLocation(newOrigineZoomAreaPosition.x,newOrigineZoomAreaPosition.y);
         repaint();
     }
 
