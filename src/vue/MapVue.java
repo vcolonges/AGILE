@@ -68,7 +68,7 @@ public class MapVue extends JPanel {
                             }else if(tournee.getLivraisons().contains(resizePlan.getLivraisons().get(end_tournee.getId()))){
                                 drawNode(new Point((int)end_tournee.getLongitude(),(int)end_tournee.getLatitude()),g);
                             }
-                            if(troncon.getLongueur()>10 && chemin.getTroncons().indexOf(troncon)%FLECHES==0){
+                            if(troncon.getLongueur()>15 && chemin.getTroncons().indexOf(troncon)%FLECHES==0){
                                 Point sw = new Point((int)((end_tournee.getLongitude()*3+start_tournee.getLongitude()*2)/5), (int)((end_tournee.getLatitude()*3+start_tournee.getLatitude()*2)/5));
                                 Point ne = new Point((int)(end_tournee.getLongitude()*2+start_tournee.getLongitude()*3)/5, (int)(end_tournee.getLatitude()*2+start_tournee.getLatitude()*3)/5);
                                 drawArrowHead(g,sw,ne);
@@ -341,16 +341,18 @@ public class MapVue extends JPanel {
 
     private void drawArrowHead(Graphics g, Point tip, Point tail)
     {
+        tip  = resizedNodeToZoom(tip);
+        tail = resizedNodeToZoom(tail);
         Graphics2D g2 = (Graphics2D)g;
         double dy = tip.y - tail.y;
         double dx = tip.x - tail.x;
         double theta = Math.atan2(dy, dx);
-        //System.out.println("theta = " + Math.toDegrees(theta));
         double x, y, rho = theta + phi;
         for(int j = 0; j < 2; j++)
         {
             x = tip.x - barb * Math.cos(rho);
             y = tip.y - barb * Math.sin(rho);
+            //drawLine(tip,tail,g2,3);
             g2.draw(new Line2D.Double(tip.x, tip.y, x, y));
             rho = theta - phi;
         }

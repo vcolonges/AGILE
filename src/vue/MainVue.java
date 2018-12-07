@@ -43,8 +43,10 @@ public class MainVue extends JFrame {
 
     public MainVue(){
 
-        super("Application");
-
+        super("Optimod'Lyon");
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        ImageIcon imageIcon = new ImageIcon("src\\bike_icon.png");
+        setIconImage(imageIcon.getImage());
         // Init map
         mapPanel = new MapVue();
 
