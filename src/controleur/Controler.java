@@ -139,4 +139,13 @@ public class Controler {
         plan.setTournees(tournees);
         mainvue.getMapPanel().tracerTournee(tournees);
     }
+
+    public void tourneeGeneree(Tournee tournee) {
+        plan.addTournee(tournee);
+        mainvue.getMapPanel().tracerTournee(plan.getTournees());
+    }
+
+    public EcouteurDeTache getEcouteurDeTache() {
+        return ecouteurDeTache;
+    }
 }
