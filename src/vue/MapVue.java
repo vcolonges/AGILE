@@ -2,6 +2,7 @@ package vue;
 
 import controleur.Controler;
 import modele.*;
+import utils.ListeLivreurs;
 
 import javax.swing.*;
 import java.awt.*;
@@ -55,7 +56,7 @@ public class MapVue extends JPanel {
             }
             if(!resizePlan.getTournees().isEmpty()){
                 for(Tournee tournee : resizePlan.getTournees()) {
-                    g.setColor(colors[resizePlan.getTournees().indexOf(tournee)]);
+                    g.setColor(tournee.getLivreur().getCouleur());
                     for (Chemin chemin : tournee.getChemins()) {
                         for (Troncon troncon : chemin.getTroncons()) {
                             Noeud start_tournee = troncon.getOrigine();
@@ -186,8 +187,8 @@ public class MapVue extends JPanel {
         Noeud newOriginTroncon = null;
         Noeud newDestinationTroncon = null;
         ArrayList<Tournee> newTournees = new ArrayList<>();
-
-        for(Tournee tournee : tournees){
+        int livreur = 0;
+        for(Tournee tournee : tournees) {
             ArrayList<Chemin> chemins = new ArrayList<>();
             for (Chemin chemin : tournee.getChemins()) {
                 Chemin newChemin = new Chemin(chemin.getOrigine(),chemin.getDestination(),chemin.getLongueur());
@@ -206,6 +207,7 @@ public class MapVue extends JPanel {
                 chemins.add(newChemin);
             }
             Tournee newtournee = new Tournee(tournee.getLivraisons(),chemins,tournee.getHeureDepart());
+            newtournee.setLivreur(ListeLivreurs.livreurs[livreur++]);
             newTournees.add(newtournee);
         }
 

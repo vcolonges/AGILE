@@ -10,6 +10,7 @@ public class Tournee {
     private Date heureDepart;
     private Date retourEntrepot;
     private static final double VITESSE = 4.17;
+    private Livreur livreur;
 
     public Tournee(ArrayList<Livraison> livraisons, ArrayList<Chemin> chemins, Date heureDepart)
     {
@@ -43,6 +44,14 @@ public class Tournee {
 
     public Date getHeureDepart() {
         return heureDepart;
+    }
+
+    public Livreur getLivreur() {
+        return livreur;
+    }
+
+    public void setLivreur(Livreur livreur) {
+        this.livreur = livreur;
     }
 
     @Override
