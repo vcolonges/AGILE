@@ -44,7 +44,7 @@ public class MapVue extends JPanel {
 
     @Override
     protected void paintComponent(Graphics g) {
-       // boolean flag=false;
+        // boolean flag=false;
         super.paintComponent(g);
 
         g.setColor(Color.BLACK);
@@ -179,6 +179,7 @@ public class MapVue extends JPanel {
         }
 
         repaint();
+
     }
 
     public void selectNode(Point point, MouseEvent e){
@@ -256,6 +257,7 @@ public class MapVue extends JPanel {
                 System.out.println("Deleted");
             }
         }
+    }
     public void wheelMovedUp(int wheelRotation) {
         zoom+=0.1;
         if(zoom>ZOOM_MAX) zoom = ZOOM_MAX;

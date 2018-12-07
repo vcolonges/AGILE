@@ -11,11 +11,11 @@ import thread.ThreadTSP;
 import thread.ThreadTSPFactory;
 import utils.XMLParser;
 import vue.MainVue;
+
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Date;
-
 
 public class Controler {
 
@@ -70,7 +70,6 @@ public class Controler {
         }
     }
 
-
     public void mouseMoved(Point point) {
         mainvue.updateMousePosition(point);
     }
@@ -122,16 +121,9 @@ public class Controler {
 
         ctrlZ.undo();
     }
-
     public void demarrerTournees() {
         etat = new EtatClientsAvertis(this);
         mainvue.setEtat(etat);
-    }
-
-
-    public void tourneesGenerees(ArrayList<Tournee> tournees) {
-        plan.setTournees(tournees);
-        mainvue.getMapPanel().tracerTournee(tournees);
     }
 
     public Point getLastDragMousePosition() {
@@ -157,6 +149,11 @@ public class Controler {
     public void mouseDragged(Point point) {
         mainvue.mouseDragged(point);
         lastDragMousePosition = point;
+    }
+
+    public void tourneesGenerees(ArrayList<Tournee> tournees) {
+        plan.setTournees(tournees);
+        mainvue.getMapPanel().tracerTournee(tournees);
     }
 
     public void tourneeGeneree(Tournee tournee) {
