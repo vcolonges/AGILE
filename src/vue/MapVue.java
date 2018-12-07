@@ -224,6 +224,7 @@ public class MapVue extends JPanel {
         }
 
         resizePlan.setTournees(newTournees);
+
         controler.drawLegende();
         repaint();
     }

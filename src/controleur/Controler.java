@@ -154,32 +154,7 @@ public class Controler {
     }
 
     public void drawLegende(){
-        int i = 0;
-        if(plan!=null)
-        {
-            for (Livreur livreur : plan.getLivreursEnCours()){
-                JPanel livreurPan = new JPanel();
-                mainvue.getConstraints().gridy = i++;
-                JLabel nomLivreur = new JLabel(livreur.getPrenom());
-                nomLivreur.setBorder(new EmptyBorder(0, 20, 0, 0));
-                BufferedImage bImg = new BufferedImage(10, 10, BufferedImage.TYPE_INT_RGB);
-                Graphics2D graphics = bImg.createGraphics();
-
-                graphics.setPaint(livreur.getCouleur());
-                graphics.fillRect(0, 0, bImg.getWidth(), bImg.getHeight());
-
-                ImageIcon imageIcon = new ImageIcon(bImg);
-
-
-                livreurPan.add(new JLabel(imageIcon));
-                livreurPan.add(nomLivreur);
-                mainvue.getLivreursPanel().add(livreurPan,mainvue.getConstraints());
-            }
-        }
-
-        mainvue.validate();
-
-
+        mainvue.drawLegend(plan);
     }
 
     public void updateNbLivreur(int value) {

@@ -5,6 +5,7 @@ import controleur.*;
 import controleur.etat.*;
 import modele.Livreur;
 import modele.Noeud;
+import modele.Plan;
 import utils.ListeLivreurs;
 
 import javax.swing.*;
@@ -252,13 +253,30 @@ public class MainVue extends JFrame {
         mapPanel.mouseDragged(point);
     }
 
+    public void drawLegend(Plan plan) {
+        int i = 0;
+        if(plan!=null)
+        {
+            for (Livreur livreur : plan.getLivreursEnCours()){
+                JPanel livreurPan = new JPanel();
+                constraints.gridy = i++;
+                JLabel nomLivreur = new JLabel(livreur.getPrenom());
+                nomLivreur.setBorder(new EmptyBorder(0, 20, 0, 0));
+                BufferedImage bImg = new BufferedImage(10, 10, BufferedImage.TYPE_INT_RGB);
+                Graphics2D graphics = bImg.createGraphics();
 
-    public JPanel getLivreursPanel() {
-        return livreursPanel;
-    }
+                graphics.setPaint(livreur.getCouleur());
+                graphics.fillRect(0, 0, bImg.getWidth(), bImg.getHeight());
 
-    public GridBagConstraints getConstraints() {
-        return constraints;
+                ImageIcon imageIcon = new ImageIcon(bImg);
+
+
+                livreurPan.add(new JLabel(imageIcon));
+                livreurPan.add(nomLivreur);
+                livreursPanel.add(livreurPan,constraints);
+            }
+        }
+        validate();
     }
 }
 
