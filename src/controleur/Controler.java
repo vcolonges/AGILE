@@ -6,6 +6,8 @@ import algorithmes.TSP;
 import controleur.etat.*;
 import exceptions.XMLException;
 import modele.*;
+import thread.ThreadTSP;
+import thread.ThreadTSPFactory;
 import utils.XMLParser;
 import vue.MainVue;
 
@@ -20,6 +22,8 @@ public class Controler {
     private MainVue mainvue;
     private Etat etat;
     private AlgoParcour algo;
+    private Point lastDragMousePosition;
+    private EcouteurDeTache ecouteurDeTache;
 
     /**
      * Cree le controleur de l'application
@@ -29,18 +33,17 @@ public class Controler {
         etat = new EtatDebut(this);
         mainvue.setEtat(etat);
         algo = new AlgoParcour();
+        ecouteurDeTache = new EcouteurDeTache(this);
     }
 
     public void chargerPlan(String lienPlan){
         try {
-            if(plan != null)
-                plan.getNoeuds().clear();
             plan = XMLParser.parsePlan(lienPlan);
             mainvue.getMapPanel().loadPlan(plan);
             etat = new EtatPlanCharge(this);
             mainvue.setEtat(etat);
         } catch (XMLException e) {
-            e.printStackTrace();
+            mainvue.getMapPanel().loadPlan(plan);
             mainvue.errorMessage(e.getMessage());
         }
     }
@@ -55,6 +58,7 @@ public class Controler {
                 mainvue.getMapPanel().loadPlan(plan);
                 etat = new EtatLivraisonsCharges(this);
                 mainvue.setEtat(etat);
+                mainvue.setLabelHeureDepart(plan.getHeureDepart());
             } catch (XMLException e) {
                 e.printStackTrace();
                 mainvue.errorMessage(e.getMessage());
@@ -92,18 +96,9 @@ public class Controler {
         mainvue.setEtat(etat);
         ArrayList<Livraison> livraisons = new ArrayList<>();
         livraisons.addAll(plan.getLivraisons().values());
-        ArrayList<Tournee> tournee = TSP.calculerLesTournees(livraisons,plan.getNbLivreurs(),plan.getEntrepot(), plan.getHeureDepart());
-        for(Tournee t : tournee){
-            System.out.println("\n\nTOURNEE : ");
-            for(Chemin c : t.getChemins()){
-                System.out.println("\n"+c);
-                for(Troncon tc : c.getTroncons()){
-                    System.out.println(tc);
-                }
-            }
-        }
-        plan.setTournees(tournee);
-        mainvue.getMapPanel().tracerTournee(tournee);
+        ThreadTSP tsp = ThreadTSPFactory.getTSPThread(livraisons,plan.getNbLivreurs(),plan.getEntrepot(),plan.getHeureDepart());
+        tsp.addThreadListener(ecouteurDeTache);
+        tsp.start();
     }
 
     public void supprimerLivraison(Noeud n){
@@ -113,5 +108,35 @@ public class Controler {
     public void demarrerTournees() {
         etat = new EtatClientsAvertis(this);
         mainvue.setEtat(etat);
+    }
+
+    public Point getLastDragMousePosition() {
+        return lastDragMousePosition;
+    }
+
+    public void setLastDragMousePosition(Point lastDragMousePosition) {
+        this.lastDragMousePosition = lastDragMousePosition;
+    }
+
+    public void wheelMovedUp(int wheelRotation) {
+        mainvue.getMapPanel().wheelMovedUp(wheelRotation);
+    }
+
+    public void setZoom(double zoom) {
+        mainvue.setZoom((int)(zoom*100.0));
+    }
+
+    public void wheelMovedDown(int wheelRotation) {
+        mainvue.getMapPanel().wheelMovedDown(wheelRotation);
+    }
+
+    public void mouseDragged(Point point) {
+        mainvue.mouseDragged(point);
+        lastDragMousePosition = point;
+    }
+
+    public void tourneesGenerees(ArrayList<Tournee> tournees) {
+        plan.setTournees(tournees);
+        mainvue.getMapPanel().tracerTournee(tournees);
     }
 }
