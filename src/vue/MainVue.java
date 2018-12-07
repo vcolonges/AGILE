@@ -240,6 +240,14 @@ public class MainVue extends JFrame {
     public void mouseDragged(Point point) {
         mapPanel.mouseDragged(point);
     }
+
+    public void setZoom(int zoom) {
+        zoomLabel.setText(zoom+"%");
+    }
+
+    public void mouseDragged(Point point) {
+        mapPanel.mouseDragged(point);
+    }
 }
 
 

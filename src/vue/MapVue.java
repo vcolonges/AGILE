@@ -2,11 +2,13 @@ package vue;
 
 import controleur.Controler;
 import modele.*;
+import utils.ListeLivreurs;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Line2D;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Queue;
 import java.util.Random;
@@ -23,63 +25,47 @@ public class MapVue extends JPanel {
     private final static int PADDING = 10;
 
     private final Color[] colors = {Color.GREEN,Color.ORANGE,Color.RED,Color.YELLOW,Color.WHITE,Color.PINK,Color.CYAN,Color.BLUE};
+    private double zoom;
+    private static final double ZOOM_MAX = 2;
+    private static final double ZOOM_MIN = 1;
+    private Rectangle zoomArea;
 
     public MapVue(){
         hoveredNodes = new LinkedBlockingDeque<>();
         deletedNodes = new ArrayList<>();
+        zoom = ZOOM_MIN;
+        zoomArea = new Rectangle(0,0,getWidth(),getHeight());
     }
 
     double phi = Math.toRadians(40);
     int barb = 10;
 
-    private void drawArrowHead(Graphics g, Point tip, Point tail)
-    {
-        Graphics2D g2 = (Graphics2D)g;
-        double dy = tip.y - tail.y;
-        double dx = tip.x - tail.x;
-        double theta = Math.atan2(dy, dx);
-        //System.out.println("theta = " + Math.toDegrees(theta));
-        double x, y, rho = theta + phi;
-        for(int j = 0; j < 2; j++)
-        {
-            x = tip.x - barb * Math.cos(rho);
-            y = tip.y - barb * Math.sin(rho);
-            g2.draw(new Line2D.Double(tip.x, tip.y, x, y));
-            rho = theta - phi;
-        }
-    }
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         g.setColor(Color.BLACK);
         if(resizePlan != null) {
-            for (Noeud n : resizePlan.getNoeuds().values()) {
-                g.fillOval((int) n.getLongitude() - WIDTH_DOT / 2, (int) n.getLatitude() - WIDTH_DOT / 2, WIDTH_DOT, WIDTH_DOT);
-            }
+            /*for (Noeud n : resizePlan.getNoeuds().values()) {
+                drawNode(new Point((int)n.getLongitude(),(int)n.getLatitude()),g);
+            }*/
             for (Troncon t : resizePlan.getTroncons()) {
-                Noeud start = t.getOrigine();
-                Noeud end = t.getDestination();
-                g.drawLine((int) start.getLongitude(), (int) start.getLatitude(), (int) end.getLongitude(), (int) end.getLatitude());
+                Point start = new Point((int)t.getOrigine().getLongitude(),(int)t.getOrigine().getLatitude());
+                Point stop = new Point((int)t.getDestination().getLongitude(),(int)t.getDestination().getLatitude());
+                drawLine(start,stop,g);
             }
             if(!resizePlan.getTournees().isEmpty()){
                 for(Tournee tournee : resizePlan.getTournees()) {
-                    Random rand = new Random();
-                    g.setColor(colors[resizePlan.getTournees().indexOf(tournee)]);
+                    g.setColor(tournee.getLivreur().getCouleur());
                     for (Chemin chemin : tournee.getChemins()) {
                         for (Troncon troncon : chemin.getTroncons()) {
                             Noeud start_tournee = troncon.getOrigine();
                             Noeud end_tournee = troncon.getDestination();
-                            g.drawLine((int) start_tournee.getLongitude(), (int) start_tournee.getLatitude(), (int) end_tournee.getLongitude(), (int) end_tournee.getLatitude());
-                            if(resizePlan.getLivraisons().containsKey(start_tournee.getId())){
-                                g.fillOval((int)start_tournee.getLongitude()-WIDTH_DOT/2,(int)start_tournee.getLatitude()-WIDTH_DOT/2,WIDTH_DOT,WIDTH_DOT);
-                            }else if(resizePlan.getLivraisons().containsKey(end_tournee.getId())){
-                                g.fillOval((int)end_tournee.getLongitude()-WIDTH_DOT/2,(int)end_tournee.getLatitude()-WIDTH_DOT/2,WIDTH_DOT,WIDTH_DOT);
-                            }
-                            if(troncon.getLongueur()>10){
-                                Point sw = new Point((int)((end_tournee.getLongitude()*3+start_tournee.getLongitude()*2)/5), (int)((end_tournee.getLatitude()*3+start_tournee.getLatitude()*2)/5));
-                                Point ne = new Point((int)(end_tournee.getLongitude()*2+start_tournee.getLongitude()*3)/5, (int)(end_tournee.getLatitude()*2+start_tournee.getLatitude()*3)/5);
-                                drawArrowHead(g,sw,ne);
+                            drawLine(new Point((int)start_tournee.getLongitude(),(int)start_tournee.getLatitude()),new Point((int)end_tournee.getLongitude(),(int)end_tournee.getLatitude()),g);
+                            if(tournee.getLivraisons().contains(resizePlan.getLivraisons().get(start_tournee.getId()))){
+                                drawNode(new Point((int)start_tournee.getLongitude(),(int)start_tournee.getLatitude()),g);
+                            }else if(tournee.getLivraisons().contains(resizePlan.getLivraisons().get(end_tournee.getId()))){
+                                drawNode(new Point((int)end_tournee.getLongitude(),(int)end_tournee.getLatitude()),g);
                             }
                         }
                     }
@@ -87,33 +73,37 @@ public class MapVue extends JPanel {
             }else{
                 for(Livraison l : resizePlan.getLivraisons().values()){
                     g.setColor(Color.GREEN);
-                    g.fillOval((int)l.getNoeud().getLongitude()-WIDTH_DOT/2,(int)l.getNoeud().getLatitude()-WIDTH_DOT/2,WIDTH_DOT,WIDTH_DOT);
+                    Point p = new Point((int)l.getNoeud().getLongitude(),(int)l.getNoeud().getLatitude());
+                    drawNode(p,g);
                 }
             }
 
             if(resizePlan.getEntrepot()!=null){
                 g.setColor(Color.MAGENTA);
-                g.fillOval((int)resizePlan.getEntrepot().getNoeud().getLongitude()-WIDTH_DOT/2,(int)resizePlan.getEntrepot().getNoeud().getLatitude()-WIDTH_DOT/2,WIDTH_DOT,WIDTH_DOT);
-            }
-
-            g.setColor(Color.yellow);
-            while(!hoveredNodes.isEmpty())
-            {
-                Noeud hoveredNode = hoveredNodes.poll();
-                g.fillOval((int)hoveredNode.getLongitude() - WIDTH_DOT/2,(int)hoveredNode.getLatitude()-WIDTH_DOT/2,WIDTH_DOT,WIDTH_DOT);
+                Point p = new Point((int)resizePlan.getEntrepot().getNoeud().getLongitude(),(int)resizePlan.getEntrepot().getNoeud().getLatitude());
+                drawNode(p,g);
             }
             if(deletedNodes!= null){
                 for(Noeud n : deletedNodes){
                     g.setColor(Color.gray);
-                    g.fillOval((int) n.getLongitude() - WIDTH_DOT / 2, (int) n.getLatitude() - WIDTH_DOT / 2, WIDTH_DOT, WIDTH_DOT);
+                    drawNode(new Point((int)n.getLongitude(),(int)n.getLatitude()),g);
                 }
             }
+            g.setColor(Color.yellow);
+            while(!hoveredNodes.isEmpty())
+            {
+                Noeud hoveredNode = hoveredNodes.poll();
+                Point p = new Point((int)hoveredNode.getLongitude(),(int)hoveredNode.getLatitude());
+                drawNode(p,g);
+            }
+
 
         }
     }
 
     public void loadPlan(Plan p)
     {
+        updateZoomArea();
         if(p == null) return;
         resizePlan = new Plan();
         controler.getPlan().getMaxLat();
@@ -169,35 +159,23 @@ public class MapVue extends JPanel {
         if(resizePlan == null) return;
 
 
-        for(Noeud n : resizePlan.getNoeuds().values())
+        Noeud n = getNearestResizedNode(point);
+        if(n != null)
         {
-            if(point.x <= n.getLongitude()+WIDTH_DOT/2 && point.x >= n.getLongitude()-WIDTH_DOT/2)
-            {
-                if(point.y <= n.getLatitude()+WIDTH_DOT/2 && point.y >= n.getLatitude()-WIDTH_DOT/2)
-                {
-                    hoveredNodes.add(n);
-                    controler.onHoverNode(n);
-                }
-            }
+            hoveredNodes.add(n);
+            controler.onHoverNode(n);
         }
 
         repaint();
-
     }
 
     public void selectNode(Point point, MouseEvent e){
         if(resizePlan == null) return;
 
-        for(Noeud n : resizePlan.getNoeuds().values())
+        Noeud n = getNearestResizedNode(e.getPoint());
+        if(n != null)
         {
-            if(point.x <= n.getLongitude()+WIDTH_DOT/2 && point.x >= n.getLongitude()-WIDTH_DOT/2)
-            {
-                if(point.y <= n.getLatitude()+WIDTH_DOT/2 && point.y >= n.getLatitude()-WIDTH_DOT/2)
-                {
-                    controler.onPressNode(controler.getPlan().getNoeuds().get(n.getId()),e);
-                    return; //on sort apres le 1er noeud trouvé
-                }
-            }
+            controler.onPressNode(controler.getPlan().getNoeuds().get(n.getId()),e);
         }
 
         repaint();
@@ -209,8 +187,12 @@ public class MapVue extends JPanel {
         Noeud newOriginTroncon = null;
         Noeud newDestinationTroncon = null;
         ArrayList<Tournee> newTournees = new ArrayList<>();
+        int livreur = 0;
         for(Tournee tournee : tournees) {
+            ArrayList<Chemin> chemins = new ArrayList<>();
             for (Chemin chemin : tournee.getChemins()) {
+                Chemin newChemin = new Chemin(chemin.getOrigine(),chemin.getDestination(),chemin.getLongueur());
+                ArrayList<Troncon> troncons = new ArrayList<>();
                 for (Troncon troncon : chemin.getTroncons()) {
                         originID = troncon.getOrigine().getId();
                         destinationID = troncon.getDestination().getId();
@@ -218,23 +200,37 @@ public class MapVue extends JPanel {
                         newOriginTroncon = this.resizePlan.getNoeuds().get(originID);
                         newDestinationTroncon = this.resizePlan.getNoeuds().get(destinationID);
 
-                        troncon.setOrigine(newOriginTroncon);
-                        troncon.setDestination(newDestinationTroncon);
+                        Troncon newTroncon = new Troncon(newOriginTroncon,newDestinationTroncon,troncon.getLongueur(),troncon.getNomRue());
+                        troncons.add(newTroncon);
                 }
+                newChemin.setTroncons(troncons);
+                chemins.add(newChemin);
             }
+            Tournee newtournee = new Tournee(tournee.getLivraisons(),chemins,tournee.getHeureDepart());
+            newtournee.setLivreur(ListeLivreurs.livreurs[livreur++]);
+            newTournees.add(newtournee);
         }
-        for(Tournee tournee : tournees) {
-            for (Chemin chemin : tournee.getChemins()) {
-                for (Troncon troncon : chemin.getTroncons()) {
-                    System.out.println(troncon.getOrigine());
-                    System.out.println(troncon.getDestination());
-                    System.out.println("\n");
-                }
-            }
-        }
-        resizePlan.setTournees(tournees);
+
+        resizePlan.setTournees(newTournees);
         repaint();
     }
+
+    private Noeud getNearestResizedNode(Point point)
+    {
+        for(Noeud n : resizePlan.getNoeuds().values())
+        {
+            Point pointResized = zoomToResizedPoint(new Point(point.x,point.y));
+            if(pointResized.x <= n.getLongitude()+WIDTH_DOT/2 && pointResized.x >= n.getLongitude()-WIDTH_DOT/2)
+            {
+                if(pointResized.y <= n.getLatitude()+WIDTH_DOT/2 && pointResized.y >= n.getLatitude()-WIDTH_DOT/2)
+                {
+                    return n;
+                }
+            }
+        }
+        return null;
+    }
+
 
     public void supprimerLivraison(Noeud n){
         resizePlan.getLivraisons().remove(n.getId()); //Suppression de la livraison dans le resize.
@@ -248,6 +244,61 @@ public class MapVue extends JPanel {
         * */
 
         deletedNodes.add(this.resizePlan.getNoeuds().get(n.getId()));
+    }
+
+    public void wheelMovedUp(int wheelRotation) {
+        zoom+=0.1;
+        if(zoom>ZOOM_MAX) zoom = ZOOM_MAX;
+        updateZoomArea();
+        controler.setZoom(zoom);
+    }
+
+    private void updateZoomArea() {
+        int widthZoomArea = (int)(getWidth()*(ZOOM_MAX-zoom));
+        int heightZoomArea = (int)(getHeight()*(ZOOM_MAX-zoom));
+        zoomArea.setSize(widthZoomArea,heightZoomArea);
+        repaint();
+    }
+
+    public void wheelMovedDown(int wheelRotation) {
+        zoom-=0.1;
+        if(zoom<ZOOM_MIN) zoom = ZOOM_MIN;
+        updateZoomArea();
+        controler.setZoom(zoom);
+    }
+
+    public void mouseDragged(Point point) {
+        Point oldPosition = controler.getLastDragMousePosition();
+        Point newPosition = point;
+        Point vectorInZoom = new Point(newPosition.x-oldPosition.x,newPosition.y-oldPosition.y);
+        Point vectorReal = new Point(-vectorInZoom.x*(this.getWidth()/(int)zoomArea.getWidth()),-vectorInZoom.y*(this.getHeight()/(int)zoomArea.getHeight()));
+        Point newOrigineZoomAreaPosition = new Point(zoomArea.getLocation().x+vectorReal.x,zoomArea.getLocation().y+vectorReal.y);
+        System.out.println(newOrigineZoomAreaPosition);
+        zoomArea.setLocation(newOrigineZoomAreaPosition.x,newOrigineZoomAreaPosition.y);
+        repaint();
+    }
+
+    private Point resizedNodeToZoom(Point point)
+    {
+        return new Point((int)((point.x-zoomArea.x)*(getWidth()/zoomArea.getWidth())),(int)((point.y-zoomArea.y)*(getHeight()/zoomArea.getHeight())));
+    }
+
+    private Point zoomToResizedPoint(Point point)
+    {
+        return new Point((int)(point.x*(zoomArea.getWidth()/getWidth())+zoomArea.x),(int)(point.y*(zoomArea.getHeight()/getHeight())+zoomArea.y));
+    }
+
+    private void drawNode(Point p, Graphics g)
+    {
+        Point pointInZoom = resizedNodeToZoom(p);
+        g.fillOval( pointInZoom.x - WIDTH_DOT / 2,  pointInZoom.y - WIDTH_DOT / 2, WIDTH_DOT, WIDTH_DOT);
+    }
+
+    private void drawLine(Point p1, Point p2, Graphics g)
+    {
+        Point start = resizedNodeToZoom(p1);
+        Point end = resizedNodeToZoom(p2);
+        g.drawLine(start.x, start.y, end.x, end.y);
     }
 
     public void ajouterLivraison(Livraison l){
