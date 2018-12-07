@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Queue;
 import java.util.Random;
 import java.util.concurrent.LinkedBlockingDeque;
+import java.awt.BasicStroke;
 
 public class MapVue extends JPanel {
 
@@ -42,8 +43,11 @@ public class MapVue extends JPanel {
 
     @Override
     protected void paintComponent(Graphics g) {
+       // boolean flag=false;
         super.paintComponent(g);
+
         g.setColor(Color.BLACK);
+
         if(resizePlan != null) {
             /*for (Noeud n : resizePlan.getNoeuds().values()) {
                 drawNode(new Point((int)n.getLongitude(),(int)n.getLatitude()),g);
@@ -53,7 +57,10 @@ public class MapVue extends JPanel {
                 Point stop = new Point((int)t.getDestination().getLongitude(),(int)t.getDestination().getLatitude());
                 drawLine(start,stop,g);
             }
+
+
             if(!resizePlan.getTournees().isEmpty()){
+
                 for(Tournee tournee : resizePlan.getTournees()) {
                     g.setColor(tournee.getLivreur().getCouleur());
                     for (Chemin chemin : tournee.getChemins()) {
