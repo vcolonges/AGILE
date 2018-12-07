@@ -3,6 +3,7 @@ package utils;
 import modele.Livreur;
 
 import java.awt.*;
+import java.util.ArrayList;
 
 public final class ListeLivreurs {
 
@@ -23,4 +24,20 @@ public final class ListeLivreurs {
             new Livreur("Matheo",new Color(245,130,48)),
             new Livreur("Eloïse",new Color(210,245,60))
     };
+
+    public static ArrayList<String> getListePrenomsLivreurs(){
+        ArrayList<String> prenomsLivreurs = new ArrayList<>();
+        for (Livreur livreur : ListeLivreurs.livreurs){
+            prenomsLivreurs.add(livreur.getPrenom());
+        }
+        return prenomsLivreurs;
+    }
+
+    public static Livreur getLivreurParPrenom(String nom){
+        for (Livreur livreur : ListeLivreurs.livreurs){
+            if(livreur.getPrenom() == nom)
+                return livreur;
+        }
+        return null;
+    }
 }

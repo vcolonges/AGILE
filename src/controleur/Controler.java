@@ -180,4 +180,13 @@ public class Controler {
         mainvue.mouseDragged(point);
         lastDragMousePosition = point;
     }
+
+    public void tourneeGeneree(Tournee tournee) {
+        plan.addTournee(tournee);
+        mainvue.getMapPanel().tracerTournee(plan.getTournees());
+    }
+
+    public EcouteurDeTache getEcouteurDeTache() {
+        return ecouteurDeTache;
+    }
 }

@@ -13,8 +13,8 @@ public class EcouteurDeTache extends ThreadTSPAdapter {
     }
 
     @Override
-    public void threadComplete(Tournee tournees) {
-        // TODO
+    public void threadComplete(Tournee tournee) {
+        controler.tourneeGeneree(tournee);
     }
 
     @Override
