@@ -85,7 +85,7 @@ public class MapVue extends JPanel {
             }
 
             if(resizePlan.getEntrepot()!=null){
-                g.setColor(Color.MAGENTA);
+                g.setColor(Color.BLACK);
                 Point p = new Point((int)resizePlan.getEntrepot().getNoeud().getLongitude(),(int)resizePlan.getEntrepot().getNoeud().getLatitude());
                 drawNode(p,g);
             }
