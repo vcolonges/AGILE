@@ -24,7 +24,7 @@ public class MapVue extends JPanel {
     private Plan resizePlan;
     private Queue<Noeud> hoveredNodes;
     private ArrayList<Noeud> deletedNodes;
-    private final static int WIDTH_DOT = 10;
+    private final static int WIDTH_DOT = 13;
     private final static int PADDING = 10;
 
     private final Color[] colors = {Color.GREEN,Color.ORANGE,Color.RED,Color.YELLOW,Color.WHITE,Color.PINK,Color.CYAN,Color.BLUE};

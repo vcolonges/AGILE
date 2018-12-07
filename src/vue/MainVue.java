@@ -6,6 +6,7 @@ import controleur.etat.*;
 import modele.Livreur;
 import modele.Noeud;
 import modele.Plan;
+import modele.Tournee;
 import utils.ListeLivreurs;
 
 import javax.swing.*;
@@ -13,6 +14,8 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -44,6 +47,7 @@ public class MainVue extends JFrame {
     private final JMenuItem chargerLivraisonXML;
     private JLabel zoomLabel;
     private JPanel livreursPanel;
+    private  JPanel livreursInnerPanel;
     private GridBagConstraints constraints;
 
     private Controler controler;
@@ -66,12 +70,14 @@ public class MainVue extends JFrame {
         //mapPanel.setBackground(Color.BLUE);
 
         // Ajout panel legende livreurs
-        livreursPanel = new JPanel();
-        livreursPanel.setBorder(new EmptyBorder(0, 10, 0, 10));
-        livreursPanel.setLayout(new GridBagLayout());
+        livreursPanel = new JPanel(new BorderLayout());
+        livreursInnerPanel = new JPanel();
+        livreursInnerPanel.setBorder(new EmptyBorder(20, 10, 0, 10));
+        livreursInnerPanel.setLayout(new GridBagLayout());
         constraints = new GridBagConstraints();
         constraints.gridx = 0;
         constraints.anchor = GridBagConstraints.WEST;
+        livreursPanel.add(livreursInnerPanel,BorderLayout.NORTH);
 
         // Création Debug Panel
         JPanel debugPanel = new JPanel(new FlowLayout());
@@ -258,22 +264,32 @@ public class MainVue extends JFrame {
         if(plan!=null)
         {
             for (Livreur livreur : plan.getLivreursEnCours()){
-                JPanel livreurPan = new JPanel();
                 constraints.gridy = i++;
+
+                JPanel livreurPan = new JPanel();
+                JPanel heurePan = new JPanel();
+                heurePan.setBorder(new EmptyBorder(-5, 0, 10, 0));
+
                 JLabel nomLivreur = new JLabel(livreur.getPrenom());
                 nomLivreur.setBorder(new EmptyBorder(0, 20, 0, 0));
+
                 BufferedImage bImg = new BufferedImage(10, 10, BufferedImage.TYPE_INT_RGB);
                 Graphics2D graphics = bImg.createGraphics();
-
                 graphics.setPaint(livreur.getCouleur());
                 graphics.fillRect(0, 0, bImg.getWidth(), bImg.getHeight());
-
                 ImageIcon imageIcon = new ImageIcon(bImg);
 
+                Tournee tournee = plan.getTourneeParLivreur(livreur);
+                SimpleDateFormat format = new SimpleDateFormat("HH:mm");
+                JLabel labelHeureFin = new JLabel("Fin : "+format.format(tournee.getRetourEntrepot()));
 
                 livreurPan.add(new JLabel(imageIcon));
                 livreurPan.add(nomLivreur);
-                livreursPanel.add(livreurPan,constraints);
+                livreursInnerPanel.add(livreurPan,constraints);
+                constraints.gridy = i++;
+                heurePan.add(labelHeureFin);
+                livreursInnerPanel.add(heurePan,constraints);
+
             }
         }
         validate();
