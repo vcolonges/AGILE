@@ -67,7 +67,7 @@ public class MapVue extends JPanel {
                         for (Troncon troncon : chemin.getTroncons()) {
                             Noeud start_tournee = troncon.getOrigine();
                             Noeud end_tournee = troncon.getDestination();
-                            drawLine(new Point((int)start_tournee.getLongitude(),(int)start_tournee.getLatitude()),new Point((int)end_tournee.getLongitude(),(int)end_tournee.getLatitude()),g);
+                            drawLine(new Point((int)start_tournee.getLongitude(),(int)start_tournee.getLatitude()),new Point((int)end_tournee.getLongitude(),(int)end_tournee.getLatitude()),g,3);
                             if(tournee.getLivraisons().contains(resizePlan.getLivraisons().get(start_tournee.getId()))){
                                 drawNode(new Point((int)start_tournee.getLongitude(),(int)start_tournee.getLatitude()),g);
                             }else if(tournee.getLivraisons().contains(resizePlan.getLivraisons().get(end_tournee.getId()))){
@@ -309,6 +309,14 @@ public class MapVue extends JPanel {
     {
         Point start = resizedNodeToZoom(p1);
         Point end = resizedNodeToZoom(p2);
+        g.drawLine(start.x, start.y, end.x, end.y);
+    }
+
+    private void drawLine(Point p1, Point p2, Graphics g, float epaisseur)
+    {
+        Point start = resizedNodeToZoom(p1);
+        Point end = resizedNodeToZoom(p2);
+        ((Graphics2D)g).setStroke(new BasicStroke(epaisseur));
         g.drawLine(start.x, start.y, end.x, end.y);
     }
 }
