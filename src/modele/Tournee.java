@@ -11,7 +11,7 @@ public class Tournee {
     private ArrayList<Chemin> chemins;
     private Date heureDepart;
     private Date retourEntrepot;
-    private static final double VITESSE = 4.17;
+    public static final double VITESSE = 4.17;
     private Livreur livreur;
 
     public Tournee(ArrayList<Livraison> livraisons, ArrayList<Chemin> chemins, Date heureDepart, Livreur livreur)
@@ -39,6 +39,16 @@ public class Tournee {
         double dureeChemin = chemins.get(chemins.size()-1).getLongueur()/VITESSE;
         heure.setTime((long) (heure.getTime()+dureeChemin*1000));
         retourEntrepot = new Date(heure.getTime());
+    }
+
+    public Date getHeureAvecLivraisonSupplementaire(Livraison livraison, Livraison entrepot)
+    {
+        double dureeCheminRetirer = chemins.get(chemins.size()-1).getLongueur()/VITESSE;
+        double dureeCheminVersEntrepot = livraison.getCheminVers(entrepot).getLongueur()/VITESSE;
+        double dureeCheminVersLivraison = livraisons.get(livraisons.size()-1).getCheminVers(livraison).getLongueur()/VITESSE;
+
+        Date ret = new Date((long) (retourEntrepot.getTime()+(dureeCheminVersEntrepot+dureeCheminVersLivraison-dureeCheminRetirer)*1000));
+        return  ret;
     }
 
     public ArrayList<Livraison> getLivraisons() {
@@ -70,6 +80,11 @@ public class Tournee {
         return "Tournee{" +
                 "chemins=" + chemins +
                 '}';
+    }
+
+    public boolean isModifiable(Date heureActuelle)
+    {
+        return heureActuelle.compareTo(heureDepart)<0;
     }
 
     public Date getRetourEntrepot() {
@@ -105,8 +120,10 @@ public class Tournee {
         if(time.before(heureDepartFirstNode))
             return new Paire(firstLivraison.getNoeud().getLongitude(),firstLivraison.getNoeud().getLatitude());
 
+
+        // TODO a refaire
         Date nextStop = new Date(heureDepartFirstNode.getTime() + currentChemin.troncons.get(0).getDuree(VITESSE));
-        int indexTroncon = 1;
+        int indexTroncon = 0;
         Troncon lastTroncon = currentChemin.getTroncons().get(0);
         while(time.compareTo(nextStop) >= 0)
         {
@@ -119,5 +136,17 @@ public class Tournee {
         Paire<Double,Double> averagePos = new Paire((lastTroncon.getOrigine().getLongitude() + lastTroncon.getDestination().getLongitude())/2,(lastTroncon.getOrigine().getLatitude() + lastTroncon.getDestination().getLatitude())/2);
 
         return averagePos;
+    }
+
+    public void ajouteLivraisonFinTournee(Livraison livraison, Livraison entrepot) {
+        Chemin cheminVersLivraison = livraisons.get(livraisons.size() - 1).getCheminVers(livraison);
+        Chemin cheminVersEntrepot = livraison.getCheminVers(entrepot);
+
+        chemins.remove(chemins.size() - 1);
+        chemins.add(cheminVersLivraison);
+        chemins.add(cheminVersEntrepot);
+
+        livraisons.add(livraison);
+        calculeHoraire();
     }
 }
