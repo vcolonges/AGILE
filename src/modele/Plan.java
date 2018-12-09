@@ -193,7 +193,8 @@ public class Plan {
     public ArrayList<Livreur> getLivreursEnCours() {
         ArrayList<Livreur> livreursCourants = new ArrayList<>();
         for (Tournee tournee : tournees) {
-            livreursCourants.add(tournee.getLivreur());
+            if(!livreursCourants.contains(tournee.getLivreur()))
+                livreursCourants.add(tournee.getLivreur());
         }
         return livreursCourants;
     }

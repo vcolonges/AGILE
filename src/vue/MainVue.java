@@ -271,7 +271,9 @@ public class MainVue extends JFrame {
                 JPanel heurePan = new JPanel();
                 heurePan.setBorder(new EmptyBorder(-5, 0, 10, 0));
 
-                JLabel nomLivreur = new JLabel(livreur.getPrenom());
+                Tournee tournee = plan.getTourneeParLivreur(livreur);
+                SimpleDateFormat format = new SimpleDateFormat("HH:mm");
+                JLabel nomLivreur = new JLabel(livreur.getPrenom() + " | Fin : "+format.format(tournee.getRetourEntrepot()));
                 nomLivreur.setBorder(new EmptyBorder(0, 20, 0, 0));
 
                 BufferedImage bImg = new BufferedImage(10, 10, BufferedImage.TYPE_INT_RGB);
@@ -280,17 +282,11 @@ public class MainVue extends JFrame {
                 graphics.fillRect(0, 0, bImg.getWidth(), bImg.getHeight());
                 ImageIcon imageIcon = new ImageIcon(bImg);
 
-                Tournee tournee = plan.getTourneeParLivreur(livreur);
-                SimpleDateFormat format = new SimpleDateFormat("HH:mm");
-                JLabel labelHeureFin = new JLabel("Fin : "+format.format(tournee.getRetourEntrepot()));
-
                 livreurPan.add(new JLabel(imageIcon));
                 livreurPan.add(nomLivreur);
                 livreursInnerPanel.add(livreurPan,constraints);
                 constraints.gridy = i++;
-                heurePan.add(labelHeureFin);
                 livreursInnerPanel.add(heurePan,constraints);
-
             }
         }
         validate();
