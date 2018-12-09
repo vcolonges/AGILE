@@ -111,11 +111,10 @@ public class TSP {
         System.out.print("}\n\n");
     }
 
-    private static ArrayList<Chemin> creerListeChemins() {
+    private static void creerListeChemins(ArrayList<Chemin> chemins, ArrayList<Livraison> livraisons) {
         int s= arrayListToInt(livraisons)-1;
         int i, sommet;
         Livraison depart, arrivee = null;
-        ArrayList<Chemin> chemins = new ArrayList<>();
 
         sommet=0;
         for (i = 1; i < nbLivraisons; ++i)
@@ -124,12 +123,12 @@ public class TSP {
             sommet = memNext[sommet][s];
             arrivee = livraisons.get(sommet);
             chemins.add(depart.getCheminVers(arrivee));
+            livraisons.add(arrivee);
             s = enleveElement(s,sommet);
         }
         depart = arrivee;
         arrivee = livraisons.get(0);
         chemins.add(depart.getCheminVers(arrivee));
-        return chemins;
     }
 
 
@@ -167,8 +166,10 @@ public class TSP {
 
         //afficheOrdre();
 
-        ArrayList<Chemin> listeChemins = creerListeChemins();
-        ArrayList<Livraison> setLivraisons = new ArrayList<>(livraisonCollection);
+        ArrayList<Chemin> listeChemins = new ArrayList<>();
+        ArrayList<Livraison> setLivraisons = new ArrayList<>();
+        creerListeChemins(listeChemins, setLivraisons);
+
         Tournee tournee = new Tournee(setLivraisons,listeChemins, heureDepart, livreur);
         tournee.calculeHoraire();
 
