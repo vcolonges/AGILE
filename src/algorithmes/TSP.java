@@ -2,7 +2,9 @@ package algorithmes;
 
 import modele.Chemin;
 import modele.Livraison;
+import modele.Livreur;
 import modele.Tournee;
+import utils.ListeLivreurs;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -145,7 +147,7 @@ public class TSP {
     }
 
 
-    public static Tournee calculerTournee(ArrayList<Livraison> livraisonCollection, Livraison entrepot, Date heureDepart){
+    public static Tournee calculerTournee(ArrayList<Livraison> livraisonCollection, Livraison entrepot, Date heureDepart, Livreur livreur){
         livraisons = new ArrayList<>(livraisonCollection);
         livraisons.add(0,entrepot);
 
@@ -167,7 +169,7 @@ public class TSP {
 
         ArrayList<Chemin> listeChemins = creerListeChemins();
         ArrayList<Livraison> setLivraisons = new ArrayList<>(livraisonCollection);
-        Tournee tournee = new Tournee(setLivraisons,listeChemins, heureDepart);
+        Tournee tournee = new Tournee(setLivraisons,listeChemins, heureDepart, livreur);
         tournee.calculeHoraire();
 
         return tournee;
@@ -191,8 +193,9 @@ public class TSP {
 
         ArrayList<Tournee> listeTournee = new ArrayList<>();
 
+        int i=0;
         for (ArrayList<Livraison> livraisonTournee: listeGroupeLivraisons){
-            Tournee tournee = TSP.calculerTournee(livraisonTournee, entrepot, heureDepart);
+            Tournee tournee = TSP.calculerTournee(livraisonTournee, entrepot, heureDepart, ListeLivreurs.livreurs[i++]);
             listeTournee.add(tournee);
         }
 

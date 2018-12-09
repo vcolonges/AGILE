@@ -9,14 +9,15 @@ public class Tournee {
     private ArrayList<Chemin> chemins;
     private Date heureDepart;
     private Date retourEntrepot;
-    private static final double VITESSE = 4.17;
+    public static final double VITESSE = 4.17;
     private Livreur livreur;
 
-    public Tournee(ArrayList<Livraison> livraisons, ArrayList<Chemin> chemins, Date heureDepart)
+    public Tournee(ArrayList<Livraison> livraisons, ArrayList<Chemin> chemins, Date heureDepart, Livreur livreur)
     {
         this.livraisons = livraisons;
         this.chemins = chemins;
         this.heureDepart = heureDepart;
+        this.livreur = livreur;
     }
 
     public ArrayList<Chemin> getChemins(){
@@ -36,6 +37,16 @@ public class Tournee {
         double dureeChemin = chemins.get(chemins.size()-1).getLongueur()/VITESSE;
         heure.setTime((long) (heure.getTime()+dureeChemin*1000));
         retourEntrepot = new Date(heure.getTime());
+    }
+
+    public Date getHeureAvecLivraisonSupplementaire(Livraison livraison, Livraison entrepot)
+    {
+        double dureeCheminRetirer = chemins.get(chemins.size()-1).getLongueur()/VITESSE;
+        double dureeCheminVersEntrepot = livraison.getCheminVers(entrepot).getLongueur()/VITESSE;
+        double dureeCheminVersLivraison = livraisons.get(livraisons.size()-1).getCheminVers(livraison).getLongueur()/VITESSE;
+
+        Date ret = new Date((long) (retourEntrepot.getTime()+(dureeCheminVersEntrepot+dureeCheminVersLivraison-dureeCheminRetirer)*1000));
+        return  ret;
     }
 
     public ArrayList<Livraison> getLivraisons() {
@@ -68,5 +79,17 @@ public class Tournee {
 
     public Date getRetourEntrepot() {
         return retourEntrepot;
+    }
+
+    public void ajouteLivraisonFinTournee(Livraison livraison, Livraison entrepot) {
+        Chemin cheminVersLivraison = livraisons.get(livraisons.size() - 1).getCheminVers(livraison);
+        Chemin cheminVersEntrepot = livraison.getCheminVers(entrepot);
+
+        chemins.remove(chemins.size() - 1);
+        chemins.add(cheminVersLivraison);
+        chemins.add(cheminVersEntrepot);
+
+        livraisons.add(livraison);
+        calculeHoraire();
     }
 }
