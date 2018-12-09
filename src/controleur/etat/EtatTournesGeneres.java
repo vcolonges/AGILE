@@ -50,23 +50,26 @@ public class EtatTournesGeneres extends Etat{
                         Livraison livraison = plan.getLivraisons().get(n.getId());
 
                         Tournee tournee = plan.getTourneeParLivraison(livraison);
-                        if(tournee != null){
-                            plan.removeTournee(tournee);
-                            tournee.removeLivraison(livraison);
+                        if(tournee.getLivreur().getPrenom() != name) {
+                            if (tournee != null) {
+                                plan.removeTournee(tournee);
+                                tournee.removeLivraison(livraison);
 
-                            ThreadTSP t = ThreadTSPFactory.getTSPThread(tournee.getLivraisons(),plan.getEntrepot(),plan.getHeureDepart(), tournee.getLivreur());
-                            t.addThreadListener(controler.getEcouteurDeTache());
-                            t.start();
-                        }
-                        Livreur nouveauLivreur = ListeLivreurs.getLivreurParPrenom(name);
-                        tournee = plan.getTourneeParLivreur(nouveauLivreur);
-                        if(tournee != null){
-                            plan.removeTournee(tournee);
-                            tournee.addLivraison(livraison);
+                                ThreadTSP t = ThreadTSPFactory.getTSPThread(tournee.getLivraisons(), plan.getEntrepot(), plan.getHeureDepart(), tournee.getLivreur());
+                                t.addThreadListener(controler.getEcouteurDeTache());
+                                t.start();
+                            }
 
-                            ThreadTSP t = ThreadTSPFactory.getTSPThread(tournee.getLivraisons(),plan.getEntrepot(),plan.getHeureDepart(), nouveauLivreur);
-                            t.addThreadListener(controler.getEcouteurDeTache());
-                            t.start();
+                            Livreur nouveauLivreur = ListeLivreurs.getLivreurParPrenom(name);
+                            tournee = plan.getTourneeParLivreur(nouveauLivreur);
+                            if (tournee != null) {
+                                plan.removeTournee(tournee);
+                                tournee.addLivraison(livraison);
+
+                                ThreadTSP t = ThreadTSPFactory.getTSPThread(tournee.getLivraisons(), plan.getEntrepot(), plan.getHeureDepart(), nouveauLivreur);
+                                t.addThreadListener(controler.getEcouteurDeTache());
+                                t.start();
+                            }
                         }
                     }
                 }

@@ -260,6 +260,7 @@ public class MainVue extends JFrame {
     }
 
     public void drawLegend(Plan plan) {
+        livreursInnerPanel.removeAll();
         int i = 0;
         if(plan!=null)
         {
