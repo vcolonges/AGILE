@@ -1,14 +1,14 @@
 package controleur;
 
 import modele.Tournee;
-import thread.ThreadTSPAdapter;
+import thread.threadtsp.ThreadTSPAdapter;
 
 import java.util.ArrayList;
 
-public class EcouteurDeTache extends ThreadTSPAdapter {
+public class EcouteurDeTacheTSP extends ThreadTSPAdapter {
     private Controler controler;
 
-    public EcouteurDeTache(Controler controler) {
+    public EcouteurDeTacheTSP(Controler controler) {
         this.controler = controler;
     }
 

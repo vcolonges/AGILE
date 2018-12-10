@@ -1,17 +1,17 @@
 package vue;
 
 import controleur.Controler;
+import controleur.etat.EtatClientsAvertis;
 import modele.*;
 import utils.ListeLivreurs;
+import utils.Paire;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Line2D;
 import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Queue;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.awt.BasicStroke;
 
@@ -30,6 +30,8 @@ public class MapVue extends JPanel {
     private static final double ZOOM_MAX = 2;
     private static final double ZOOM_MIN = 1;
     private Rectangle zoomArea;
+    private HashMap<Livreur, Point> positionLivreurs;
+    private double ratioPlanResizedPlan;
 
     public MapVue(){
         hoveredNodes = new LinkedBlockingDeque<>();
@@ -96,6 +98,15 @@ public class MapVue extends JPanel {
                     drawNode(new Point((int)n.getLongitude(),(int)n.getLatitude()),g);
                 }
             }
+            if(controler.getEtat() instanceof EtatClientsAvertis && positionLivreurs != null)
+            {
+                g.setColor(Color.BLACK);
+                for(Point p : positionLivreurs.values())
+                {
+                    drawNode(p,g);
+                }
+            }
+
             g.setColor(Color.yellow);
             while(!hoveredNodes.isEmpty())
             {
@@ -127,12 +138,12 @@ public class MapVue extends JPanel {
         double ratioLong = (widthMap-2*PADDING)/(maxLongPlan-minLongPlan);
         double ratioLat = (heightMap-2*PADDING)/(maxLatPlan-minLatPlan);
 
-        double ratioMin = ratioLong < ratioLat ? ratioLong : ratioLat;
+        ratioPlanResizedPlan = ratioLong < ratioLat ? ratioLong : ratioLat;
 
 
         for (Noeud n : controler.getPlan().getNoeuds().values()){
-            double newlatitude = (n.getLatitude()-minLatPlan)*ratioMin + PADDING;
-            double newLongitude = (n.getLongitude()-minLongPlan)*ratioMin + PADDING;
+            double newlatitude = (n.getLatitude()-minLatPlan)* ratioPlanResizedPlan + PADDING;
+            double newLongitude = (n.getLongitude()-minLongPlan)* ratioPlanResizedPlan + PADDING;
             this.resizePlan.addNoeud(new Noeud(n.getId(),newlatitude,newLongitude));
         }
 
@@ -328,5 +339,18 @@ public class MapVue extends JPanel {
         Point end = resizedNodeToZoom(p2);
         ((Graphics2D)g).setStroke(new BasicStroke(epaisseur));
         g.drawLine(start.x, start.y, end.x, end.y);
+    }
+
+    public void updatePositionLivreurs(HashMap<Livreur, Paire<Double, Double>> update) {
+        double minLongPlan = controler.getPlan().getMinLong();
+        double minLatPlan = controler.getPlan().getMinLat();
+        positionLivreurs = new HashMap<>();
+        for(Map.Entry<Livreur,Paire<Double,Double>> e : update.entrySet())
+        {
+            double newLatitude = (e.getValue().getSecond()-minLatPlan)* ratioPlanResizedPlan + PADDING;
+            double newLongitude = (e.getValue().getPremier()-minLongPlan)* ratioPlanResizedPlan + PADDING;
+            positionLivreurs.put(e.getKey(),new Point((int)newLongitude,(int)newLatitude));
+        }
+        repaint();
     }
 }

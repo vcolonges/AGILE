@@ -2,20 +2,21 @@ package controleur;
 
 
 import algorithmes.AlgoParcour;
-import algorithmes.TSP;
 import controleur.etat.*;
 import controleur.gestionCommande.*;
 import exceptions.XMLException;
 import modele.*;
-import thread.ThreadTSP;
-import thread.ThreadTSPFactory;
+import thread.threadsimulation.ThreadSimulation;
+import thread.threadtsp.ThreadTSP;
+import thread.threadtsp.ThreadTSPFactory;
+import utils.Paire;
 import utils.XMLParser;
 import vue.MainVue;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.HashMap;
 
 public class Controler {
 
@@ -24,7 +25,8 @@ public class Controler {
     private Etat etat;
     private AlgoParcour algo;
     private Point lastDragMousePosition;
-    private EcouteurDeTache ecouteurDeTache;
+    private EcouteurDeTacheTSP ecouteurDeTacheTSP;
+    private EcouteurDeTacheSimulation ecouteurDeTacheSimulation;
 
 
     private CommandeManager ctrlZ;
@@ -36,7 +38,8 @@ public class Controler {
         etat = new EtatDebut(this);
         mainvue.setEtat(etat);
         algo = new AlgoParcour();
-        ecouteurDeTache = new EcouteurDeTache(this);
+        ecouteurDeTacheTSP = new EcouteurDeTacheTSP(this);
+        this.ecouteurDeTacheSimulation = new EcouteurDeTacheSimulation(this);
         this.ctrlZ = new CommandeManager();
     }
 
@@ -62,7 +65,6 @@ public class Controler {
                 mainvue.getMapPanel().loadPlan(plan);
                 etat = new EtatLivraisonsCharges(this);
                 mainvue.setEtat(etat);
-                mainvue.setLabelHeureDepart(plan.getHeureDepart());
             } catch (XMLException e) {
                 e.printStackTrace();
                 mainvue.errorMessage(e.getMessage());
@@ -101,7 +103,7 @@ public class Controler {
         ArrayList<Livraison> livraisons = new ArrayList<>();
         livraisons.addAll(plan.getLivraisons().values());
         ThreadTSP tsp = ThreadTSPFactory.getTSPThread(livraisons,plan.getNbLivreurs(),plan.getEntrepot(),plan.getHeureDepart());
-        tsp.addThreadListener(ecouteurDeTache);
+        tsp.addThreadListener(ecouteurDeTacheTSP);
         tsp.start();
     }
 
@@ -117,13 +119,18 @@ public class Controler {
         mainvue.revertAjouterLivraison(l);
     }
 
-    public void ctrlZ(){
+
+    public void ctrlZ() {
 
         ctrlZ.undo();
     }
     public void demarrerTournees() {
         etat = new EtatClientsAvertis(this);
         mainvue.setEtat(etat);
+
+        ThreadSimulation t = new ThreadSimulation(plan.getTournees(),plan.getHeureDepart());
+        t.addThreadListener(ecouteurDeTacheSimulation);
+        t.start();
     }
 
     public Point getLastDragMousePosition() {
@@ -161,7 +168,15 @@ public class Controler {
         mainvue.getMapPanel().tracerTournee(plan.getTournees());
     }
 
-    public EcouteurDeTache getEcouteurDeTache() {
-        return ecouteurDeTache;
+    public EcouteurDeTacheTSP getEcouteurDeTacheTSP() {
+        return ecouteurDeTacheTSP;
+    }
+
+    public void updatePositionLivreurs(HashMap<Livreur, Paire<Double, Double>> update) {
+        mainvue.updatePositionLivreurs(update);
+    }
+
+    public Etat getEtat() {
+        return etat;
     }
 }

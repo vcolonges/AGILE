@@ -1,4 +1,4 @@
-package thread;
+package thread.threadtsp;
 
 import modele.Livraison;
 import modele.Livreur;

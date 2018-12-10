@@ -2,17 +2,12 @@ package controleur.etat;
 
 import controleur.Controler;
 import modele.*;
-import thread.ThreadTSP;
-import thread.ThreadTSPFactory;
+import thread.threadtsp.ThreadTSP;
+import thread.threadtsp.ThreadTSPFactory;
 import utils.ListeLivreurs;
 import vue.PopUpMenu;
 
 import javax.swing.*;
-import javax.swing.text.Position;
-import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class EtatTournesGeneres extends Etat{
@@ -54,7 +49,7 @@ public class EtatTournesGeneres extends Etat{
                                 tournee.removeLivraison(livraison);
 
                                 ThreadTSP t = ThreadTSPFactory.getTSPThread(tournee.getLivraisons(),plan.getEntrepot(),plan.getHeureDepart(), tournee.getLivreur());
-                                t.addThreadListener(controler.getEcouteurDeTache());
+                                t.addThreadListener(controler.getEcouteurDeTacheTSP());
                                 t.start();
                                 break;
                             }
@@ -66,7 +61,7 @@ public class EtatTournesGeneres extends Etat{
                             tournee.addLivraison(livraison);
 
                             ThreadTSP t = ThreadTSPFactory.getTSPThread(tournee.getLivraisons(),plan.getEntrepot(),plan.getHeureDepart(), nouveauLivreur);
-                            t.addThreadListener(controler.getEcouteurDeTache());
+                            t.addThreadListener(controler.getEcouteurDeTacheTSP());
                             t.start();
                         }
                     }

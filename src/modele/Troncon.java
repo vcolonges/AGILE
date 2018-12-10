@@ -64,4 +64,14 @@ public class Troncon {
                 ", nomRue='" + nomRue + '\'' +
                 "}\r\n";
     }
+
+    /**
+     *
+     * @param vitesse
+     * @return duree en ms
+     */
+    public long getDuree(double vitesse)
+    {
+        return (long)((longueur/vitesse)*1000);
+    }
 }

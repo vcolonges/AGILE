@@ -3,14 +3,17 @@ package vue;
 
 import controleur.*;
 import controleur.etat.*;
+import modele.Livreur;
 import modele.Noeud;
 import modele.Livraison;
+import utils.Paire;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 
 public class MainVue extends JFrame {
 
@@ -244,6 +247,10 @@ public class MainVue extends JFrame {
     }
 
 
+
+    public void updatePositionLivreurs(HashMap<Livreur, Paire<Double, Double>> update) {
+        mapPanel.updatePositionLivreurs(update);
+    }
 }
 
 
