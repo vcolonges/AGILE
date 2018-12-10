@@ -41,7 +41,7 @@ public class ThreadSimulation extends Thread {
                 }
                 Calendar c = Calendar.getInstance();
                 c.setTime(currentTime);
-                c.add(Calendar.MINUTE,1);
+                c.add(Calendar.SECOND,60);
                 currentTime = c.getTime();
             }
             listeners.forEach(l->l.onUpdate(updateInfo));

@@ -100,14 +100,18 @@ public class Tournee {
         Chemin currentChemin = chemins.get(0);
         Livraison secondLivraison = chemins.get(0).getDestination(); // le premier point a livrer
         int indexLivraison = 1;
-        while(time.compareTo(secondLivraison.getHeureArrivee())>=0) // si apres ou egale
+        Date heureArriveSecondNode = secondLivraison.getHeureArrivee();
+        while(time.compareTo(heureArriveSecondNode)>=0) // si apres ou egale
         {
-            currentChemin = chemins.get(indexLivraison);
+            currentChemin = chemins.get(indexLivraison++);
             firstLivraison = currentChemin.getOrigine();
             secondLivraison = currentChemin.getDestination();
+            heureArriveSecondNode = secondLivraison.getHeureArrivee();
+            if(heureArriveSecondNode == null)
+                heureArriveSecondNode = retourEntrepot;
          }// on connait maintenant entre quels livraison se trouvera le livreur
 
-        Date heureArriveSecondNode = secondLivraison.getHeureArrivee();
+        heureArriveSecondNode = secondLivraison.getHeureArrivee();
         if(heureArriveSecondNode == null) // si on tombe sur l entrepot
             heureArriveSecondNode = retourEntrepot;
 
@@ -120,12 +124,10 @@ public class Tournee {
         if(time.before(heureDepartFirstNode))
             return new Paire(firstLivraison.getNoeud().getLongitude(),firstLivraison.getNoeud().getLatitude());
 
-
-        // TODO a refaire
         Date nextStop = new Date(heureDepartFirstNode.getTime() + currentChemin.troncons.get(0).getDuree(VITESSE));
         int indexTroncon = 0;
         Troncon lastTroncon = currentChemin.getTroncons().get(0);
-        while(time.compareTo(nextStop) >= 0)
+        while(time.compareTo(nextStop) >= 0 && indexTroncon != currentChemin.troncons.size())
         {
             long duree = lastTroncon.getDuree(VITESSE);
             nextStop = new Date(nextStop.getTime() + duree);
