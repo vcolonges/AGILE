@@ -1,17 +1,17 @@
 package vue;
 
 import controleur.Controler;
+import controleur.etat.EtatClientsAvertis;
 import modele.*;
 import utils.ListeLivreurs;
+import utils.Paire;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Line2D;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.Queue;
+import java.lang.reflect.Array;
+import java.util.*;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.awt.BasicStroke;
 
@@ -26,10 +26,13 @@ public class MapVue extends JPanel {
     private final static int PADDING = 10;
     private final static int FLECHES = 6;
 
+    private final Color[] colors = {Color.GREEN,Color.ORANGE,Color.RED,Color.YELLOW,Color.WHITE,Color.PINK,Color.CYAN,Color.BLUE};
     private double zoom;
     private static final double ZOOM_MAX = 2;
     private static final double ZOOM_MIN = 1;
     private Rectangle zoomArea;
+    private HashMap<Livreur, Point> positionLivreurs;
+    private double ratioPlanResizedPlan;
 
     public MapVue(){
         hoveredNodes = new LinkedBlockingDeque<>();
@@ -41,11 +44,13 @@ public class MapVue extends JPanel {
     double phi = Math.toRadians(40);
     int barb = 10;
 
-
     @Override
     protected void paintComponent(Graphics g) {
+       // boolean flag=false;
         super.paintComponent(g);
+
         g.setColor(Color.BLACK);
+
         if(resizePlan != null) {
             /*for (Noeud n : resizePlan.getNoeuds().values()) {
                 drawNode(new Point((int)n.getLongitude(),(int)n.getLatitude()),g);
@@ -55,7 +60,10 @@ public class MapVue extends JPanel {
                 Point stop = new Point((int)t.getDestination().getLongitude(),(int)t.getDestination().getLatitude());
                 drawLine(start,stop,g);
             }
+
+
             if(!resizePlan.getTournees().isEmpty()){
+
                 for(Tournee tournee : resizePlan.getTournees()) {
                     g.setColor(tournee.getLivreur().getCouleur());
                     for (Chemin chemin : tournee.getChemins()) {
@@ -85,9 +93,9 @@ public class MapVue extends JPanel {
             }
 
             if(resizePlan.getEntrepot()!=null){
-                g.setColor(Color.BLACK);
+                g.setColor(Color.MAGENTA);
                 Point p = new Point((int)resizePlan.getEntrepot().getNoeud().getLongitude(),(int)resizePlan.getEntrepot().getNoeud().getLatitude());
-                drawNode(p,g,WIDTH_DOT+2);
+                drawNode(p,g);
             }
             if(deletedNodes!= null){
                 for(Noeud n : deletedNodes){
@@ -95,6 +103,15 @@ public class MapVue extends JPanel {
                     drawNode(new Point((int)n.getLongitude(),(int)n.getLatitude()),g);
                 }
             }
+            if(controler.getEtat() instanceof EtatClientsAvertis && positionLivreurs != null)
+            {
+                g.setColor(Color.BLACK);
+                for(Point p : positionLivreurs.values())
+                {
+                    drawNode(p,g);
+                }
+            }
+
             g.setColor(Color.BLACK);
             while(!hoveredNodes.isEmpty())
             {
@@ -126,12 +143,12 @@ public class MapVue extends JPanel {
         double ratioLong = (widthMap-2*PADDING)/(maxLongPlan-minLongPlan);
         double ratioLat = (heightMap-2*PADDING)/(maxLatPlan-minLatPlan);
 
-        double ratioMin = ratioLong < ratioLat ? ratioLong : ratioLat;
+        ratioPlanResizedPlan = ratioLong < ratioLat ? ratioLong : ratioLat;
 
 
         for (Noeud n : controler.getPlan().getNoeuds().values()){
-            double newlatitude = (n.getLatitude()-minLatPlan)*ratioMin + PADDING;
-            double newLongitude = (n.getLongitude()-minLongPlan)*ratioMin + PADDING;
+            double newlatitude = (n.getLatitude()-minLatPlan)* ratioPlanResizedPlan + PADDING;
+            double newLongitude = (n.getLongitude()-minLongPlan)* ratioPlanResizedPlan + PADDING;
             this.resizePlan.addNoeud(new Noeud(n.getId(),newlatitude,newLongitude));
         }
 
@@ -191,6 +208,7 @@ public class MapVue extends JPanel {
         }
 
         repaint();
+
     }
 
     public void selectNode(Point point, MouseEvent e){
@@ -354,5 +372,18 @@ public class MapVue extends JPanel {
             g2.draw(new Line2D.Double(tip.x, tip.y, x, y));
             rho = theta - phi;
         }
+    }
+
+    public void updatePositionLivreurs(HashMap<Livreur, Paire<Double, Double>> update) {
+        double minLongPlan = controler.getPlan().getMinLong();
+        double minLatPlan = controler.getPlan().getMinLat();
+        positionLivreurs = new HashMap<>();
+        for(Map.Entry<Livreur,Paire<Double,Double>> e : update.entrySet())
+        {
+            double newLatitude = (e.getValue().getSecond()-minLatPlan)* ratioPlanResizedPlan + PADDING;
+            double newLongitude = (e.getValue().getPremier()-minLongPlan)* ratioPlanResizedPlan + PADDING;
+            positionLivreurs.put(e.getKey(),new Point((int)newLongitude,(int)newLatitude));
+        }
+        repaint();
     }
 }

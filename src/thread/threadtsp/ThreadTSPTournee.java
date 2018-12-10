@@ -1,4 +1,4 @@
-package thread;
+package thread.threadtsp;
 
 import algorithmes.TSP;
 import modele.Livraison;

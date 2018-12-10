@@ -11,25 +11,34 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 
+/*
+ * Cette classe sert à résoudre le problème du voyageur de commerce pour un groupe de livraison
+ * Elle crée les Tournee décrivant les solutions optimales
+ */
+
+
 public class TSP {
     static private ArrayList<Livraison> livraisons;
     static private int nbLivraisons;
     static private int nbEnsemble;
-    static private double[][] cout;
-    static private double[][] memD;
-    static private int[][] memNext;
+    static private double[][] cout; // retiens la distance entre 2 Livraisons
+    static private double[][] memD; // retiens la distance de la plus courte solution du TSP partant d'une livraison et passant par un ensemble de livraison
+    static private int[][] memNext; // retiens la livraison suivante dans la solution optimale à partir d'une livraison et passant par un ensemble de livraison
 
 
-    private static int arrayListToInt(ArrayList<Livraison> list){
+    // Transforme une collection de Livraison en un ensemble stocké en int à partir de la liste originale de livraison
+    private static int arrayListToInt(Collection<Livraison> list){
         int sum = 0;
 
         for (Livraison item: list) {
+            // Pour chaque item de la liste on passe à 1 le bit correspondant dans l'ensemble
             sum += Math.pow(2,livraisons.indexOf(item));
         }
 
         return sum;
     }
 
+    // stocke dans un tableau les distances entre 2 Livraisons
     private static void creerCout(){
         int i,j;
         for (Livraison livraison : livraisons ) {
@@ -41,7 +50,6 @@ public class TSP {
                     cout[i][j] = chemin.getLongueur();
                 }
             }
-
         }
     }
 
@@ -56,8 +64,11 @@ public class TSP {
 
             for (int j=1; j<nbLivraisons; j++){
                 if (estElementDe(j,s)){
+
                     double d = calculeD(j, enleveElement(s,j));
-                    if (cout[i][j] + d < min){
+
+
+                    if (cout[i][j] + d < min){ // si on trouve une meilleure solution
                         memNext[i][s]=j;
                         min = cout[i][j] + d;
                     }
@@ -100,11 +111,10 @@ public class TSP {
         System.out.print("}\n\n");
     }
 
-    private static ArrayList<Chemin> creerListeChemins() {
+    private static void creerListeChemins(ArrayList<Chemin> chemins, ArrayList<Livraison> livraisonsOutput) {
         int s= arrayListToInt(livraisons)-1;
         int i, sommet;
         Livraison depart, arrivee = null;
-        ArrayList<Chemin> chemins = new ArrayList<>();
 
         sommet=0;
         for (i = 1; i < nbLivraisons; ++i)
@@ -113,12 +123,12 @@ public class TSP {
             sommet = memNext[sommet][s];
             arrivee = livraisons.get(sommet);
             chemins.add(depart.getCheminVers(arrivee));
+            livraisonsOutput.add(arrivee);
             s = enleveElement(s,sommet);
         }
         depart = arrivee;
         arrivee = livraisons.get(0);
         chemins.add(depart.getCheminVers(arrivee));
-        return chemins;
     }
 
 
@@ -156,8 +166,10 @@ public class TSP {
 
         //afficheOrdre();
 
-        ArrayList<Chemin> listeChemins = creerListeChemins();
-        ArrayList<Livraison> setLivraisons = new ArrayList<>(livraisonCollection);
+        ArrayList<Chemin> listeChemins = new ArrayList<>();
+        ArrayList<Livraison> setLivraisons = new ArrayList<>();
+        creerListeChemins(listeChemins, setLivraisons);
+
         Tournee tournee = new Tournee(setLivraisons,listeChemins, heureDepart, livreur);
         tournee.calculeHoraire();
 
@@ -181,7 +193,8 @@ public class TSP {
         ArrayList<ArrayList<Livraison>> listeGroupeLivraisons = algoParcour.getLivraisons(livraisons, nbrLivreur);
 
         ArrayList<Tournee> listeTournee = new ArrayList<>();
-        int i = 0;
+
+        int i=0;
         for (ArrayList<Livraison> livraisonTournee: listeGroupeLivraisons){
             Tournee tournee = TSP.calculerTournee(livraisonTournee, entrepot, heureDepart, ListeLivreurs.livreurs[i++]);
             listeTournee.add(tournee);
@@ -198,7 +211,7 @@ public class TSP {
 
         Livraison l1 = new Livraison(noeudl1, 1);
         Livraison l2 = new Livraison(noeudl2, 2);
-        Livraison l3 = new Livraison(noeudl3, 3);
+        Livraison l3 = new Livraison(noexudl3, 3);
         Livraison entrepot = new Livraison(noeudEntrepot, 0);
 
         Chemin cheminEntrepotL1 = new Chemin(entrepot,l1,4);
