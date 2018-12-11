@@ -284,6 +284,11 @@ public class MainVue extends JFrame {
         labelSliderHeure.setText(secondes/3600+":"+String.format("%02d", secondes%3600/60));
     }
 
+    /**
+     * Affiche la legende des livreurs
+     *
+     * @param plan Plan de l'application dans lequel se trouve les livreurs
+     */
     public void drawLegend(Plan plan) {
         livreursInnerPanel.removeAll();
         int i = 0;

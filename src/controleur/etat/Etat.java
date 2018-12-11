@@ -12,12 +12,19 @@ import java.awt.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-
 public class Etat {
     protected String label;
     protected Controler  controler;
 
     Etat(Controler c){this.controler = c;}
+
+    /**
+     * Cette fonction renvoie une popUpMenu avec l'adresse de noeud appelant
+     *
+     * @param plan plan de l'application
+     * @param n noeud appelant (celui sur lequel on veut afficher la popUpMenu)
+     * @return la popUpMenu cree
+     */
     public PopUpMenu getPopUpMenu(Plan plan, Noeud n){
         PopUpMenu popUpMenu = new PopUpMenu();
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -39,6 +46,15 @@ public class Etat {
         return label;
     }
 
+    /**
+     * Cette fonction ajoute la popUpMenu les differentes informations sur la livraison,
+     * le livreur, l'heure d'arrivee de celui-ci, sa duree sur place et son heure de depart
+     *
+     * @param popUpMenu popUpMenu precedemment creee
+     * @param p Plan de l'application
+     * @param n  Noeud courant (sur lequel la popupmenu est affichee)
+     * @return la popUpMenu modifiee
+     */
     public PopUpMenu ajoutInfosLivraisonsToPopUpMenu(PopUpMenu popUpMenu, Plan p, Noeud n){
         Livraison livraison = p.getLivraisons().get(n.getId());
         Tournee tournee = p.getTourneeParLivraison(livraison);

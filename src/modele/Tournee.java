@@ -59,6 +59,11 @@ public class Tournee {
         return heureDepart;
     }
 
+    /**
+     * Renvoie le livreur associe a la tournee
+     *
+     * @return livreur
+     */
     public Livreur getLivreur() {
         return livreur;
     }
@@ -71,6 +76,11 @@ public class Tournee {
         livraisons.remove(livraison);
     }
 
+    /**
+     * Definit le livreur associe a la tournee
+     *
+     * @param livreur livreur qui fait la tournee
+     */
     public void setLivreur(Livreur livreur) {
         this.livreur = livreur;
     }
