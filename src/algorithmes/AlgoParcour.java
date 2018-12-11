@@ -143,145 +143,258 @@ public class AlgoParcour {
             tmpResult.add(tmpResultList);
         }
 
-            for (int iterationTime = 0; iterationTime < nbrLivreur; iterationTime++) {
-                int indexCircle = 0;
-                int loopCounter = nbrLivreur;
-                while (loopCounter != 0) {
-                    boolean testNoChange = true;
-                    int lastCircleIndex = indexCircle;
-                    if (result.get(indexCircle).size() != 0) {
-                        //pour chaque cercle on prend chaque noeud
-                        for (int indexNoeud = 0; indexNoeud < result.get(indexCircle).size(); indexNoeud++) {
-                            //pour chaque noeud on récupère sa distance au centre de son cercle
-                            Noeud curNoeud = result.get(indexCircle).get(indexNoeud).getNoeud();
-                            double distanceToCenter = PointsDistance(curNoeud.getLatitude(), curNoeud.getLongitude(), circlesData.get(indexCircle).get(0), circlesData.get(indexCircle).get(1));
-                            //on compare la distance entre noeud et son cercle à la distance du noeud et autres cercles
-                            double tmpDistance;
-                            for (int tmpIndexCircle = 0; tmpIndexCircle < nbrLivreur; tmpIndexCircle++) {
-                                tmpDistance = PointsDistance(curNoeud.getLatitude(), curNoeud.getLongitude(), circlesData.get(tmpIndexCircle).get(0), circlesData.get(tmpIndexCircle).get(1));
-                                if (tmpDistance < distanceToCenter) {
-                                    distanceToCenter = tmpDistance;
-                                    lastCircleIndex = tmpIndexCircle;
-                                }
+        for (int iterationTime = 0; iterationTime < nbrLivreur; iterationTime++) {
+            int indexCircle = 0;
+            int loopCounter = nbrLivreur;
+            while (loopCounter != 0) {
+                boolean testNoChange = true;
+                int lastCircleIndex = indexCircle;
+                if (result.get(indexCircle).size() != 0) {
+                    //pour chaque cercle on prend chaque noeud
+                    for (int indexNoeud = 0; indexNoeud < result.get(indexCircle).size(); indexNoeud++) {
+                        //pour chaque noeud on récupère sa distance au centre de son cercle
+                        Noeud curNoeud = result.get(indexCircle).get(indexNoeud).getNoeud();
+                        double distanceToCenter = PointsDistance(curNoeud.getLatitude(), curNoeud.getLongitude(), circlesData.get(indexCircle).get(0), circlesData.get(indexCircle).get(1));
+                        //on compare la distance entre noeud et son cercle à la distance du noeud et autres cercles
+                        double tmpDistance;
+                        for (int tmpIndexCircle = 0; tmpIndexCircle < nbrLivreur; tmpIndexCircle++) {
+                            tmpDistance = PointsDistance(curNoeud.getLatitude(), curNoeud.getLongitude(), circlesData.get(tmpIndexCircle).get(0), circlesData.get(tmpIndexCircle).get(1));
+                            if (tmpDistance < distanceToCenter) {
+                                distanceToCenter = tmpDistance;
+                                lastCircleIndex = tmpIndexCircle;
                             }
-                            //si le noeud est plus pres du centre d'un autre cercle que du sien, on le transmet à resultat final du cercle ciblé et on redemarre l'algorithme
-                            //pour le cercle cible
-                            //possible d'optimiser
-                            if (lastCircleIndex != indexCircle) {
-                                tmpResult.get(lastCircleIndex).add(result.get(indexCircle).remove(indexNoeud));
-                                circlesData.set(lastCircleIndex, initCircleData(result.get(lastCircleIndex), tmpResult.get(lastCircleIndex)));
-                                circlesData.set(indexCircle, initCircleData(result.get(indexCircle), tmpResult.get(indexCircle)));
+                        }
+                        //si le noeud est plus pres du centre d'un autre cercle que du sien, on le transmet à resultat final du cercle ciblé et on redemarre l'algorithme
+                        //pour le cercle cible
+                        //possible d'optimiser
+                        if (lastCircleIndex != indexCircle) {
+                            tmpResult.get(lastCircleIndex).add(result.get(indexCircle).remove(indexNoeud));
+                            circlesData.set(lastCircleIndex, initCircleData(result.get(lastCircleIndex), tmpResult.get(lastCircleIndex)));
+                            circlesData.set(indexCircle, initCircleData(result.get(indexCircle), tmpResult.get(indexCircle)));
 
-                                indexCircle = lastCircleIndex;
-                                testNoChange = false;
-                                loopCounter = nbrLivreur;
-                                break;
-                            } else {
-                                tmpResult.get(indexCircle).add(result.get(indexCircle).remove(indexNoeud));
-                            }
+                            indexCircle = lastCircleIndex;
+                            testNoChange = false;
+                            loopCounter = nbrLivreur;
+                            break;
+                        } else {
+                            tmpResult.get(indexCircle).add(result.get(indexCircle).remove(indexNoeud));
                         }
-                        if (testNoChange) {
-                            indexCircle = (indexCircle + 1) % nbrLivreur;
-                        }
-                    } else {
-                        loopCounter--;
+                    }
+                    if (testNoChange) {
                         indexCircle = (indexCircle + 1) % nbrLivreur;
                     }
-                }
-
-                for(int i=tmpResult.size()-1; i>=0; --i)
-                {
-                    result.get(i).addAll(tmpResult.get(i));
-                    tmpResult.get(i).clear();
+                } else {
+                    loopCounter--;
+                    indexCircle = (indexCircle + 1) % nbrLivreur;
                 }
             }
-                   /* if (testNoChange) {
-                        if (result.get(indexCircle).size() <= nLim) {
-                            tmpResult.get(indexCircle).addAll(result.get(indexCircle));
-                            result.get(indexCircle).clear();
-                            indexCircle = (indexCircle + 1) % nbrLivreur;
-                        } else{
-                            Livraison curLiv = null;
-                            int indexCircleToMove = -1;
-                            double distanceToCenter = 10000000;
-                            for (int indexOkNoeud = 0; indexOkNoeud != result.get(indexCircle).size(); indexOkNoeud++) {
-                                Livraison tmpCurLiv = result.get(indexCircle).get(indexOkNoeud);
-                                for (int indexTargetCircle = 0; indexTargetCircle < nbrLivreur; indexTargetCircle++) {
-                                    double tmpDistanceToCenter = PointsDistance(tmpCurLiv.getNoeud().getLatitude(), tmpCurLiv.getNoeud().getLongitude(), circlesData.get(indexTargetCircle).get(0), circlesData.get(indexTargetCircle).get(1));
-                                    if (tmpDistanceToCenter < distanceToCenter && indexTargetCircle != indexCircle && result.get(indexTargetCircle).size() != 0) {
-                                        distanceToCenter = tmpDistanceToCenter;
-                                        curLiv = tmpCurLiv;
-                                        indexCircleToMove = indexTargetCircle;
-                                    }
+
+            for (int i = tmpResult.size() - 1; i >= 0; --i) {
+                result.get(i).addAll(tmpResult.get(i));
+                tmpResult.get(i).clear();
+            }
+        }
+               /* if (testNoChange) {
+                    if (result.get(indexCircle).size() <= nLim) {
+                        tmpResult.get(indexCircle).addAll(result.get(indexCircle));
+                        result.get(indexCircle).clear();
+                        indexCircle = (indexCircle + 1) % nbrLivreur;
+                    } else{
+                        Livraison curLiv = null;
+                        int indexCircleToMove = -1;
+                        double distanceToCenter = 10000000;
+                        for (int indexOkNoeud = 0; indexOkNoeud != result.get(indexCircle).size(); indexOkNoeud++) {
+                            Livraison tmpCurLiv = result.get(indexCircle).get(indexOkNoeud);
+                            for (int indexTargetCircle = 0; indexTargetCircle < nbrLivreur; indexTargetCircle++) {
+                                double tmpDistanceToCenter = PointsDistance(tmpCurLiv.getNoeud().getLatitude(), tmpCurLiv.getNoeud().getLongitude(), circlesData.get(indexTargetCircle).get(0), circlesData.get(indexTargetCircle).get(1));
+                                if (tmpDistanceToCenter < distanceToCenter && indexTargetCircle != indexCircle && result.get(indexTargetCircle).size() != 0) {
+                                    distanceToCenter = tmpDistanceToCenter;
+                                    curLiv = tmpCurLiv;
+                                    indexCircleToMove = indexTargetCircle;
                                 }
                             }
-                            if(indexCircleToMove==-1)
-                            {
-                                continue;
-                            }
-                            result.get(indexCircleToMove).add(curLiv);
-                            result.get(indexCircle).remove(curLiv);
-                            tmpResult.get(indexCircle).addAll(result.get(indexCircle));
-                            result.get(indexCircle).clear();
-                            circlesData.set(indexCircle, initCircleData(tmpResult.get(indexCircle)));
-                            circlesData.set(indexCircleToMove, initCircleData(result.get(indexCircleToMove)));
-                            indexCircle = indexCircleToMove;
                         }
-
-
+                        if(indexCircleToMove==-1)
+                        {
+                            continue;
+                        }
+                        result.get(indexCircleToMove).add(curLiv);
+                        result.get(indexCircle).remove(curLiv);
+                        tmpResult.get(indexCircle).addAll(result.get(indexCircle));
+                        result.get(indexCircle).clear();
+                        circlesData.set(indexCircle, initCircleData(tmpResult.get(indexCircle)));
+                        circlesData.set(indexCircleToMove, initCircleData(result.get(indexCircleToMove)));
+                        indexCircle = indexCircleToMove;
                     }
 
-                }*/
-                int loopCounter=0;
-                for(int indexCurCircle=0; indexCurCircle<result.size(); indexCurCircle++)
-                {
-                    /*if(nbrSupCircle==loopCounter)
-                    {
-                        break;
-                    }*/
-                    if(result.get(indexCurCircle).size()<nLimMin ) {
-                        //while (result.get(indexCurCircle).size() < nLimMin) {
-                            int indexTarget=-1;
-                            int indexMoveFrom = -1;
-                            double distanceToCenter=1000000;
 
-                            for(int indexTargetCircle=0; indexTargetCircle<nbrLivreur; indexTargetCircle++)
-                            {
-                                if(indexTargetCircle==indexCurCircle)
-                                {
-                                    continue;
-                                }
-                                for(int indexTargetNoeud=0; indexTargetNoeud<result.get(indexTargetCircle).size(); indexTargetNoeud++)
-                                {
-                                    Livraison tmpLiv = result.get(indexTargetCircle).get(indexTargetNoeud);
-                                    double tmpDistance = PointsDistance(tmpLiv.getNoeud().getLatitude(), tmpLiv.getNoeud().getLongitude(), circlesData.get(indexCurCircle).get(0), circlesData.get(indexCurCircle).get(1));
-                                    if(distanceToCenter>tmpDistance)
-                                    {
-                                        distanceToCenter = tmpDistance;
-                                        indexTarget=indexTargetNoeud;
-                                        indexMoveFrom = indexTargetCircle;
-                                    }
-
-                                }
-                            }
-                            result.get(indexCurCircle).add(result.get(indexMoveFrom).remove(indexTarget));
-                            circlesData.set(indexCurCircle, initCircleData(result.get(indexCurCircle)));
-                            circlesData.set(indexMoveFrom, initCircleData(result.get(indexMoveFrom)));
-                       // }
-                        //nbrSupCircle--;
-                        indexCurCircle = -1;
-                    }
                 }
 
-                /*for(int i=tmpResult.size()-1; i>=0; --i)
+            }*/
+
+        int sertARien = 0;
+        for (int indexCurCircle = 0; indexCurCircle < result.size(); indexCurCircle++) {
+            if (result.get(indexCurCircle).size() < nLimMin && tmpResult.get(indexCurCircle).size() == 0) {
+                while (result.get(indexCurCircle).size() < nLimMin) {
+                    int indexTarget = -1;
+                    int indexMoveFrom = -1;
+                    double distanceToCenter = 1000000;
+
+                    for (int indexTargetCircle = 0; indexTargetCircle < nbrLivreur; indexTargetCircle++) {
+                        if (indexTargetCircle == indexCurCircle) {
+                            continue;
+                        }
+                        for (int indexTargetNoeud = 0; indexTargetNoeud < result.get(indexTargetCircle).size(); indexTargetNoeud++) {
+                            Livraison tmpLiv = result.get(indexTargetCircle).get(indexTargetNoeud);
+                            double tmpDistance = PointsDistance(tmpLiv.getNoeud().getLatitude(), tmpLiv.getNoeud().getLongitude(), circlesData.get(indexCurCircle).get(0), circlesData.get(indexCurCircle).get(1));
+                            if (distanceToCenter > tmpDistance) {
+                                distanceToCenter = tmpDistance;
+                                indexTarget = indexTargetNoeud;
+                                indexMoveFrom = indexTargetCircle;
+                            }
+
+                        }
+                    }
+                    result.get(indexCurCircle).add(result.get(indexMoveFrom).remove(indexTarget));
+                    circlesData.set(indexCurCircle, initCircleData(result.get(indexCurCircle)));
+                    if (result.get(indexMoveFrom).size() != 0) {
+                        circlesData.set(indexMoveFrom, initCircleData(result.get(indexMoveFrom)));
+                    }
+                }
+                tmpResult.get(indexCurCircle).addAll(result.get(indexCurCircle));
+                result.get(indexCurCircle).clear();
+                indexCurCircle = -1;
+            }
+        }
+
+        for (int i = tmpResult.size() - 1; i >= 0; --i) {
+            result.get(i).addAll(tmpResult.get(i));
+            tmpResult.get(i).clear();
+        }
+        //**** corriger pour grand plan, 12 livraison, 7 livreurs
+        int sertARien2 = 0;
+        for (int indexCurCircle = 0; indexCurCircle < result.size(); indexCurCircle++) {
+            if (result.get(indexCurCircle).size() > nLimMax) {
+                while (result.get(indexCurCircle).size() > nLimMax) {
+                    int indexTarget = -1;
+                    int indexMoveTo = -1;
+                    double distanceToCenter = 1000000;
+
+                    for (int indexTargetNoeud = 0; indexTargetNoeud < result.get(indexCurCircle).size(); indexTargetNoeud++) {
+                        Livraison tmpLiv = result.get(indexCurCircle).get(indexTargetNoeud);
+
+                        for (int indexTargetCircle = 0; indexTargetCircle < nbrLivreur; indexTargetCircle++) {
+                            if (indexTargetCircle == indexCurCircle && result.get(indexTargetCircle).size() != 0) {
+                                continue;
+                            }
+                            double tmpDistance = PointsDistance(tmpLiv.getNoeud().getLatitude(), tmpLiv.getNoeud().getLongitude(), circlesData.get(indexTargetCircle).get(0), circlesData.get(indexTargetCircle).get(1));
+
+                            if (distanceToCenter > tmpDistance) {
+                                distanceToCenter = tmpDistance;
+                                indexTarget = indexTargetNoeud;
+                                indexMoveTo = indexTargetCircle;
+                            }
+                        }
+                    }
+                    result.get(indexMoveTo).add(result.get(indexCurCircle).remove(indexTarget));
+                    circlesData.set(indexCurCircle, initCircleData(result.get(indexCurCircle)));
+                    circlesData.set(indexMoveTo, initCircleData(result.get(indexMoveTo)));
+                }
+                tmpResult.get(indexCurCircle).addAll(result.get(indexCurCircle));
+                result.get(indexCurCircle).clear();
+                indexCurCircle = -1;
+            }
+        }
+
+        for (int i = tmpResult.size() - 1; i >= 0; --i) {
+            result.get(i).addAll(tmpResult.get(i));
+            tmpResult.get(i).clear();
+        }
+
+        tmpResult.clear();
+        int indexCircle = 0;
+        while (result.size()!=0) {
+            boolean testNoChange = true;
+            int lastCircleIndex = indexCircle;
+            int indexOriginLiv = 0;
+            Livraison originLiv = null;
+            double distanceToCenterTarget = 1000000;
+                //pour chaque cercle on prend chaque noeud
+                for (int indexNoeud = 0; indexNoeud < result.get(indexCircle).size(); indexNoeud++) {
+                    //pour chaque noeud on récupère sa distance au centre de son cercle
+                    Livraison tmpLiv = result.get(indexCircle).get(indexNoeud);
+                    //distanceToCenterTarget = PointsDistance(tmpLiv.getNoeud().getLatitude(), tmpLiv.getNoeud().getLongitude(), circlesData.get(indexCircle).get(0), circlesData.get(indexCircle).get(1));
+                    //on compare la distance entre noeud et son cercle à la distance du noeud et autres cercles
+                    for (int tmpIndexCircle = 0; tmpIndexCircle < result.size(); tmpIndexCircle++) {
+                        double tmpDistance = PointsDistance(tmpLiv.getNoeud().getLatitude(), tmpLiv.getNoeud().getLongitude(), circlesData.get(tmpIndexCircle).get(0), circlesData.get(tmpIndexCircle).get(1));
+                        if (tmpDistance < distanceToCenterTarget) {
+                            distanceToCenterTarget = tmpDistance;
+                            lastCircleIndex = tmpIndexCircle;
+                            originLiv=tmpLiv;
+                            indexOriginLiv = indexNoeud;
+                        }
+                    }
+                    //si le noeud est plus pres du centre d'un autre cercle que du sien, on le transmet à resultat final du cercle ciblé et on redemarre l'algorithme
+                    //pour le cercle cible
+                    //possible d'optimiser
+                    if (lastCircleIndex != indexCircle) {
+                        //result.get(lastCircleIndex).add(result.get(indexCircle).remove(indexNoeud));
+                        //circlesData.set(lastCircleIndex, initCircleData(result.get(lastCircleIndex)));
+                        //circlesData.set(indexCircle, initCircleData(result.get(indexCircle)));
+
+                        //indexCircle = lastCircleIndex;
+                        testNoChange = false;
+                        break;
+                    }
+
+                }
+                if (testNoChange && indexCircle==result.size()-1) {
+                    tmpResult.add(result.remove(indexCircle));
+                    circlesData.remove(indexCircle);
+                    indexCircle = 0;
+                }
+                else if(testNoChange && indexCircle!=result.size()-1) {
+                    indexCircle++;
+                }
+                else
                 {
-                    result.get(i).addAll(tmpResult.get(i));
-                    tmpResult.get(i).clear();
-                }*/
+                   // double distanceToCenter;
+                    double distanceToOriginCenter = 1000000;
+                    int indexTargetLivToOrigin = 0;
+                    Livraison targetToMove=null;
+                    for(int indexCurNoeud=0; indexCurNoeud< result.get(lastCircleIndex).size(); indexCurNoeud++)
+                    {
+                        Livraison tmpLiv = result.get(lastCircleIndex).get(indexCurNoeud);
+                       // double tmpDistanceToCenter = PointsDistance(tmpLiv.getNoeud().getLatitude(), tmpLiv.getNoeud().getLongitude(), circlesData.get(lastCircleIndex).get(0), circlesData.get(lastCircleIndex).get(1));
+                        double tmpDistanceToOriginCenter = PointsDistance(tmpLiv.getNoeud().getLatitude(), tmpLiv.getNoeud().getLongitude(), circlesData.get(indexCircle).get(0), circlesData.get(indexCircle).get(1));
+                        if(distanceToOriginCenter>tmpDistanceToOriginCenter && tmpDistanceToOriginCenter < distanceToCenterTarget)
+                        {
+                            distanceToOriginCenter=tmpDistanceToOriginCenter;
+                            indexTargetLivToOrigin = indexCurNoeud;
+                            targetToMove= tmpLiv;
+                        }
+                    }
+                    if(targetToMove == originLiv /*|| targetToMove == null*/)
+                    {
+                        tmpResult.add(result.remove(lastCircleIndex));
+                    }
+                    else if(targetToMove==null)
+                    {
+                        //*****je sais pas
+                    }
+                    else
+                    {
+                        result.get(lastCircleIndex).add(result.get(indexCircle).remove(indexOriginLiv));
+                        result.get(indexCircle).add(result.get(lastCircleIndex).remove(indexTargetLivToOrigin));
+                        circlesData.set(lastCircleIndex, initCircleData(result.get(lastCircleIndex)));
+                        circlesData.set(indexCircle, initCircleData(result.get(indexCircle)));
+                        //indexCircle=(indexCircle+1)%result.size();
+                    }
+                    indexCircle=0;
+                }
+            }
 
-
-
-        return result;
+        return tmpResult;
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
