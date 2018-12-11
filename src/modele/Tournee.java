@@ -119,10 +119,12 @@ public class Tournee {
         Date heureArriveeFirstNode = firstLivraison.getHeureArrivee();
         if(heureArriveeFirstNode == null)
             heureArriveeFirstNode = heureDepart;
-        Date heureDepartFirstNode = new Date(heureArriveeFirstNode.getTime() + firstLivraison.getDuree());
+        Date heureDepartFirstNode = new Date(heureArriveeFirstNode.getTime() + firstLivraison.getDuree()*1000);
         // si le livreur sera encore sur le lieu de livraison, on renvoie ses coordonnées
-        if(time.before(heureDepartFirstNode))
+        if(time.before(heureDepartFirstNode)){
             return new Paire(firstLivraison.getNoeud().getLongitude(),firstLivraison.getNoeud().getLatitude());
+        }
+
 
         Date nextStop = new Date(heureDepartFirstNode.getTime() + currentChemin.troncons.get(0).getDuree(VITESSE));
         int indexTroncon = 0;
@@ -133,7 +135,6 @@ public class Tournee {
             nextStop = new Date(nextStop.getTime() + duree);
             lastTroncon = currentChemin.troncons.get(indexTroncon++);
         }
-
 
         Paire<Double,Double> averagePos = new Paire((lastTroncon.getOrigine().getLongitude() + lastTroncon.getDestination().getLongitude())/2,(lastTroncon.getOrigine().getLatitude() + lastTroncon.getDestination().getLatitude())/2);
 

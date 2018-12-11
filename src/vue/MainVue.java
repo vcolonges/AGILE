@@ -23,25 +23,25 @@ public class MainVue extends JFrame {
     public static final String GENERER_TOURNEES = "Générer les Tournées";
     public static final String DEMARRER_TOURNEES = "Démarrer les Tournées";
 
+    public static final int HEURE_DEBUT = 28800;
+    public static final int HEURE_FIN = 64800;
+    public static final int DIFF_HEURE = 1800;
+
 
     private EcouteurDeBoutons ecouteurDeBoutons;
     private EcouteurDeSouris ecouteurDeSouris;
     private EcouteurDeComposant ecouteurDeComposant;
     private EcouteurDeSpinner ecouteurDeSpinner;
+    private EcouteurDeSlider ecouteurDeSlider;
     private JMenuBar menuBar;
     private MapVue mapPanel;
-    private JLabel XPosition;
-    private JLabel YPosition;
-    private JLabel selectedNode;
     private JSpinner spinnerLivreur;
     private JPanel panelHeureDebut;
     private JLabel labelHeureDepart;
     private final JButton genererTournees;
-    private final JLabel etatLabel;
     private final JButton demarrerTournees;
     private final JMenuItem chargerPlanXML;
     private final JMenuItem chargerLivraisonXML;
-    private JLabel zoomLabel;
 
     private JSlider sliderHeure;
     private JLabel labelSliderHeure;
@@ -69,41 +69,30 @@ public class MainVue extends JFrame {
 
         // Création Debug Panel
         JPanel debugPanel = new JPanel(new BorderLayout());
-        sliderHeure = new JSlider(JSlider.HORIZONTAL,28800, 64800, 28800);
+        sliderHeure = new JSlider(JSlider.HORIZONTAL,HEURE_DEBUT, HEURE_FIN, HEURE_DEBUT);
         Hashtable labelTable = new Hashtable();
-        for(int i = 28800 ; i<=64800 ; i++){
-            if(i%1800==0){
+        for(int i = HEURE_DEBUT ; i<=HEURE_FIN ; i++){
+            if(i%DIFF_HEURE==0){
                 labelTable.put(i,new JLabel(i/3600+":"+String.format("%02d", i%3600/60)));
             }
 
         }
         sliderHeure.setLabelTable( labelTable );
         sliderHeure.setMajorTickSpacing(3600);
+        sliderHeure.setEnabled(false);
         sliderHeure.setPaintLabels(true);
         labelSliderHeure = new JLabel(28800/3600+":"+String.format("%02d", 28800%3600/60),SwingConstants.CENTER);
+        labelSliderHeure.setFont(new Font(Font.DIALOG,  Font.BOLD, 20));
+        labelSliderHeure.setEnabled(false);
         debugPanel.add(labelSliderHeure, BorderLayout.CENTER);
         debugPanel.add(sliderHeure, BorderLayout.SOUTH);
-        /*zoomLabel = new JLabel();
-        debugPanel.add(zoomLabel);
-        debugPanel.add(new JLabel("X:"));
-        XPosition = new JLabel();
-        debugPanel.add(XPosition);
-        debugPanel.add(new JLabel("Y:"));
-        YPosition = new JLabel();
-        debugPanel.add(YPosition);
-        debugPanel.add(new JLabel("Selected node : "));
-        selectedNode = new JLabel();
-        debugPanel.add(selectedNode);
-        debugPanel.add(new JLabel("Etat : "));*/
-        etatLabel = new JLabel();
-        /*debugPanel.add(etatLabel);*/
 
         //init controleur
         controler = new Controler(this);
         mapPanel.setControler(controler);
 
         // Crétion des listener
-        sliderHeure.addChangeListener(new EcouteurDeSlider(controler));
+        ecouteurDeSlider = new EcouteurDeSlider(controler);
         ecouteurDeBoutons = new EcouteurDeBoutons(controler);
         ecouteurDeSouris = new EcouteurDeSouris(controler);
         ecouteurDeComposant = new EcouteurDeComposant(controler);
@@ -112,6 +101,7 @@ public class MainVue extends JFrame {
         mapPanel.addMouseMotionListener(ecouteurDeSouris);
         mapPanel.addComponentListener(ecouteurDeComposant);
         mapPanel.addMouseWheelListener(ecouteurDeSouris);
+        sliderHeure.addChangeListener(new EcouteurDeSlider(controler));
 
         // Crétion toolPanel
         JPanel toolPanel = new JPanel();
@@ -229,32 +219,35 @@ public class MainVue extends JFrame {
     }
 
     public void setEtat(Etat etat) {
-        etatLabel.setText(etat.getLabel());
+        if(this.genererTournees==null)return;
+        genererTournees.setEnabled(false);
+        demarrerTournees.setEnabled(false);
+        spinnerLivreur.setEnabled(false);
+        chargerLivraisonXML.setEnabled(false);
+        sliderHeure.setEnabled(false);
+        labelSliderHeure.setEnabled(false);
+
         if(etat instanceof EtatPlanCharge) {
-            genererTournees.setEnabled(false);
-            demarrerTournees.setEnabled(false);
             chargerLivraisonXML.setEnabled(true);
         }else if(etat instanceof EtatLivraisonsCharges) {
             genererTournees.setEnabled(true);
-            demarrerTournees.setEnabled(false);
             panelHeureDebut.setVisible(true);
             spinnerLivreur.setEnabled(true);
+            spinnerLivreur.setValue(1);
         }else if(etat instanceof EtatTournesGeneres){
+            chargerLivraisonXML.setEnabled(true);
+            spinnerLivreur.setEnabled(true);
+            genererTournees.setEnabled(true);
             demarrerTournees.setEnabled(true);
         }else if(etat instanceof EtatClientsAvertis){
-            genererTournees.setEnabled(false);
-            demarrerTournees.setEnabled(false);
-            spinnerLivreur.setEnabled(false);
+            chargerLivraisonXML.setEnabled(true);
+            sliderHeure.setEnabled(true);
+            labelSliderHeure.setEnabled(true);
         }
     }
 
     public void deletePoint(Noeud n){
-
         mapPanel.deletePoint(n);
-    }
-
-    public void setZoom(int zoom) {
-        zoomLabel.setText(zoom+"%");
     }
 
     public void mouseDragged(Point point) {

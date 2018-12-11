@@ -124,10 +124,6 @@ public class Controler {
         mainvue.getMapPanel().wheelMovedUp(wheelRotation);
     }
 
-    public void setZoom(double zoom) {
-        mainvue.setZoom((int)(zoom*100.0));
-    }
-
     public void wheelMovedDown(int wheelRotation) {
         mainvue.getMapPanel().wheelMovedDown(wheelRotation);
     }

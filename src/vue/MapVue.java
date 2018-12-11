@@ -3,14 +3,12 @@ package vue;
 import controleur.Controler;
 import controleur.etat.EtatClientsAvertis;
 import modele.*;
-import utils.ListeLivreurs;
 import utils.Paire;
+import utils.Star;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
-import java.awt.geom.Line2D;
-import java.lang.reflect.Array;
 import java.util.*;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.awt.BasicStroke;
@@ -24,9 +22,7 @@ public class MapVue extends JPanel {
     private ArrayList<Noeud> deletedNodes;
     private final static int WIDTH_DOT = 10;
     private final static int PADDING = 10;
-    private final static int FLECHES = 6;
 
-    private final Color[] colors = {Color.GREEN,Color.ORANGE,Color.RED,Color.YELLOW,Color.WHITE,Color.PINK,Color.CYAN,Color.BLUE};
     private double zoom;
     private static final double ZOOM_MAX = 2;
     private static final double ZOOM_MIN = 1;
@@ -40,9 +36,6 @@ public class MapVue extends JPanel {
         zoom = ZOOM_MIN;
         zoomArea = new Rectangle(0,0,getWidth(),getHeight());
     }
-
-    double phi = Math.toRadians(40);
-    int barb = 10;
 
     @Override
     protected void paintComponent(Graphics g) {
@@ -61,7 +54,6 @@ public class MapVue extends JPanel {
                 drawLine(start,stop,g);
             }
 
-
             if(!resizePlan.getTournees().isEmpty()){
 
                 for(Tournee tournee : resizePlan.getTournees()) {
@@ -76,11 +68,6 @@ public class MapVue extends JPanel {
                             }else if(tournee.getLivraisons().contains(resizePlan.getLivraisons().get(end_tournee.getId()))){
                                 drawNode(new Point((int)end_tournee.getLongitude(),(int)end_tournee.getLatitude()),g);
                             }
-                            if(troncon.getLongueur()>15 && chemin.getTroncons().indexOf(troncon)%FLECHES==0){
-                                Point sw = new Point((int)((end_tournee.getLongitude()*3+start_tournee.getLongitude()*2)/5), (int)((end_tournee.getLatitude()*3+start_tournee.getLatitude()*2)/5));
-                                Point ne = new Point((int)(end_tournee.getLongitude()*2+start_tournee.getLongitude()*3)/5, (int)(end_tournee.getLatitude()*2+start_tournee.getLatitude()*3)/5);
-                                drawArrowHead(g,sw,ne);
-                            }
                         }
                     }
                 }
@@ -93,9 +80,13 @@ public class MapVue extends JPanel {
             }
 
             if(resizePlan.getEntrepot()!=null){
-                g.setColor(Color.MAGENTA);
+                g.setColor(Color.RED);
                 Point p = new Point((int)resizePlan.getEntrepot().getNoeud().getLongitude(),(int)resizePlan.getEntrepot().getNoeud().getLatitude());
-                drawNode(p,g);
+                //drawNode(p,g);
+                p = resizedNodeToZoom(p);
+                Star star = new Star(p.x,p.y,15,6,5);
+                Graphics2D g2 = (Graphics2D)g;
+                g2.fill(star);
             }
             if(deletedNodes!= null){
                 for(Noeud n : deletedNodes){
@@ -112,7 +103,7 @@ public class MapVue extends JPanel {
                 }
             }
 
-            g.setColor(Color.BLACK);
+            g.setColor(Color.YELLOW);
             while(!hoveredNodes.isEmpty())
             {
                 Noeud hoveredNode = hoveredNodes.poll();
@@ -279,7 +270,6 @@ public class MapVue extends JPanel {
         zoom+=0.1;
         if(zoom>ZOOM_MAX) zoom = ZOOM_MAX;
         updateZoomArea();
-        controler.setZoom(zoom);
     }
 
     private void updateZoomAreaLocation(int x, int y)
@@ -304,7 +294,6 @@ public class MapVue extends JPanel {
         zoom-=0.1;
         if(zoom<ZOOM_MIN) zoom = ZOOM_MIN;
         updateZoomArea();
-        controler.setZoom(zoom);
     }
 
     public void mouseDragged(Point point) {
@@ -353,25 +342,6 @@ public class MapVue extends JPanel {
         Point end = resizedNodeToZoom(p2);
         ((Graphics2D)g).setStroke(new BasicStroke(epaisseur));
         g.drawLine(start.x, start.y, end.x, end.y);
-    }
-
-    private void drawArrowHead(Graphics g, Point tip, Point tail)
-    {
-        tip  = resizedNodeToZoom(tip);
-        tail = resizedNodeToZoom(tail);
-        Graphics2D g2 = (Graphics2D)g;
-        double dy = tip.y - tail.y;
-        double dx = tip.x - tail.x;
-        double theta = Math.atan2(dy, dx);
-        double x, y, rho = theta + phi;
-        for(int j = 0; j < 2; j++)
-        {
-            x = tip.x - barb * Math.cos(rho);
-            y = tip.y - barb * Math.sin(rho);
-            //drawLine(tip,tail,g2,3);
-            g2.draw(new Line2D.Double(tip.x, tip.y, x, y));
-            rho = theta - phi;
-        }
     }
 
     public void updatePositionLivreurs(HashMap<Livreur, Paire<Double, Double>> update) {
