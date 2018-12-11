@@ -17,10 +17,17 @@ public class AlgoLivraisonUrgente {
 
     private HashMap<Livreur,Date> finTravailleLivreur;
     private HashMap<Livreur,Tournee> tourneeModifiable;
+    private int idLivreur;
+    private Date heureRetourMin;
 
-    private Tournee getDebutFinTravail(Livraison livraison, Livraison entrepot, Collection<Tournee> tournees, Date heureActuelle, int nbLivreurs)
-    {
-        Tournee tournee;
+    public AlgoLivraisonUrgente() {
+        this.finTravailleLivreur = new HashMap<>();
+        this.tourneeModifiable = new HashMap<>();
+        this.idLivreur = 0;
+        this.heureRetourMin = new Date(0);
+    }
+
+    private void remplirMap(Collection<Tournee> tournees, Date heureActuelle){
         for (Tournee item: tournees) {
             Livreur livreur = item.getLivreur();
             Date debut = item.getHeureDepart();
@@ -40,42 +47,15 @@ public class AlgoLivraisonUrgente {
                 tourneeModifiable.put(livreur,item);
             }
         }
+    }
 
-        int idLivreur = 0;
-        Date heureRetourMin = new Date(0);
+    public Tournee modifiTournee(Livraison livraison, Livraison entrepot, Collection<Tournee> tournees, Date heureActuelle, int nbLivreurs)
+    {
+        Tournee tournee;
+        remplirMap(tournees,heureActuelle);
 
         for (int i = 0; i < nbLivreurs; i++) {
-            Livreur livreur = ListeLivreurs.livreurs[i];
-
-            if(tourneeModifiable.containsKey(livreur))
-            {
-                tournee = tourneeModifiable.get(livreur);
-                Date heureRetour = tournee.getHeureAvecLivraisonSupplementaire(livraison, entrepot);
-
-                if(heureRetour.compareTo(heureRetourMin) < 0)
-                {
-                    idLivreur = i;
-                    heureRetourMin = heureRetour;
-                }
-            }else{
-                Date heureDepart;
-                if(heureActuelle.compareTo(finTravailleLivreur.get(ListeLivreurs.livreurs[i]))<0){
-                    heureDepart = new Date(finTravailleLivreur.get(ListeLivreurs.livreurs[i]).getTime());
-                } else {
-                    heureDepart = new Date(heureActuelle.getTime());
-                }
-
-                double dureeCheminVersEntrepot = livraison.getCheminVers(entrepot).getLongueur()/ VITESSE;
-                double dureeCheminDepuisEntrepot = entrepot.getCheminVers(livraison).getLongueur()/VITESSE;
-
-                Date heureRetour = new Date((long) (heureDepart.getTime()+(dureeCheminVersEntrepot+dureeCheminDepuisEntrepot)*1000));
-
-                if(heureRetour.compareTo(heureRetourMin) < 0)
-                {
-                    idLivreur = i;
-                    heureRetourMin = heureRetour;
-                }
-            }
+            livreurHeureMin(i,livraison,entrepot,heureActuelle);
         }
 
         if(tourneeModifiable.containsKey(ListeLivreurs.livreurs[idLivreur]))
@@ -90,12 +70,7 @@ public class AlgoLivraisonUrgente {
             chemins.add(entrepot.getCheminVers(livraison));
             chemins.add(livraison.getCheminVers(entrepot));
 
-            Date heureDepart;
-            if(heureActuelle.compareTo(finTravailleLivreur.get(ListeLivreurs.livreurs[idLivreur]))<0){
-                heureDepart = new Date(finTravailleLivreur.get(ListeLivreurs.livreurs[idLivreur]).getTime());
-            } else {
-                heureDepart = new Date(heureActuelle.getTime());
-            }
+            Date heureDepart = minDate(heureActuelle, idLivreur);
 
             tournee = new Tournee(livraisons,chemins,heureDepart,ListeLivreurs.livreurs[idLivreur]);
         }
@@ -103,7 +78,46 @@ public class AlgoLivraisonUrgente {
         return tournee;
     }
 
+    private Date minDate(Date heureActuelle, int idLivreur) {
+        Date heureDepart;
+        if(heureActuelle.compareTo(finTravailleLivreur.get(ListeLivreurs.livreurs[idLivreur]))<0){
+            heureDepart = new Date(finTravailleLivreur.get(ListeLivreurs.livreurs[idLivreur]).getTime());
+        } else {
+            heureDepart = new Date(heureActuelle.getTime());
+        }
+        return heureDepart;
+    }
 
+    private void livreurHeureMin(int idLivreurActuel, Livraison livraison, Livraison entrepot, Date heureActuelle){
+        Tournee tournee;
+        Livreur livreur = ListeLivreurs.livreurs[idLivreurActuel];
+
+        if(tourneeModifiable.containsKey(livreur))
+        {
+            tournee = tourneeModifiable.get(livreur);
+            Date heureRetour = tournee.getHeureAvecLivraisonSupplementaire(livraison, entrepot);
+
+            if(heureRetour.compareTo(heureRetourMin) < 0)
+            {
+                idLivreur = idLivreurActuel;
+                heureRetourMin = heureRetour;
+            }
+        }else{
+            Date heureDepart;
+            heureDepart = minDate(heureActuelle, idLivreurActuel);
+
+            double dureeCheminVersEntrepot = livraison.getCheminVers(entrepot).getLongueur()/ VITESSE;
+            double dureeCheminDepuisEntrepot = entrepot.getCheminVers(livraison).getLongueur()/VITESSE;
+
+            Date heureRetour = new Date((long) (heureDepart.getTime()+(dureeCheminVersEntrepot+dureeCheminDepuisEntrepot)*1000));
+
+            if(heureRetour.compareTo(heureRetourMin) < 0)
+            {
+                idLivreur = idLivreurActuel;
+                heureRetourMin = heureRetour;
+            }
+        }
+    }
 
 
 }
