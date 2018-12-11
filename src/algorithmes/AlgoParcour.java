@@ -271,10 +271,10 @@ public class AlgoParcour {
             result.get(i).addAll(tmpResult.get(i));
             tmpResult.get(i).clear();
         }
-        //**** corriger pour grand plan, 12 livraison, 7 livreurs
+
         int sertARien2 = 0;
         for (int indexCurCircle = 0; indexCurCircle < result.size(); indexCurCircle++) {
-            if (result.get(indexCurCircle).size() > nLimMax) {
+            if (result.get(indexCurCircle).size() > nLimMax ) {
                 while (result.get(indexCurCircle).size() > nLimMax) {
                     int indexTarget = -1;
                     int indexMoveTo = -1;
@@ -284,7 +284,7 @@ public class AlgoParcour {
                         Livraison tmpLiv = result.get(indexCurCircle).get(indexTargetNoeud);
 
                         for (int indexTargetCircle = 0; indexTargetCircle < nbrLivreur; indexTargetCircle++) {
-                            if (indexTargetCircle == indexCurCircle && result.get(indexTargetCircle).size() != 0) {
+                            if (indexTargetCircle == indexCurCircle || result.get(indexTargetCircle).size() == 0) {
                                 continue;
                             }
                             double tmpDistance = PointsDistance(tmpLiv.getNoeud().getLatitude(), tmpLiv.getNoeud().getLongitude(), circlesData.get(indexTargetCircle).get(0), circlesData.get(indexTargetCircle).get(1));
@@ -374,14 +374,14 @@ public class AlgoParcour {
                             targetToMove= tmpLiv;
                         }
                     }
-                    if(targetToMove == originLiv /*|| targetToMove == null*/)
+                    if(targetToMove == originLiv || targetToMove == null)
                     {
                         tmpResult.add(result.remove(lastCircleIndex));
                     }
-                    else if(targetToMove==null)
+                    /*else if(targetToMove==null)
                     {
                         //*****je sais pas
-                    }
+                    }*/
                     else
                     {
                         result.get(lastCircleIndex).add(result.get(indexCircle).remove(indexOriginLiv));
