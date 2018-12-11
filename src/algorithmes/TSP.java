@@ -203,54 +203,5 @@ public class TSP {
         return listeTournee;
     }
 
-    /*public static void main(String[] args){
-        Noeud noeudl1 = new Noeud(1,1,1);
-        Noeud noeudl2 = new Noeud(2,1,1);
-        Noeud noeudl3 = new Noeud(3,1,1);
-        Noeud noeudEntrepot = new Noeud(0,1,1);
-
-        Livraison l1 = new Livraison(noeudl1, 1);
-        Livraison l2 = new Livraison(noeudl2, 2);
-        Livraison l3 = new Livraison(noexudl3, 3);
-        Livraison entrepot = new Livraison(noeudEntrepot, 0);
-
-        Chemin cheminEntrepotL1 = new Chemin(entrepot,l1,4);
-        Chemin cheminEntrepotL2 = new Chemin(entrepot,l2,3);
-        Chemin cheminEntrepotL3 = new Chemin(entrepot,l3,2);
-
-        Chemin cheminL1L2 = new Chemin(l1,l2,2);
-        Chemin cheminL1L3 = new Chemin(l1,l3,1);
-        Chemin cheminL1Entrepot = new Chemin(l1,entrepot,4);
-
-        Chemin cheminL2Entrepot = new Chemin(l2,entrepot,3);
-        Chemin cheminL2L1 = new Chemin(l2,l1,1);
-        Chemin cheminL2L3 = new Chemin(l2,l3,5);
-
-
-        Chemin cheminL3Entrepot = new Chemin(l3,entrepot,1);
-        Chemin cheminL3L1 = new Chemin(l3,l1,2);
-        Chemin cheminL3L2 = new Chemin(l3,l2,5);
-
-
-        entrepot.getChemins().add(cheminEntrepotL1);
-        entrepot.getChemins().add(cheminEntrepotL2);
-        entrepot.getChemins().add(cheminEntrepotL3);
-        l1.getChemins().add(cheminL1Entrepot);
-        l1.getChemins().add(cheminL1L2);
-        l1.getChemins().add(cheminL1L3);
-        l2.getChemins().add(cheminL2L1);
-        l2.getChemins().add(cheminL2L3);
-        l2.getChemins().add(cheminL2Entrepot);
-        l3.getChemins().add(cheminL3Entrepot);
-        l3.getChemins().add(cheminL3L2);
-        l3.getChemins().add(cheminL3L1);
-
-        ArrayList<Livraison> livraisons = new ArrayList<>();
-        livraisons.add(l1);
-        livraisons.add(l2);
-        livraisons.add(l3);
-
-        Tournee tournee = calculerTournee(livraisons,entrepot);
-    }*/
 
 }
