@@ -276,7 +276,8 @@ public class AlgoParcour {
 
         tmpResult.clear();
         int indexCircle = 0;
-        while (result.size()!=0) {
+        int loopCounter=nbrLivreur;
+        while (loopCounter!=0/*result.size()!=0*/) {
             int indexTargetCircleToMove = -1;
             int indexNoeudToMove = -1;
             boolean testNoChange = true;
@@ -300,10 +301,11 @@ public class AlgoParcour {
                     int indexNoeudToReturn = -1;
                     for(int indexTargetNoeud = 0; indexTargetNoeud<result.get(indexTargetCircleToMove).size(); indexTargetNoeud++)
                     {
+                        double distanceCircleNoeudToCenter = PointsDistance(curLiv.getNoeud().getLatitude(), curLiv.getNoeud().getLongitude(), circlesData.get(indexCircle).get(0), circlesData.get(indexCircle).get(1));
                         Livraison targetCurLiv = result.get(indexTargetCircleToMove).get(indexTargetNoeud);
                         double tmpDistanceToOriginCenter = PointsDistance(targetCurLiv.getNoeud().getLatitude(), targetCurLiv.getNoeud().getLongitude(), circlesData.get(indexCircle).get(0), circlesData.get(indexCircle).get(1));
-                        double distanceToCurCenter = PointsDistance(targetCurLiv.getNoeud().getLatitude(), targetCurLiv.getNoeud().getLongitude(), circlesData.get(indexTargetCircleToMove).get(0), circlesData.get(indexTargetCircleToMove).get(1));
-                        if(distanceToOriginCenter>tmpDistanceToOriginCenter && distanceToCurCenter> tmpDistanceToOriginCenter)
+                        //double distanceToCurCenter = PointsDistance(targetCurLiv.getNoeud().getLatitude(), targetCurLiv.getNoeud().getLongitude(), circlesData.get(indexTargetCircleToMove).get(0), circlesData.get(indexTargetCircleToMove).get(1));
+                        if(distanceToOriginCenter>tmpDistanceToOriginCenter && distanceCircleNoeudToCenter> tmpDistanceToOriginCenter)
                         {
                             distanceToOriginCenter=tmpDistanceToOriginCenter;
                             indexNoeudToReturn = indexTargetNoeud;
@@ -319,6 +321,7 @@ public class AlgoParcour {
                         circlesData.set(indexTargetCircleToMove, initCircleData(result.get(indexTargetCircleToMove)));
                         indexCircle = indexTargetCircleToMove;
                         testNoChange=false;
+                        loopCounter=nbrLivreur;
                         break;
                     }
                 }
@@ -326,13 +329,14 @@ public class AlgoParcour {
             }
             if(testNoChange)
             {
-                tmpResult.add(result.remove(indexCircle));
-                circlesData.remove(indexCircle);
-                indexCircle=0;
+                //tmpResult.add(result.remove(indexCircle));
+                //circlesData.remove(indexCircle);
+                indexCircle = (indexCircle+1) % result.size();
+                loopCounter--;
             }
         }
 
-        return tmpResult;
+        return result;
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
