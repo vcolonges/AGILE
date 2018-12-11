@@ -3,10 +3,7 @@ package vue;
 
 import controleur.*;
 import controleur.etat.*;
-import modele.Livreur;
-import modele.Noeud;
-import modele.Plan;
-import modele.Tournee;
+import modele.*;
 import utils.ListeLivreurs;
 import utils.Paire;
 
@@ -21,6 +18,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Hashtable;
+
+import static javax.swing.BorderFactory.createEmptyBorder;
 
 public class MainVue extends JFrame {
 
@@ -80,8 +79,10 @@ public class MainVue extends JFrame {
 
         // Ajout panel legende livreurs
         livreursPanel = new JPanel(new BorderLayout());
+        JScrollPane scrollPane = new JScrollPane(livreursPanel);
+        scrollPane.setBorder(new EmptyBorder(0, 10, 0, 10));
         livreursInnerPanel = new JPanel();
-        livreursInnerPanel.setBorder(new EmptyBorder(20, 10, 0, 10));
+        //livreursInnerPanel.setBorder(new EmptyBorder(0, 10, 0, 10));
         livreursInnerPanel.setLayout(new GridBagLayout());
         constraints = new GridBagConstraints();
         constraints.gridx = 0;
@@ -174,7 +175,7 @@ public class MainVue extends JFrame {
         toolPanel.add(demarrerTourneesPanel);
         this.add(debugPanel,BorderLayout.SOUTH);
         this.add(mapPanel,BorderLayout.CENTER);
-        this.add(livreursPanel,BorderLayout.EAST);
+        this.add(scrollPane,BorderLayout.EAST);
         this.add(toolPanel,BorderLayout.NORTH);
 
 
@@ -289,13 +290,12 @@ public class MainVue extends JFrame {
         int i = 0;
         if(plan!=null)
         {
-            for (Livreur livreur : plan.getLivreursEnCours()){
+            for (Tournee tournee : plan.getTournees()){
+                Livreur livreur = tournee.getLivreur();
                 constraints.gridy = i++;
 
                 JPanel livreurPan = new JPanel();
-                livreurPan.setBorder(new EmptyBorder(-5, 0, 10, 0));
 
-                Tournee tournee = plan.getTourneeParLivreur(livreur);
                 SimpleDateFormat format = new SimpleDateFormat("HH:mm");
                 JLabel nomLivreur = new JLabel(livreur.getPrenom() + " | Fin : "+format.format(tournee.getRetourEntrepot()));
                 nomLivreur.setBorder(new EmptyBorder(0, 20, 0, 0));
@@ -308,7 +308,15 @@ public class MainVue extends JFrame {
 
                 livreurPan.add(new JLabel(imageIcon));
                 livreurPan.add(nomLivreur);
+                JPanel livraisonsPanel = new JPanel(new GridLayout(tournee.getLivraisons().size(),1));
+                for(Livraison l : tournee.getLivraisons()){
+                    JLabel jl = new JLabel("("+(tournee.getLivraisons().indexOf(l)+1)+") - "+format.format(l.getHeureArrivee())+" -> "+format.format(new Date(l.getHeureArrivee().getTime() + l.getDuree()*1000)));
+                    livraisonsPanel.add(jl);
+                }
+                livraisonsPanel.setBorder(new EmptyBorder(0, 10, 10, 10));
                 livreursInnerPanel.add(livreurPan,constraints);
+                constraints.gridy = i++;
+                livreursInnerPanel.add(livraisonsPanel,constraints);
             }
         }
         validate();

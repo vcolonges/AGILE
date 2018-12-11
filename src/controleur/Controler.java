@@ -57,7 +57,7 @@ public class Controler {
         else{
             try {
                 plan.getLivraisons().clear();
-                plan = XMLParser.parseTrajets(lienLivraisons, plan);
+                plan = XMLParser.parseLivraisons(lienLivraisons, plan);
                 mainvue.getMapPanel().loadPlan(plan);
                 etat = new EtatLivraisonsCharges(this);
                 mainvue.setEtat(etat);
