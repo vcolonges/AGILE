@@ -7,8 +7,15 @@ import utils.Paire;
 import utils.Star;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.awt.geom.Line2D;
+import java.awt.image.BufferedImage;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Queue;
+import java.util.Random;
 import java.util.*;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.awt.BasicStroke;
@@ -20,7 +27,7 @@ public class MapVue extends JPanel {
     private Plan resizePlan;
     private Queue<Noeud> hoveredNodes;
     private ArrayList<Noeud> deletedNodes;
-    private final static int WIDTH_DOT = 10;
+    private final static int WIDTH_DOT = 13;
     private final static int PADDING = 10;
 
     private double zoom;
@@ -243,6 +250,8 @@ public class MapVue extends JPanel {
         }
 
         resizePlan.setTournees(newTournees);
+
+        controler.drawLegende();
         repaint();
     }
 

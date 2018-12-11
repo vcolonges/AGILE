@@ -5,11 +5,18 @@ import controleur.*;
 import controleur.etat.*;
 import modele.Livreur;
 import modele.Noeud;
+import modele.Plan;
+import modele.Tournee;
+import utils.ListeLivreurs;
 import utils.Paire;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -45,6 +52,10 @@ public class MainVue extends JFrame {
 
     private JSlider sliderHeure;
     private JLabel labelSliderHeure;
+    private JLabel zoomLabel;
+    private JPanel livreursPanel;
+    private  JPanel livreursInnerPanel;
+    private GridBagConstraints constraints;
 
     private Controler controler;
 
@@ -66,6 +77,16 @@ public class MainVue extends JFrame {
         this.setLayout(mainLayout);
 
         //mapPanel.setBackground(Color.BLUE);
+
+        // Ajout panel legende livreurs
+        livreursPanel = new JPanel(new BorderLayout());
+        livreursInnerPanel = new JPanel();
+        livreursInnerPanel.setBorder(new EmptyBorder(20, 10, 0, 10));
+        livreursInnerPanel.setLayout(new GridBagLayout());
+        constraints = new GridBagConstraints();
+        constraints.gridx = 0;
+        constraints.anchor = GridBagConstraints.WEST;
+        livreursPanel.add(livreursInnerPanel,BorderLayout.NORTH);
 
         // Création Debug Panel
         JPanel debugPanel = new JPanel(new BorderLayout());
@@ -153,6 +174,7 @@ public class MainVue extends JFrame {
         toolPanel.add(demarrerTourneesPanel);
         this.add(debugPanel,BorderLayout.SOUTH);
         this.add(mapPanel,BorderLayout.CENTER);
+        this.add(livreursPanel,BorderLayout.EAST);
         this.add(toolPanel,BorderLayout.NORTH);
 
 
@@ -260,6 +282,36 @@ public class MainVue extends JFrame {
 
     public void updateLabelSliderHeure(int secondes){
         labelSliderHeure.setText(secondes/3600+":"+String.format("%02d", secondes%3600/60));
+    }
+
+    public void drawLegend(Plan plan) {
+        livreursInnerPanel.removeAll();
+        int i = 0;
+        if(plan!=null)
+        {
+            for (Livreur livreur : plan.getLivreursEnCours()){
+                constraints.gridy = i++;
+
+                JPanel livreurPan = new JPanel();
+                livreurPan.setBorder(new EmptyBorder(-5, 0, 10, 0));
+
+                Tournee tournee = plan.getTourneeParLivreur(livreur);
+                SimpleDateFormat format = new SimpleDateFormat("HH:mm");
+                JLabel nomLivreur = new JLabel(livreur.getPrenom() + " | Fin : "+format.format(tournee.getRetourEntrepot()));
+                nomLivreur.setBorder(new EmptyBorder(0, 20, 0, 0));
+
+                BufferedImage bImg = new BufferedImage(10, 10, BufferedImage.TYPE_INT_RGB);
+                Graphics2D graphics = bImg.createGraphics();
+                graphics.setPaint(livreur.getCouleur());
+                graphics.fillRect(0, 0, bImg.getWidth(), bImg.getHeight());
+                ImageIcon imageIcon = new ImageIcon(bImg);
+
+                livreurPan.add(new JLabel(imageIcon));
+                livreurPan.add(nomLivreur);
+                livreursInnerPanel.add(livreurPan,constraints);
+            }
+        }
+        validate();
     }
 }
 

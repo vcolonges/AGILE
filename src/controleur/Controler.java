@@ -5,14 +5,16 @@ import algorithmes.AlgoParcour;
 import controleur.etat.*;
 import exceptions.XMLException;
 import modele.*;
-import thread.threadtsp.ThreadTSP;
-import thread.threadtsp.ThreadTSPFactory;
+import thread.threadtsp.*;
 import utils.Paire;
 import utils.XMLParser;
 import vue.MainVue;
 
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -109,7 +111,6 @@ public class Controler {
     public void demarrerTournees() {
         etat = new EtatClientsAvertis(this);
         mainvue.setEtat(etat);
-
     }
 
     public Point getLastDragMousePosition() {
@@ -167,5 +168,13 @@ public class Controler {
 
     public Etat getEtat() {
         return etat;
+    }
+
+    public void drawLegende(){
+        mainvue.drawLegend(plan);
+    }
+
+    public void updateNbLivreur(int value) {
+        plan.setNbLivreurs(value);
     }
 }

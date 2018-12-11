@@ -193,11 +193,18 @@ public class Plan {
     public ArrayList<Livreur> getLivreursEnCours() {
         ArrayList<Livreur> livreursCourants = new ArrayList<>();
         for (Tournee tournee : tournees) {
-            System.out.println(tournee.getLivreur().getPrenom());
-            livreursCourants.add(tournee.getLivreur());
+            if(!livreursCourants.contains(tournee.getLivreur()))
+                livreursCourants.add(tournee.getLivreur());
         }
-        System.out.println("-------------");
-        System.out.println(livreursCourants);
         return livreursCourants;
+    }
+
+    public Tournee getTourneeParLivraison(Livraison livraison){
+        for(Tournee tournee : tournees) {
+            for(Livraison liv : tournee.getLivraisons())
+                if (liv == livraison)
+                    return tournee;
+        }
+        return null;
     }
 }

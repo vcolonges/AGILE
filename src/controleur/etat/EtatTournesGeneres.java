@@ -1,5 +1,6 @@
 package controleur.etat;
 
+import algorithmes.TSP;
 import controleur.Controler;
 import modele.*;
 import thread.threadtsp.ThreadTSP;
@@ -43,26 +44,32 @@ public class EtatTournesGeneres extends Etat{
 
                     if(name != null && name.length() > 0) {
                         Livraison livraison = plan.getLivraisons().get(n.getId());
-                        for(Tournee tournee : plan.getTournees()){
-                            if(tournee.getLivraisons().get(0) == livraison){
+
+                        Tournee tournee = plan.getTourneeParLivraison(livraison);
+                        if(tournee.getLivreur().getPrenom() != name) {
+                            if (tournee != null) {
                                 plan.removeTournee(tournee);
                                 tournee.removeLivraison(livraison);
 
-                                ThreadTSP t = ThreadTSPFactory.getTSPThread(tournee.getLivraisons(),plan.getEntrepot(),plan.getHeureDepart(), tournee.getLivreur());
-                                t.addThreadListener(controler.getEcouteurDeTacheTSP());
-                                t.start();
-                                break;
+                                Tournee t1 = TSP.calculerTournee(tournee.getLivraisons(),plan.getEntrepot(),plan.getHeureDepart(),tournee.getLivreur());
+                                controler.tourneeGeneree(t1);
+                                /*ThreadTSP t = ThreadTSPFactory.getTSPThread(tournee.getLivraisons(), plan.getEntrepot(), plan.getHeureDepart(), tournee.getLivreur());
+                                t.addThreadListener(controler.getEcouteurDeTache());
+                                t.start();*/
                             }
-                        }
-                        Livreur nouveauLivreur = ListeLivreurs.getLivreurParPrenom(name);
-                        Tournee tournee = plan.getTourneeParLivreur(nouveauLivreur);
-                        if(tournee != null){
-                            plan.removeTournee(tournee);
-                            tournee.addLivraison(livraison);
 
-                            ThreadTSP t = ThreadTSPFactory.getTSPThread(tournee.getLivraisons(),plan.getEntrepot(),plan.getHeureDepart(), nouveauLivreur);
-                            t.addThreadListener(controler.getEcouteurDeTacheTSP());
-                            t.start();
+                            Livreur nouveauLivreur = ListeLivreurs.getLivreurParPrenom(name);
+                            tournee = plan.getTourneeParLivreur(nouveauLivreur);
+                            if (tournee != null) {
+                                plan.removeTournee(tournee);
+                                tournee.addLivraison(livraison);
+
+                                Tournee t1 = TSP.calculerTournee(tournee.getLivraisons(),plan.getEntrepot(),plan.getHeureDepart(),tournee.getLivreur());
+                                controler.tourneeGeneree(t1);
+                                /*ThreadTSP t = ThreadTSPFactory.getTSPThread(tournee.getLivraisons(), plan.getEntrepot(), plan.getHeureDepart(), nouveauLivreur);
+                                t.addThreadListener(controler.getEcouteurDeTache());
+                                t.start();*/
+                            }
                         }
                     }
                 }
