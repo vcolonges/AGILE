@@ -49,7 +49,7 @@ public class AlgoLivraisonUrgente {
         }
     }
 
-    private Tournee modifiTournee(Livraison livraison, Livraison entrepot, Collection<Tournee> tournees, Date heureActuelle, int nbLivreurs)
+    public Tournee modifiTournee(Livraison livraison, Livraison entrepot, Collection<Tournee> tournees, Date heureActuelle, int nbLivreurs)
     {
         Tournee tournee;
         remplirMap(tournees,heureActuelle);
