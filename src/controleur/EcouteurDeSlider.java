@@ -19,5 +19,6 @@ public class EcouteurDeSlider implements ChangeListener {
         controleur.updateLabelSliderHeure(jSlider.getValue());
         controleur.updateMapVueAvecPositionAt(jSlider.getValue());
 
+
     }
 }

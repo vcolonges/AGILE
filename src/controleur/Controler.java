@@ -168,8 +168,9 @@ public class Controler {
 
     public void updateMapVueAvecPositionAt(int secondes){
         HashMap positionLivreur = new HashMap();
-        for(Tournee t :plan.getTournees()){
-            Paire<Double,Double> p = t.getPositionAt(new Date(secondes*1000));
+        for(Tournee t : plan.getTournees()){
+            // -3600*1000 car la date commence à 1h
+            Paire<Double,Double> p = t.getPositionAt(new Date((secondes*1000) - (3600*1000)));
             positionLivreur.put(t.getLivreur(),p);
         }
         updatePositionLivreurs(positionLivreur);

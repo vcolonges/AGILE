@@ -382,7 +382,6 @@ public class MapVue extends JPanel {
         {
             double newLatitude = (e.getValue().getSecond()-minLatPlan)* ratioPlanResizedPlan + PADDING;
             double newLongitude = (e.getValue().getPremier()-minLongPlan)* ratioPlanResizedPlan + PADDING;
-            System.out.println(newLatitude+" --- "+newLongitude);
             positionLivreurs.put(e.getKey(),new Point((int)newLongitude,(int)newLatitude));
         }
         repaint();
