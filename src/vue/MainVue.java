@@ -13,6 +13,7 @@ import java.awt.event.MouseEvent;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Hashtable;
 
 public class MainVue extends JFrame {
 
@@ -42,6 +43,9 @@ public class MainVue extends JFrame {
     private final JMenuItem chargerLivraisonXML;
     private JLabel zoomLabel;
 
+    private JSlider sliderHeure;
+    private JLabel labelSliderHeure;
+
     private Controler controler;
 
     public MainVue(){
@@ -64,8 +68,22 @@ public class MainVue extends JFrame {
         //mapPanel.setBackground(Color.BLUE);
 
         // Création Debug Panel
-        JPanel debugPanel = new JPanel(new FlowLayout());
-        zoomLabel = new JLabel();
+        JPanel debugPanel = new JPanel(new BorderLayout());
+        sliderHeure = new JSlider(JSlider.HORIZONTAL,28800, 64800, 28800);
+        Hashtable labelTable = new Hashtable();
+        for(int i = 28800 ; i<=64800 ; i++){
+            if(i%1800==0){
+                labelTable.put(i,new JLabel(i/3600+":"+String.format("%02d", i%3600/60)));
+            }
+
+        }
+        sliderHeure.setLabelTable( labelTable );
+        sliderHeure.setMajorTickSpacing(3600);
+        sliderHeure.setPaintLabels(true);
+        labelSliderHeure = new JLabel(28800/3600+":"+String.format("%02d", 28800%3600/60),SwingConstants.CENTER);
+        debugPanel.add(labelSliderHeure, BorderLayout.CENTER);
+        debugPanel.add(sliderHeure, BorderLayout.SOUTH);
+        /*zoomLabel = new JLabel();
         debugPanel.add(zoomLabel);
         debugPanel.add(new JLabel("X:"));
         XPosition = new JLabel();
@@ -76,15 +94,16 @@ public class MainVue extends JFrame {
         debugPanel.add(new JLabel("Selected node : "));
         selectedNode = new JLabel();
         debugPanel.add(selectedNode);
-        debugPanel.add(new JLabel("Etat : "));
+        debugPanel.add(new JLabel("Etat : "));*/
         etatLabel = new JLabel();
-        debugPanel.add(etatLabel);
+        /*debugPanel.add(etatLabel);*/
 
         //init controleur
         controler = new Controler(this);
         mapPanel.setControler(controler);
 
         // Crétion des listener
+        sliderHeure.addChangeListener(new EcouteurDeSlider(controler));
         ecouteurDeBoutons = new EcouteurDeBoutons(controler);
         ecouteurDeSouris = new EcouteurDeSouris(controler);
         ecouteurDeComposant = new EcouteurDeComposant(controler);
@@ -171,14 +190,14 @@ public class MainVue extends JFrame {
     }
 
     public void updateMousePosition(Point point) {
-        XPosition.setText(""+point.x);
-        YPosition.setText(""+point.y);
+        //XPosition.setText(""+point.x);
+        //YPosition.setText(""+point.y);
         mapPanel.onMouseMove(point);
     }
 
     public void setSelectedNode(Noeud n)
     {
-        selectedNode.setText(n.toString());
+        //selectedNode.setText(n.toString());
     }
 
     public void displayMenuNode(Noeud n, MouseEvent e, PopUpMenu popUpMenu)
@@ -244,6 +263,10 @@ public class MainVue extends JFrame {
 
     public void updatePositionLivreurs(HashMap<Livreur, Paire<Double, Double>> update) {
         mapPanel.updatePositionLivreurs(update);
+    }
+
+    public void updateLabelSliderHeure(int secondes){
+        labelSliderHeure.setText(secondes/3600+":"+String.format("%02d", secondes%3600/60));
     }
 }
 

@@ -15,7 +15,9 @@ import vue.MainVue;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 
 public class Controler {
 
@@ -61,6 +63,7 @@ public class Controler {
                 mainvue.getMapPanel().loadPlan(plan);
                 etat = new EtatLivraisonsCharges(this);
                 mainvue.setEtat(etat);
+                mainvue.setLabelHeureDepart(plan.getHeureDepart());
             } catch (XMLException e) {
                 e.printStackTrace();
                 mainvue.errorMessage(e.getMessage());
@@ -157,6 +160,19 @@ public class Controler {
 
     public void updatePositionLivreurs(HashMap<Livreur, Paire<Double, Double>> update) {
         mainvue.updatePositionLivreurs(update);
+    }
+
+    public void updateLabelSliderHeure(int secondes){
+        mainvue.updateLabelSliderHeure(secondes);
+    }
+
+    public void updateMapVueAvecPositionAt(int secondes){
+        HashMap positionLivreur = new HashMap();
+        for(Tournee t :plan.getTournees()){
+            Paire<Double,Double> p = t.getPositionAt(new Date(secondes*1000));
+            positionLivreur.put(t.getLivreur(),p);
+        }
+        updatePositionLivreurs(positionLivreur);
     }
 
     public Etat getEtat() {
