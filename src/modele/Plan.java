@@ -114,6 +114,14 @@ public class Plan {
         this.tournees = tournees;
     }
 
+    public void addTournee(Tournee tournee){
+        tournees.add(tournee);
+    }
+
+    public void removeTournee(Tournee tournee){
+        tournees.remove(tournee);
+    }
+
     public int getNbLivreurs() {
         return nbLivreurs;
     }
@@ -172,5 +180,31 @@ public class Plan {
         result = 31 * result + (entrepot != null ? entrepot.hashCode() : 0);
         result = 31 * result + (heureDepart != null ? heureDepart.hashCode() : 0);
         return result;
+    }
+
+    public Tournee getTourneeParLivreur(Livreur livreur){
+        for(Tournee tournee : tournees){
+            if(tournee.getLivreur() == livreur)
+                return tournee;
+        }
+        return null;
+    }
+
+    public ArrayList<Livreur> getLivreursEnCours() {
+        ArrayList<Livreur> livreursCourants = new ArrayList<>();
+        for (Tournee tournee : tournees) {
+            if(!livreursCourants.contains(tournee.getLivreur()))
+                livreursCourants.add(tournee.getLivreur());
+        }
+        return livreursCourants;
+    }
+
+    public Tournee getTourneeParLivraison(Livraison livraison){
+        for(Tournee tournee : tournees) {
+            for(Livraison liv : tournee.getLivraisons())
+                if (liv == livraison)
+                    return tournee;
+        }
+        return null;
     }
 }

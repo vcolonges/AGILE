@@ -2,19 +2,22 @@ package controleur;
 
 
 import algorithmes.AlgoParcour;
-import algorithmes.TSP;
 import controleur.etat.*;
 import exceptions.XMLException;
 import modele.*;
-import thread.ThreadTSP;
-import thread.ThreadTSPFactory;
+import thread.threadtsp.*;
+import utils.Paire;
 import utils.XMLParser;
 import vue.MainVue;
 
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 
 public class Controler {
 
@@ -23,7 +26,7 @@ public class Controler {
     private Etat etat;
     private AlgoParcour algo;
     private Point lastDragMousePosition;
-    private EcouteurDeTache ecouteurDeTache;
+    private EcouteurDeTacheTSP ecouteurDeTacheTSP;
 
     /**
      * Cree le controleur de l'application
@@ -33,7 +36,7 @@ public class Controler {
         etat = new EtatDebut(this);
         mainvue.setEtat(etat);
         algo = new AlgoParcour();
-        ecouteurDeTache = new EcouteurDeTache(this);
+        ecouteurDeTacheTSP = new EcouteurDeTacheTSP(this);
     }
 
     public void chargerPlan(String lienPlan){
@@ -97,7 +100,7 @@ public class Controler {
         ArrayList<Livraison> livraisons = new ArrayList<>();
         livraisons.addAll(plan.getLivraisons().values());
         ThreadTSP tsp = ThreadTSPFactory.getTSPThread(livraisons,plan.getNbLivreurs(),plan.getEntrepot(),plan.getHeureDepart());
-        tsp.addThreadListener(ecouteurDeTache);
+        tsp.addThreadListener(ecouteurDeTacheTSP);
         tsp.start();
     }
 
@@ -122,10 +125,6 @@ public class Controler {
         mainvue.getMapPanel().wheelMovedUp(wheelRotation);
     }
 
-    public void setZoom(double zoom) {
-        mainvue.setZoom((int)(zoom*100.0));
-    }
-
     public void wheelMovedDown(int wheelRotation) {
         mainvue.getMapPanel().wheelMovedDown(wheelRotation);
     }
@@ -138,5 +137,44 @@ public class Controler {
     public void tourneesGenerees(ArrayList<Tournee> tournees) {
         plan.setTournees(tournees);
         mainvue.getMapPanel().tracerTournee(tournees);
+    }
+
+    public void tourneeGeneree(Tournee tournee) {
+        plan.addTournee(tournee);
+        mainvue.getMapPanel().tracerTournee(plan.getTournees());
+    }
+
+    public EcouteurDeTacheTSP getEcouteurDeTacheTSP() {
+        return ecouteurDeTacheTSP;
+    }
+
+    public void updatePositionLivreurs(HashMap<Livreur, Paire<Double, Double>> update) {
+        mainvue.updatePositionLivreurs(update);
+    }
+
+    public void updateLabelSliderHeure(int secondes){
+        mainvue.updateLabelSliderHeure(secondes);
+    }
+
+    public void updateMapVueAvecPositionAt(int secondes){
+        HashMap positionLivreur = new HashMap();
+        for(Tournee t : plan.getTournees()){
+            // -3600*1000 car la date commence à 1h
+            Paire<Double,Double> p = t.getPositionAt(new Date((secondes*1000) - (3600*1000)));
+            positionLivreur.put(t.getLivreur(),p);
+        }
+        updatePositionLivreurs(positionLivreur);
+    }
+
+    public Etat getEtat() {
+        return etat;
+    }
+
+    public void drawLegende(){
+        mainvue.drawLegend(plan);
+    }
+
+    public void updateNbLivreur(int value) {
+        plan.setNbLivreurs(value);
     }
 }

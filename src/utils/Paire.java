@@ -32,10 +32,6 @@ public class Paire<A, B> {
         return false;
     }
 
-    public String toString() {
-        return "(" + premier + ", " + second + ")";
-    }
-
     public A getPremier() {
         return premier;
     }

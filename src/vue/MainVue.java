@@ -3,13 +3,24 @@ package vue;
 
 import controleur.*;
 import controleur.etat.*;
+import modele.Livreur;
 import modele.Noeud;
+import modele.Plan;
+import modele.Tournee;
+import utils.ListeLivreurs;
+import utils.Paire;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Hashtable;
 
 public class MainVue extends JFrame {
 
@@ -19,32 +30,41 @@ public class MainVue extends JFrame {
     public static final String GENERER_TOURNEES = "Générer les Tournées";
     public static final String DEMARRER_TOURNEES = "Démarrer les Tournées";
 
+    public static final int HEURE_DEBUT = 28800;
+    public static final int HEURE_FIN = 64800;
+    public static final int DIFF_HEURE = 1800;
+
 
     private EcouteurDeBoutons ecouteurDeBoutons;
     private EcouteurDeSouris ecouteurDeSouris;
     private EcouteurDeComposant ecouteurDeComposant;
     private EcouteurDeSpinner ecouteurDeSpinner;
+    private EcouteurDeSlider ecouteurDeSlider;
     private JMenuBar menuBar;
     private MapVue mapPanel;
-    private JLabel XPosition;
-    private JLabel YPosition;
-    private JLabel selectedNode;
     private JSpinner spinnerLivreur;
     private JPanel panelHeureDebut;
     private JLabel labelHeureDepart;
     private final JButton genererTournees;
-    private final JLabel etatLabel;
     private final JButton demarrerTournees;
     private final JMenuItem chargerPlanXML;
     private final JMenuItem chargerLivraisonXML;
+
+    private JSlider sliderHeure;
+    private JLabel labelSliderHeure;
     private JLabel zoomLabel;
+    private JPanel livreursPanel;
+    private  JPanel livreursInnerPanel;
+    private GridBagConstraints constraints;
 
     private Controler controler;
 
     public MainVue(){
 
-        super("Application");
-
+        super("Optimod'Lyon");
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        ImageIcon imageIcon = new ImageIcon("src\\bike_icon.png");
+        setIconImage(imageIcon.getImage());
         // Init map
         mapPanel = new MapVue();
 
@@ -58,28 +78,42 @@ public class MainVue extends JFrame {
 
         //mapPanel.setBackground(Color.BLUE);
 
+        // Ajout panel legende livreurs
+        livreursPanel = new JPanel(new BorderLayout());
+        livreursInnerPanel = new JPanel();
+        livreursInnerPanel.setBorder(new EmptyBorder(20, 10, 0, 10));
+        livreursInnerPanel.setLayout(new GridBagLayout());
+        constraints = new GridBagConstraints();
+        constraints.gridx = 0;
+        constraints.anchor = GridBagConstraints.WEST;
+        livreursPanel.add(livreursInnerPanel,BorderLayout.NORTH);
+
         // Création Debug Panel
-        JPanel debugPanel = new JPanel(new FlowLayout());
-        zoomLabel = new JLabel();
-        debugPanel.add(zoomLabel);
-        debugPanel.add(new JLabel("X:"));
-        XPosition = new JLabel();
-        debugPanel.add(XPosition);
-        debugPanel.add(new JLabel("Y:"));
-        YPosition = new JLabel();
-        debugPanel.add(YPosition);
-        debugPanel.add(new JLabel("Selected node : "));
-        selectedNode = new JLabel();
-        debugPanel.add(selectedNode);
-        debugPanel.add(new JLabel("Etat : "));
-        etatLabel = new JLabel();
-        debugPanel.add(etatLabel);
+        JPanel debugPanel = new JPanel(new BorderLayout());
+        sliderHeure = new JSlider(JSlider.HORIZONTAL,HEURE_DEBUT, HEURE_FIN, HEURE_DEBUT);
+        Hashtable labelTable = new Hashtable();
+        for(int i = HEURE_DEBUT ; i<=HEURE_FIN ; i++){
+            if(i%DIFF_HEURE==0){
+                labelTable.put(i,new JLabel(i/3600+":"+String.format("%02d", i%3600/60)));
+            }
+
+        }
+        sliderHeure.setLabelTable( labelTable );
+        sliderHeure.setMajorTickSpacing(3600);
+        sliderHeure.setEnabled(false);
+        sliderHeure.setPaintLabels(true);
+        labelSliderHeure = new JLabel(28800/3600+":"+String.format("%02d", 28800%3600/60),SwingConstants.CENTER);
+        labelSliderHeure.setFont(new Font(Font.DIALOG,  Font.BOLD, 20));
+        labelSliderHeure.setEnabled(false);
+        debugPanel.add(labelSliderHeure, BorderLayout.CENTER);
+        debugPanel.add(sliderHeure, BorderLayout.SOUTH);
 
         //init controleur
         controler = new Controler(this);
         mapPanel.setControler(controler);
 
         // Crétion des listener
+        ecouteurDeSlider = new EcouteurDeSlider(controler);
         ecouteurDeBoutons = new EcouteurDeBoutons(controler);
         ecouteurDeSouris = new EcouteurDeSouris(controler);
         ecouteurDeComposant = new EcouteurDeComposant(controler);
@@ -88,6 +122,7 @@ public class MainVue extends JFrame {
         mapPanel.addMouseMotionListener(ecouteurDeSouris);
         mapPanel.addComponentListener(ecouteurDeComposant);
         mapPanel.addMouseWheelListener(ecouteurDeSouris);
+        sliderHeure.addChangeListener(new EcouteurDeSlider(controler));
 
         // Crétion toolPanel
         JPanel toolPanel = new JPanel();
@@ -139,6 +174,7 @@ public class MainVue extends JFrame {
         toolPanel.add(demarrerTourneesPanel);
         this.add(debugPanel,BorderLayout.SOUTH);
         this.add(mapPanel,BorderLayout.CENTER);
+        this.add(livreursPanel,BorderLayout.EAST);
         this.add(toolPanel,BorderLayout.NORTH);
 
 
@@ -166,14 +202,14 @@ public class MainVue extends JFrame {
     }
 
     public void updateMousePosition(Point point) {
-        XPosition.setText(""+point.x);
-        YPosition.setText(""+point.y);
+        //XPosition.setText(""+point.x);
+        //YPosition.setText(""+point.y);
         mapPanel.onMouseMove(point);
     }
 
     public void setSelectedNode(Noeud n)
     {
-        selectedNode.setText(n.toString());
+        //selectedNode.setText(n.toString());
     }
 
     public void displayMenuNode(Noeud n, MouseEvent e, PopUpMenu popUpMenu)
@@ -205,36 +241,77 @@ public class MainVue extends JFrame {
     }
 
     public void setEtat(Etat etat) {
-        etatLabel.setText(etat.getLabel());
+        if(this.genererTournees==null)return;
+        genererTournees.setEnabled(false);
+        demarrerTournees.setEnabled(false);
+        spinnerLivreur.setEnabled(false);
+        chargerLivraisonXML.setEnabled(false);
+        sliderHeure.setEnabled(false);
+        labelSliderHeure.setEnabled(false);
+
         if(etat instanceof EtatPlanCharge) {
-            genererTournees.setEnabled(false);
-            demarrerTournees.setEnabled(false);
             chargerLivraisonXML.setEnabled(true);
         }else if(etat instanceof EtatLivraisonsCharges) {
             genererTournees.setEnabled(true);
-            demarrerTournees.setEnabled(false);
             panelHeureDebut.setVisible(true);
             spinnerLivreur.setEnabled(true);
+            spinnerLivreur.setValue(1);
         }else if(etat instanceof EtatTournesGeneres){
+            chargerLivraisonXML.setEnabled(true);
+            spinnerLivreur.setEnabled(true);
+            genererTournees.setEnabled(true);
             demarrerTournees.setEnabled(true);
         }else if(etat instanceof EtatClientsAvertis){
-            genererTournees.setEnabled(false);
-            demarrerTournees.setEnabled(false);
-            spinnerLivreur.setEnabled(false);
+            chargerLivraisonXML.setEnabled(true);
+            sliderHeure.setEnabled(true);
+            labelSliderHeure.setEnabled(true);
         }
     }
 
     public void deletePoint(Noeud n){
-
         mapPanel.deletePoint(n);
-    }
-
-    public void setZoom(int zoom) {
-        zoomLabel.setText(zoom+"%");
     }
 
     public void mouseDragged(Point point) {
         mapPanel.mouseDragged(point);
+    }
+
+    public void updatePositionLivreurs(HashMap<Livreur, Paire<Double, Double>> update) {
+        mapPanel.updatePositionLivreurs(update);
+    }
+
+    public void updateLabelSliderHeure(int secondes){
+        labelSliderHeure.setText(secondes/3600+":"+String.format("%02d", secondes%3600/60));
+    }
+
+    public void drawLegend(Plan plan) {
+        livreursInnerPanel.removeAll();
+        int i = 0;
+        if(plan!=null)
+        {
+            for (Livreur livreur : plan.getLivreursEnCours()){
+                constraints.gridy = i++;
+
+                JPanel livreurPan = new JPanel();
+                livreurPan.setBorder(new EmptyBorder(-5, 0, 10, 0));
+
+                Tournee tournee = plan.getTourneeParLivreur(livreur);
+                SimpleDateFormat format = new SimpleDateFormat("HH:mm");
+                JLabel nomLivreur = new JLabel(livreur.getPrenom() + " | Fin : "+format.format(tournee.getRetourEntrepot()));
+                nomLivreur.setBorder(new EmptyBorder(0, 20, 0, 0));
+
+                BufferedImage bImg = new BufferedImage(10, 10, BufferedImage.TYPE_INT_RGB);
+                Graphics2D graphics = bImg.createGraphics();
+                graphics.setPaint(livreur.getCouleur());
+                graphics.fillRect(0, 0, bImg.getWidth(), bImg.getHeight());
+                ImageIcon imageIcon = new ImageIcon(bImg);
+
+                livreurPan.add(new JLabel(imageIcon));
+                livreurPan.add(nomLivreur);
+                livreursInnerPanel.add(livreurPan,constraints);
+            }
+        }
+        validate();
     }
 }
 
