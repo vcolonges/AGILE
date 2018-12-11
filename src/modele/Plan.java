@@ -10,6 +10,7 @@ public class Plan {
     private HashMap<Long, Noeud> noeuds;
     private HashSet<Troncon> troncons;
     private HashMap<Long, Livraison> livraisons;
+    private HashMap<Long, Livraison> livraisonsUrgentes;
     private Livraison entrepot;
     private Date heureDepart;
     private ArrayList<Tournee> tournees;
@@ -21,6 +22,7 @@ public class Plan {
         this.livraisons = new HashMap<>();
         this.tournees = new ArrayList<>();
         this.nbLivreurs = 1;
+        this.livraisonsUrgentes = new HashMap<>();
     }
 
     public HashMap<Long, Noeud> getNoeuds(){
@@ -206,5 +208,13 @@ public class Plan {
                     return tournee;
         }
         return null;
+    }
+
+    public HashMap<Long, Livraison> getLivraisonsUrgentes() {
+        return livraisonsUrgentes;
+    }
+
+    public void addLivraisonUrgente(Livraison livraison) {
+        livraisonsUrgentes.put(livraison.getNoeud().getId(),livraison);
     }
 }

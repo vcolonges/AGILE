@@ -313,6 +313,10 @@ public class MainVue extends JFrame {
         }
         validate();
     }
+
+    public Date getHeureSlider() {
+        return new Date(sliderHeure.getValue()*1000);
+    }
 }
 
 
