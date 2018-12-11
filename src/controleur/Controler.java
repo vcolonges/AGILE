@@ -5,7 +5,6 @@ import algorithmes.AlgoParcour;
 import controleur.etat.*;
 import exceptions.XMLException;
 import modele.*;
-import thread.threadsimulation.ThreadSimulation;
 import thread.threadtsp.ThreadTSP;
 import thread.threadtsp.ThreadTSPFactory;
 import utils.Paire;
@@ -17,7 +16,6 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 
 public class Controler {
 
@@ -27,7 +25,6 @@ public class Controler {
     private AlgoParcour algo;
     private Point lastDragMousePosition;
     private EcouteurDeTacheTSP ecouteurDeTacheTSP;
-    private EcouteurDeTacheSimulation ecouteurDeTacheSimulation;
 
     /**
      * Cree le controleur de l'application
@@ -38,7 +35,6 @@ public class Controler {
         mainvue.setEtat(etat);
         algo = new AlgoParcour();
         ecouteurDeTacheTSP = new EcouteurDeTacheTSP(this);
-        this.ecouteurDeTacheSimulation = new EcouteurDeTacheSimulation(this);
     }
 
     public void chargerPlan(String lienPlan){
@@ -114,9 +110,6 @@ public class Controler {
         etat = new EtatClientsAvertis(this);
         mainvue.setEtat(etat);
 
-        ThreadSimulation t = new ThreadSimulation(plan.getTournees(),plan.getHeureDepart());
-        t.addThreadListener(ecouteurDeTacheSimulation);
-        t.start();
     }
 
     public Point getLastDragMousePosition() {
