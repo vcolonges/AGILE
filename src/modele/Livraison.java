@@ -84,4 +84,11 @@ public class Livraison {
     public void setHeureArrivee(Date heureArrivee) {
         this.heureArrivee = heureArrivee;
     }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        Livraison cloneLivraison = new Livraison(this.noeud,this.duree);
+        cloneLivraison.heureArrivee = (Date)this.heureArrivee.clone();
+        return cloneLivraison;
+    }
 }

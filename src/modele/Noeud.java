@@ -71,4 +71,9 @@ public class Noeud {
                 ", tronconsAdjacents=" + tronconsAdjacents +
                 "}\r\n";
     }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return new Noeud(this.id,this.latitude,this.longitude);
+    }
 }

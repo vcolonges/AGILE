@@ -1,9 +1,6 @@
 package modele;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.*;
 
 public class Plan {
 
@@ -199,5 +196,43 @@ public class Plan {
         System.out.println("-------------");
         System.out.println(livreursCourants);
         return livreursCourants;
+    }
+
+    public void setLivraisons(HashMap<Long, Livraison> livraisons) {
+        this.livraisons = livraisons;
+    }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        Plan clonePlan = new Plan();
+        clonePlan.noeuds = this.noeuds;
+        clonePlan.entrepot = this.entrepot;
+        clonePlan.nbLivreurs = this.nbLivreurs;
+        clonePlan.troncons = this.troncons;
+        clonePlan.heureDepart = (Date)this.heureDepart.clone();
+        clonePlan.livraisons = new HashMap<>();
+        for(Map.Entry<Long,Livraison> e : this.livraisons.entrySet())
+        {
+            clonePlan.livraisons.put(e.getKey(),(Livraison) e.getValue().clone());
+        }
+        clonePlan.tournees = new ArrayList<>();
+        for(Tournee t : this.tournees)
+        {
+            ArrayList<Livraison> cloneLivraison = new ArrayList<>();
+            for(Livraison l : t.getLivraisons())
+            {
+                cloneLivraison.add(clonePlan.livraisons.get(l.getNoeud().getId()));
+            }
+            ArrayList<Chemin> cloneChemins = new ArrayList<>();
+            for(Chemin c : t.getChemins())
+            {
+                cloneChemins.add(c);
+            }
+            Tournee cloneTournee = new Tournee(cloneLivraison,cloneChemins,(Date)t.getHeureDepart().clone(),t.getLivreur());
+            cloneTournee.calculeHoraire();
+            clonePlan.tournees.add(cloneTournee);
+        }
+
+        return clonePlan;
     }
 }
