@@ -1,5 +1,6 @@
 package controleur.etat;
 
+import algorithmes.TSP;
 import controleur.Controler;
 import modele.*;
 import thread.ThreadTSP;
@@ -55,9 +56,11 @@ public class EtatTournesGeneres extends Etat{
                                 plan.removeTournee(tournee);
                                 tournee.removeLivraison(livraison);
 
-                                ThreadTSP t = ThreadTSPFactory.getTSPThread(tournee.getLivraisons(), plan.getEntrepot(), plan.getHeureDepart(), tournee.getLivreur());
+                                Tournee t1 = TSP.calculerTournee(tournee.getLivraisons(),plan.getEntrepot(),plan.getHeureDepart(),tournee.getLivreur());
+                                controler.tourneeGeneree(t1);
+                                /*ThreadTSP t = ThreadTSPFactory.getTSPThread(tournee.getLivraisons(), plan.getEntrepot(), plan.getHeureDepart(), tournee.getLivreur());
                                 t.addThreadListener(controler.getEcouteurDeTache());
-                                t.start();
+                                t.start();*/
                             }
 
                             Livreur nouveauLivreur = ListeLivreurs.getLivreurParPrenom(name);
@@ -66,9 +69,11 @@ public class EtatTournesGeneres extends Etat{
                                 plan.removeTournee(tournee);
                                 tournee.addLivraison(livraison);
 
-                                ThreadTSP t = ThreadTSPFactory.getTSPThread(tournee.getLivraisons(), plan.getEntrepot(), plan.getHeureDepart(), nouveauLivreur);
+                                Tournee t1 = TSP.calculerTournee(tournee.getLivraisons(),plan.getEntrepot(),plan.getHeureDepart(),tournee.getLivreur());
+                                controler.tourneeGeneree(t1);
+                                /*ThreadTSP t = ThreadTSPFactory.getTSPThread(tournee.getLivraisons(), plan.getEntrepot(), plan.getHeureDepart(), nouveauLivreur);
                                 t.addThreadListener(controler.getEcouteurDeTache());
-                                t.start();
+                                t.start();*/
                             }
                         }
                     }

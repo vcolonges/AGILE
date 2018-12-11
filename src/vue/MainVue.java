@@ -268,8 +268,7 @@ public class MainVue extends JFrame {
                 constraints.gridy = i++;
 
                 JPanel livreurPan = new JPanel();
-                JPanel heurePan = new JPanel();
-                heurePan.setBorder(new EmptyBorder(-5, 0, 10, 0));
+                livreurPan.setBorder(new EmptyBorder(-5, 0, 10, 0));
 
                 Tournee tournee = plan.getTourneeParLivreur(livreur);
                 SimpleDateFormat format = new SimpleDateFormat("HH:mm");
@@ -285,8 +284,6 @@ public class MainVue extends JFrame {
                 livreurPan.add(new JLabel(imageIcon));
                 livreurPan.add(nomLivreur);
                 livreursInnerPanel.add(livreurPan,constraints);
-                constraints.gridy = i++;
-                livreursInnerPanel.add(heurePan,constraints);
             }
         }
         validate();
