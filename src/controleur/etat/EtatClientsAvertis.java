@@ -15,7 +15,7 @@ public class EtatClientsAvertis extends Etat {
     }
 
     @Override
-    public PopUpMenu getPopUpMenu(Plan plan, Noeud n) {
+    public PopUpMenu getPopUpMenu(Plan plan, Noeud n) { // Pourquoi passer plan ?
         PopUpMenu popUpMenu = super.getPopUpMenu(plan,n);
         if(!plan.getLivraisons().containsKey(n.getId()))
         {

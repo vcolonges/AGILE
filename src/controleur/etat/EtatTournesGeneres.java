@@ -25,7 +25,10 @@ public class EtatTournesGeneres extends Etat{
         {
             super.ajoutInfosLivraisonsToPopUpMenu(popUpMenu, plan, n);
             JMenuItem menuItem = new JMenuItem("Changer de livreur");
+            JMenuItem menuItemAnnuler = new JMenuItem("Annuler");
             popUpMenu.add(menuItem);
+            popUpMenu.add(menuItemAnnuler);
+            menuItemAnnuler.addActionListener(e-> ctrlz());
             menuItem.addActionListener(new java.awt.event.ActionListener() {
                 @Override
                 public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -40,34 +43,15 @@ public class EtatTournesGeneres extends Etat{
                             null,
                             nomLivreursEnCours.toArray(),
                             nomLivreursEnCours.get(0));
+                    controler.updateDeliverer(name,n,plan);
 
-                    if(name != null && name.length() > 0) {
-                        Livraison livraison = plan.getLivraisons().get(n.getId());
-                        for(Tournee tournee : plan.getTournees()){
-                            if(tournee.getLivraisons().get(0) == livraison){
-                                plan.removeTournee(tournee);
-                                tournee.removeLivraison(livraison);
-
-                                ThreadTSP t = ThreadTSPFactory.getTSPThread(tournee.getLivraisons(),plan.getEntrepot(),plan.getHeureDepart(), tournee.getLivreur());
-                                t.addThreadListener(controler.getEcouteurDeTacheTSP());
-                                t.start();
-                                break;
-                            }
-                        }
-                        Livreur nouveauLivreur = ListeLivreurs.getLivreurParPrenom(name);
-                        Tournee tournee = plan.getTourneeParLivreur(nouveauLivreur);
-                        if(tournee != null){
-                            plan.removeTournee(tournee);
-                            tournee.addLivraison(livraison);
-
-                            ThreadTSP t = ThreadTSPFactory.getTSPThread(tournee.getLivraisons(),plan.getEntrepot(),plan.getHeureDepart(), nouveauLivreur);
-                            t.addThreadListener(controler.getEcouteurDeTacheTSP());
-                            t.start();
-                        }
-                    }
                 }
             });
         }
         return popUpMenu;
+    }
+
+    public void ctrlz(){
+        controler.ctrlZ();
     }
 }

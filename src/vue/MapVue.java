@@ -161,21 +161,21 @@ public class MapVue extends JPanel {
             newDestinationTroncon = this.resizePlan.getNoeuds().get(destinationID);
 
             this.resizePlan.addTroncon(new Troncon(newOriginTroncon,newDestinationTroncon,t.getLongueur(),t.getNomRue()));
-
         }
+
         for(Livraison l : controler.getPlan().getLivraisons().values()){
             this.resizePlan.addLivraison(new Livraison(this.resizePlan.getNoeuds().get(l.getNoeud().getId()),l.getDuree()));
         }
         if(controler.getPlan().getEntrepot()!=null)
             this.resizePlan.setEntrepot(new Livraison(this.resizePlan.getNoeuds().get(controler.getPlan().getEntrepot().getNoeud().getId()),0));
 
-        tracerTournee(p.getTournees());
+        tracerTournee(controler.getPlan().getTournees());
         repaint();
 
     }
 
-    public void setControler(Controler controler) {
-        this.controler = controler;
+    public void setControler(Controler c) {
+        this.controler = c;
     }
 
     public void onMouseMove(Point point) {
@@ -255,8 +255,7 @@ public class MapVue extends JPanel {
     }
 
     public void supprimerLivraison(Noeud n){
-        resizePlan.getLivraisons().remove(n.getId()); //Suppression de la livraison dans le resize.
-
+        resizePlan.getLivraisons().remove(n.getId());
         deletedNodes.add(this.resizePlan.getNoeuds().get(n.getId()));
     }
 
@@ -353,4 +352,6 @@ public class MapVue extends JPanel {
         }
         repaint();
     }
+
+
 }

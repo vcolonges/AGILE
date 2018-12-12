@@ -2,6 +2,7 @@ package controleur;
 
 
 import algorithmes.AlgoParcour;
+import com.sun.tools.javac.Main;
 import controleur.etat.*;
 import controleur.gestionCommande.*;
 import exceptions.XMLException;
@@ -9,6 +10,7 @@ import modele.*;
 import thread.threadsimulation.ThreadSimulation;
 import thread.threadtsp.ThreadTSP;
 import thread.threadtsp.ThreadTSPFactory;
+import utils.ListeLivreurs;
 import utils.Paire;
 import utils.XMLParser;
 import vue.MainVue;
@@ -121,7 +123,6 @@ public class Controler {
 
 
     public void ctrlZ() {
-
         ctrlZ.undo();
     }
     public void demarrerTournees() {
@@ -148,6 +149,8 @@ public class Controler {
     public void setZoom(double zoom) {
         mainvue.setZoom((int)(zoom*100.0));
     }
+
+    public void setPlan(Plan p){ this.plan = p;}
 
     public void wheelMovedDown(int wheelRotation) {
         mainvue.getMapPanel().wheelMovedDown(wheelRotation);
@@ -178,5 +181,41 @@ public class Controler {
 
     public Etat getEtat() {
         return etat;
+    }
+
+
+    public void setMainvue(MainVue v){
+        this.mainvue = v;
+    }
+
+    public MainVue getMainVue(){
+        return this.mainvue;
+    }
+    public void updateDeliverer(String name,Noeud n,Plan p){
+        if(name != null && name.length() > 0) {
+            ctrlZ.add(new ModifierLivreur(p,this));
+            Livraison livraison = p.getLivraisons().get(n.getId());
+            for(Tournee tournee : p.getTournees()){
+                if(tournee.getLivraisons().get(0) == livraison){
+                    p.removeTournee(tournee);
+                    tournee.removeLivraison(livraison);
+
+                    ThreadTSP t = ThreadTSPFactory.getTSPThread(tournee.getLivraisons(),p.getEntrepot(),p.getHeureDepart(), tournee.getLivreur());
+                    t.addThreadListener(this.getEcouteurDeTacheTSP());
+                    t.start();
+                    break;
+                }
+            }
+            Livreur nouveauLivreur = ListeLivreurs.getLivreurParPrenom(name);
+            Tournee tournee = p.getTourneeParLivreur(nouveauLivreur);
+            if(tournee != null){
+                p.removeTournee(tournee);
+                tournee.addLivraison(livraison);
+
+                ThreadTSP t = ThreadTSPFactory.getTSPThread(tournee.getLivraisons(),p.getEntrepot(),p.getHeureDepart(), nouveauLivreur);
+                t.addThreadListener(this.getEcouteurDeTacheTSP());
+                t.start();
+            }
+        }
     }
 }

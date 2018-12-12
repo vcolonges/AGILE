@@ -164,7 +164,13 @@ public class MainVue extends JFrame {
         this.setVisible(true);
 
     }
-
+    public Controler getControler(){
+        return this.controler;
+    }
+    public void setControler(Controler c){
+        this.controler=c;
+        mapPanel.setControler(c);
+    }
     public MapVue getMapPanel() {
         return mapPanel;
     }
@@ -236,8 +242,6 @@ public class MainVue extends JFrame {
         mapPanel.revertAjouterLivraison(l);
     }
 
-
-
     public void setZoom(int zoom) {
         zoomLabel.setText(zoom+"%");
     }
@@ -246,11 +250,11 @@ public class MainVue extends JFrame {
         mapPanel.mouseDragged(point);
     }
 
-
-
     public void updatePositionLivreurs(HashMap<Livreur, Paire<Double, Double>> update) {
         mapPanel.updatePositionLivreurs(update);
     }
+
+
 }
 
 
