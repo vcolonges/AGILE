@@ -95,7 +95,7 @@ class XMLParserTest {
         plan.addLivraison(livraison);
 
         Plan planParse = XMLParser.parsePlan("tests/test_files/plan_troncon.xml");
-        planParse = XMLParser.parseTrajets("tests/test_files/livraison.xml",planParse);
+        planParse = XMLParser.parseLivraisons("tests/test_files/livraison.xml",planParse);
 
         assertEquals(plan,planParse);
     }

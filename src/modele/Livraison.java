@@ -68,7 +68,6 @@ public class Livraison {
     }
 
     public Chemin getCheminVers(Livraison destination){
-        //System.out.println(chemins.size());
         for (Chemin item: chemins) {
             if(item.getDestination() == destination){
                 return item;

@@ -23,14 +23,10 @@ class PaireTest {
     @Test
     void testPremier(){
         assertEquals(p.getPremier(),1);
-        p.setPremier(3);
-        assertEquals(p.getPremier(),3);
     }
 
     @Test
     void testSecond(){
         assertEquals(p.getSecond(),3.5);
-        p.setSecond(2.75);
-        assertEquals(p.getSecond(),2.75);
     }
 }

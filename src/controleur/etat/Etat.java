@@ -4,6 +4,7 @@ import controleur.Controler;
 import modele.Livraison;
 import modele.Noeud;
 import modele.Plan;
+import modele.Tournee;
 import vue.PopUpMenu;
 
 import javax.swing.*;
@@ -38,8 +39,17 @@ public class Etat {
         return label;
     }
 
-    public PopUpMenu ajoutInfosLivraisonsToPopUpMenu(PopUpMenu popUpMenu, Plan p, Noeud n){
+    protected PopUpMenu ajoutInfosLivraisonsToPopUpMenu(PopUpMenu popUpMenu, Plan p, Noeud n){
         Livraison livraison = p.getLivraisons().get(n.getId());
+        Tournee tournee = p.getTourneeParLivraison(livraison);
+        if(tournee != null){
+            JPanel panelLivreur = new JPanel(new FlowLayout(FlowLayout.LEFT));
+            JLabel livreur = new JLabel("Livreur : " + tournee.getLivreur().getPrenom());
+            panelLivreur.add(livreur);
+            popUpMenu.add(panelLivreur);
+        }
+
+
         JPanel panelArrivee = new JPanel(new FlowLayout(FlowLayout.LEFT));
         SimpleDateFormat format = new SimpleDateFormat("HH:mm");
         JLabel heureArrivee = new JLabel("Heure d'arrivee sur place : " + format.format(livraison.getHeureArrivee()));

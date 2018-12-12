@@ -7,6 +7,7 @@ public class Plan {
     private HashMap<Long, Noeud> noeuds;
     private HashSet<Troncon> troncons;
     private HashMap<Long, Livraison> livraisons;
+    private HashMap<Long, Livraison> livraisonsUrgentes;
     private Livraison entrepot;
     private Date heureDepart;
     private ArrayList<Tournee> tournees;
@@ -18,6 +19,7 @@ public class Plan {
         this.livraisons = new HashMap<>();
         this.tournees = new ArrayList<>();
         this.nbLivreurs = 1;
+        this.livraisonsUrgentes = new HashMap<>();
     }
 
     public HashMap<Long, Noeud> getNoeuds(){
@@ -190,12 +192,27 @@ public class Plan {
     public ArrayList<Livreur> getLivreursEnCours() {
         ArrayList<Livreur> livreursCourants = new ArrayList<>();
         for (Tournee tournee : tournees) {
-            System.out.println(tournee.getLivreur().getPrenom());
-            livreursCourants.add(tournee.getLivreur());
+            if(!livreursCourants.contains(tournee.getLivreur()))
+                livreursCourants.add(tournee.getLivreur());
         }
-        System.out.println("-------------");
-        System.out.println(livreursCourants);
         return livreursCourants;
+    }
+
+    public Tournee getTourneeParLivraison(Livraison livraison){
+        for(Tournee tournee : tournees) {
+            for(Livraison liv : tournee.getLivraisons())
+                if (liv == livraison)
+                    return tournee;
+        }
+        return null;
+    }
+
+    public HashMap<Long, Livraison> getLivraisonsUrgentes() {
+        return livraisonsUrgentes;
+    }
+
+    public void addLivraisonUrgente(Livraison livraison) {
+        livraisonsUrgentes.put(livraison.getNoeud().getId(),livraison);
     }
 
     public void setLivraisons(HashMap<Long, Livraison> livraisons) {

@@ -7,8 +7,15 @@ import utils.Paire;
 import utils.Star;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.awt.geom.Line2D;
+import java.awt.image.BufferedImage;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Queue;
+import java.util.Random;
 import java.util.*;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.awt.BasicStroke;
@@ -20,7 +27,7 @@ public class MapVue extends JPanel {
     private Plan resizePlan;
     private Queue<Noeud> hoveredNodes;
     private ArrayList<Noeud> deletedNodes;
-    private final static int WIDTH_DOT = 10;
+    private final static int WIDTH_DOT = 13;
     private final static int PADDING = 10;
 
     private double zoom;
@@ -65,8 +72,8 @@ public class MapVue extends JPanel {
                             drawLine(new Point((int)start_tournee.getLongitude(),(int)start_tournee.getLatitude()),new Point((int)end_tournee.getLongitude(),(int)end_tournee.getLatitude()),g,3);
                             if(tournee.getLivraisons().contains(resizePlan.getLivraisons().get(start_tournee.getId()))){
                                 drawNode(new Point((int)start_tournee.getLongitude(),(int)start_tournee.getLatitude()),g);
-                            }else if(tournee.getLivraisons().contains(resizePlan.getLivraisons().get(end_tournee.getId()))){
-                                drawNode(new Point((int)end_tournee.getLongitude(),(int)end_tournee.getLatitude()),g);
+                            }else if(tournee.getLivraisons().contains(controler.getPlan().getLivraisonsUrgentes().get(start_tournee.getId()))){
+                                drawNode(new Point((int)start_tournee.getLongitude(),(int)start_tournee.getLatitude()),g);
                             }
                         }
                     }
@@ -243,6 +250,8 @@ public class MapVue extends JPanel {
         }
 
         resizePlan.setTournees(newTournees);
+
+        controler.drawLegende();
         repaint();
     }
 

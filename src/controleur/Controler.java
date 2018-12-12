@@ -1,18 +1,21 @@
 package controleur;
 
 
+import algorithmes.AlgoLivraisonUrgente;
 import algorithmes.AlgoParcour;
 import controleur.etat.*;
 import exceptions.XMLException;
 import modele.*;
-import thread.threadtsp.ThreadTSP;
-import thread.threadtsp.ThreadTSPFactory;
+import thread.threadtsp.*;
 import utils.Paire;
 import utils.XMLParser;
 import vue.MainVue;
 
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -55,7 +58,7 @@ public class Controler {
         else{
             try {
                 plan.getLivraisons().clear();
-                plan = XMLParser.parseTrajets(lienLivraisons, plan);
+                plan = XMLParser.parseLivraisons(lienLivraisons, plan);
                 mainvue.getMapPanel().loadPlan(plan);
                 etat = new EtatLivraisonsCharges(this);
                 mainvue.setEtat(etat);
@@ -109,7 +112,6 @@ public class Controler {
     public void demarrerTournees() {
         etat = new EtatClientsAvertis(this);
         mainvue.setEtat(etat);
-
     }
 
     public Point getLastDragMousePosition() {
@@ -158,14 +160,37 @@ public class Controler {
     public void updateMapVueAvecPositionAt(int secondes){
         HashMap positionLivreur = new HashMap();
         for(Tournee t : plan.getTournees()){
-            // -3600*1000 car la date commence à 1h
-            Paire<Double,Double> p = t.getPositionAt(new Date((secondes*1000) - (3600*1000)));
-            positionLivreur.put(t.getLivreur(),p);
+            if(t.getHeureDepart().getTime() <= new Date((secondes*1000)-(3600*1000)).getTime())
+            {
+                // -3600*1000 car la date commence à 1h
+                Paire<Double,Double> p = t.getPositionAt(new Date((secondes*1000) - (3600*1000)));
+                positionLivreur.put(t.getLivreur(),p);
+            }
+
         }
         updatePositionLivreurs(positionLivreur);
     }
 
     public Etat getEtat() {
         return etat;
+    }
+
+    public void drawLegende(){
+        mainvue.drawLegend(plan);
+    }
+
+    public void updateNbLivreur(int value) {
+        plan.setNbLivreurs(value);
+    }
+
+    public void ajouterLivraisonUrgente(Noeud n, int duree) {
+        AlgoLivraisonUrgente algo = new AlgoLivraisonUrgente();
+        AlgoParcour algoParcour = new AlgoParcour();
+        Livraison livraison = new Livraison(n,duree);
+        plan.addLivraisonUrgente(livraison);
+        Tournee t = algo.modifiTournee(livraison,plan.getLivraisonsUrgentes().values(),plan.getEntrepot(),plan.getTournees(),mainvue.getHeureSlider(),plan.getNbLivreurs());
+        if(!plan.getTournees().contains(t))
+            plan.addTournee(t);
+        mainvue.getMapPanel().tracerTournee(plan.getTournees());
     }
 }

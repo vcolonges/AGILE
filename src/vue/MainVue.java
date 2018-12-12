@@ -3,17 +3,23 @@ package vue;
 
 import controleur.*;
 import controleur.etat.*;
-import modele.Livreur;
-import modele.Noeud;
+import modele.*;
+import utils.ListeLivreurs;
 import utils.Paire;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Hashtable;
+
+import static javax.swing.BorderFactory.createEmptyBorder;
 
 public class MainVue extends JFrame {
 
@@ -45,6 +51,10 @@ public class MainVue extends JFrame {
 
     private JSlider sliderHeure;
     private JLabel labelSliderHeure;
+    private JLabel zoomLabel;
+    private JPanel livreursPanel;
+    private  JPanel livreursInnerPanel;
+    private GridBagConstraints constraints;
 
     private Controler controler;
 
@@ -66,6 +76,18 @@ public class MainVue extends JFrame {
         this.setLayout(mainLayout);
 
         //mapPanel.setBackground(Color.BLUE);
+
+        // Ajout panel legende livreurs
+        livreursPanel = new JPanel(new BorderLayout());
+        JScrollPane scrollPane = new JScrollPane(livreursPanel);
+        scrollPane.setBorder(new EmptyBorder(0, 10, 0, 10));
+        livreursInnerPanel = new JPanel();
+        //livreursInnerPanel.setBorder(new EmptyBorder(0, 10, 0, 10));
+        livreursInnerPanel.setLayout(new GridBagLayout());
+        constraints = new GridBagConstraints();
+        constraints.gridx = 0;
+        constraints.anchor = GridBagConstraints.WEST;
+        livreursPanel.add(livreursInnerPanel,BorderLayout.NORTH);
 
         // Création Debug Panel
         JPanel debugPanel = new JPanel(new BorderLayout());
@@ -153,6 +175,7 @@ public class MainVue extends JFrame {
         toolPanel.add(demarrerTourneesPanel);
         this.add(debugPanel,BorderLayout.SOUTH);
         this.add(mapPanel,BorderLayout.CENTER);
+        this.add(scrollPane,BorderLayout.EAST);
         this.add(toolPanel,BorderLayout.NORTH);
 
 
@@ -260,6 +283,47 @@ public class MainVue extends JFrame {
 
     public void updateLabelSliderHeure(int secondes){
         labelSliderHeure.setText(secondes/3600+":"+String.format("%02d", secondes%3600/60));
+    }
+
+    public void drawLegend(Plan plan) {
+        livreursInnerPanel.removeAll();
+        int i = 0;
+        if(plan!=null)
+        {
+            for (Tournee tournee : plan.getTournees()){
+                Livreur livreur = tournee.getLivreur();
+                constraints.gridy = i++;
+
+                JPanel livreurPan = new JPanel();
+
+                SimpleDateFormat format = new SimpleDateFormat("HH:mm");
+                JLabel nomLivreur = new JLabel(livreur.getPrenom() + " | Fin : "+format.format(tournee.getRetourEntrepot()));
+                nomLivreur.setBorder(new EmptyBorder(0, 20, 0, 0));
+
+                BufferedImage bImg = new BufferedImage(10, 10, BufferedImage.TYPE_INT_RGB);
+                Graphics2D graphics = bImg.createGraphics();
+                graphics.setPaint(livreur.getCouleur());
+                graphics.fillRect(0, 0, bImg.getWidth(), bImg.getHeight());
+                ImageIcon imageIcon = new ImageIcon(bImg);
+
+                livreurPan.add(new JLabel(imageIcon));
+                livreurPan.add(nomLivreur);
+                JPanel livraisonsPanel = new JPanel(new GridLayout(tournee.getLivraisons().size(),1));
+                for(Livraison l : tournee.getLivraisons()){
+                    JLabel jl = new JLabel("("+(tournee.getLivraisons().indexOf(l)+1)+") - "+format.format(l.getHeureArrivee())+" -> "+format.format(new Date(l.getHeureArrivee().getTime() + l.getDuree()*1000)));
+                    livraisonsPanel.add(jl);
+                }
+                livraisonsPanel.setBorder(new EmptyBorder(0, 10, 10, 10));
+                livreursInnerPanel.add(livreurPan,constraints);
+                constraints.gridy = i++;
+                livreursInnerPanel.add(livraisonsPanel,constraints);
+            }
+        }
+        validate();
+    }
+
+    public Date getHeureSlider() {
+        return new Date(sliderHeure.getValue()*1000);
     }
 }
 

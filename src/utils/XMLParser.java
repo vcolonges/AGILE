@@ -17,8 +17,23 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+/**
+ * Classe compose de methodes statiques permettant de parser les fichier de Plan et les fichiers de Livraisons
+ */
 public class XMLParser {
 
+    /**
+     *
+     * @param lienFichier Lien vers le fichier de plan que vous voulez parser
+     * @return Retourne l'objet Plan issue du fichier
+     * @throws XMLException Erreurs possibles :<br>
+     * - Fichier introuvable<br>
+     * - Le fichier n'est pas un Plan<br>
+     * - Doublon de Noeud<br>
+     * - Doublon de Troncon<br>
+     * - Noeud sans ID ou Latitude ou Longitude<br>
+     * - Troncon sans Origine ou Destination ou Longueur<br>
+     */
     public static Plan parsePlan(String lienFichier) throws XMLException {
         Plan plan = new Plan();
 
@@ -162,7 +177,20 @@ public class XMLParser {
         return new Troncon(origine,destination,longueur,nomRue);
     }
 
-    public static Plan parseTrajets(String lienFichier, Plan plan) throws XMLException {
+    /**
+     *
+     * @param lienFichier Lien vers le fichier de livraisons que vous voulez parser
+     * @param plan Instance de Plan dans laquelle vous souhaitez ajouter ces livraisons
+     * @return Retourne le meme Plan que celui d'entree avec les Livraisons en plus
+     * @throws XMLException Erreurs possibles :<br>
+     * - Fichier introuvable<br>
+     * - Le fichier n'est pas un Plan<br>
+     * - Deux entrepots
+     * - Adresse livraison invalide pour ce plan
+     * - Probleme de parsing de l'heure de depart (format hh:mm:ss)
+     * - Livraison sans duree
+     */
+    public static Plan parseLivraisons(String lienFichier, Plan plan) throws XMLException {
         plan.getLivraisons().clear();
         plan.getTournees().clear();
         Document doc = ouvrirDocument(lienFichier);
