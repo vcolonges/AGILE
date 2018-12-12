@@ -72,8 +72,8 @@ public class MapVue extends JPanel {
                             drawLine(new Point((int)start_tournee.getLongitude(),(int)start_tournee.getLatitude()),new Point((int)end_tournee.getLongitude(),(int)end_tournee.getLatitude()),g,3);
                             if(tournee.getLivraisons().contains(resizePlan.getLivraisons().get(start_tournee.getId()))){
                                 drawNode(new Point((int)start_tournee.getLongitude(),(int)start_tournee.getLatitude()),g);
-                            }else if(tournee.getLivraisons().contains(resizePlan.getLivraisons().get(end_tournee.getId()))){
-                                drawNode(new Point((int)end_tournee.getLongitude(),(int)end_tournee.getLatitude()),g);
+                            }else if(tournee.getLivraisons().contains(controler.getPlan().getLivraisonsUrgentes().get(start_tournee.getId()))){
+                                drawNode(new Point((int)start_tournee.getLongitude(),(int)start_tournee.getLatitude()),g);
                             }
                         }
                     }

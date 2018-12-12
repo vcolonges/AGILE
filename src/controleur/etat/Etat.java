@@ -39,7 +39,7 @@ public class Etat {
         return label;
     }
 
-    public PopUpMenu ajoutInfosLivraisonsToPopUpMenu(PopUpMenu popUpMenu, Plan p, Noeud n){
+    protected PopUpMenu ajoutInfosLivraisonsToPopUpMenu(PopUpMenu popUpMenu, Plan p, Noeud n){
         Livraison livraison = p.getLivraisons().get(n.getId());
         Tournee tournee = p.getTourneeParLivraison(livraison);
         if(tournee != null){
