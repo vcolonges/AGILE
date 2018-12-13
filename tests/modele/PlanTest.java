@@ -2,9 +2,12 @@ package modele;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import utils.ListeLivreurs;
 
+import java.lang.reflect.Array;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -17,9 +20,13 @@ class PlanTest {
     HashMap<Long, Noeud> noeuds;
     HashSet<Troncon> troncons;
     HashMap<Long, Livraison> livraisons;
+    ArrayList<Livraison> listelivraisons;
+    ArrayList<Chemin> chemins;
     Livraison entrepot;
     Date heureDepart;
     int nbLivreurs;
+    ArrayList<Tournee> tournees;
+    Date date;
 
     @BeforeEach
     void setUp() {
@@ -27,6 +34,7 @@ class PlanTest {
         noeuds = new HashMap<>();
         troncons = new HashSet<>();
         livraisons = new HashMap<>();
+        tournees = new ArrayList<>();
 
         Noeud n1 = new Noeud(156,2.154,6.25);
         Noeud n2 = new Noeud(542,5.214,1.32);
@@ -43,16 +51,19 @@ class PlanTest {
         Livraison l2 = new Livraison(n2,466);
         livraisons.put(l1.getNoeud().getId(), l1);
         livraisons.put(l2.getNoeud().getId(), l2);
+        listelivraisons = new ArrayList<>();
+        listelivraisons.add(l1);
+        listelivraisons.add(l2);
         p.addLivraison(l1);
         p.addLivraison(l2);
 
         Livraison entrepot = new Livraison(new Noeud(1486,0.2158,2.368),154);
         p.setEntrepot(entrepot);
         this.entrepot = entrepot;
-
+        date = new Date();
         try {
             String stringDate = "31/12/1998 15:21:54";
-            Date date = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").parse(stringDate);
+            date = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").parse(stringDate);
             p.setHeureDepart(date);
             heureDepart = date;
         } catch (ParseException e) {
@@ -61,6 +72,13 @@ class PlanTest {
 
         nbLivreurs = 15;
         p.setNbLivreurs(nbLivreurs);
+
+        chemins = new ArrayList<>();
+        chemins.add(new Chemin(l1,l2,150));
+
+        Tournee tournee1 = new Tournee(listelivraisons,chemins,date, ListeLivreurs.livreurs[0]);
+        tournees.add(tournee1);
+        p.addTournee(tournee1);
     }
 
     @Test
@@ -160,22 +178,33 @@ class PlanTest {
 
     @Test
     void getTournees() {
-        //TODO Victor | Anatolii
+        assertEquals(p.getTournees(),tournees);
     }
 
     @Test
     void setTournees() {
-        //TODO Victor | Anatolii
+        Tournee tournee1 = new Tournee(listelivraisons,chemins,date, ListeLivreurs.livreurs[1]);
+        ArrayList<Tournee> listeTournees = new ArrayList<>();
+        listeTournees.add(tournee1);
+        tournees = listeTournees;
+        p.setTournees(listeTournees);
+        assertEquals(p.getTournees(),tournees);
     }
 
     @Test
     void addTournee() {
-        //TODO Victor | Anatolii
+        Tournee tournee1 = new Tournee(listelivraisons,chemins,date, ListeLivreurs.livreurs[1]);
+        tournees.add(tournee1);
+        p.addTournee(tournee1);
+        assertEquals(p.getTournees(),tournees);
     }
 
     @Test
     void removeTournee() {
-        //TODO Victor | Anatolii
+        Tournee tournee1 = new Tournee(listelivraisons,chemins,date, ListeLivreurs.livreurs[0]);
+        tournees.remove(tournee1);
+        p.removeTournee(tournee1);
+        assertEquals(p.getTournees(),tournees);
     }
 
     @Test
@@ -192,17 +221,34 @@ class PlanTest {
 
     @Test
     void getTourneeParLivreur() {
-        //TODO Emilie
+        Tournee tournee1 = new Tournee(listelivraisons,chemins,date, ListeLivreurs.livreurs[1]);
+        p.addTournee(tournee1);
+        assertEquals(p.getTourneeParLivreur(ListeLivreurs.livreurs[1]),tournee1);
     }
 
     @Test
     void getLivreursEnCours() {
-        //TODO Emilie
+        Tournee tournee1 = new Tournee(listelivraisons,chemins,date, ListeLivreurs.livreurs[1]);
+        Tournee tournee2 = new Tournee(listelivraisons,chemins,date, ListeLivreurs.livreurs[2]);
+        ArrayList<Tournee> listeTournees = new ArrayList<>();
+        listeTournees.add(tournee1);
+        listeTournees.add(tournee2);
+        tournees = listeTournees;
+        p.setTournees(listeTournees);
+        ArrayList<Livreur> livreursCourants = new ArrayList<>();
+        livreursCourants.add(ListeLivreurs.livreurs[1]);
+        livreursCourants.add(ListeLivreurs.livreurs[2]);
+        assertEquals(p.getLivreursEnCours(),livreursCourants);
     }
 
     @Test
     void getTourneeParLivraison() {
-        //TODO Emilie
+        Tournee tournee1 = new Tournee(listelivraisons,chemins,date, ListeLivreurs.livreurs[2]);
+        ArrayList<Tournee> listeTournees = new ArrayList<>();
+        listeTournees.add(tournee1);
+        tournees = listeTournees;
+        p.setTournees(listeTournees);
+        assertEquals(p.getTourneeParLivraison(listelivraisons.get(0)),tournee1);
     }
 
     @Test
