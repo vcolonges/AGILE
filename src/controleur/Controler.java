@@ -138,14 +138,26 @@ public class Controler {
         return ecouteurDeTacheTSP;
     }
 
+    /**
+     * Appelle la vue pour qu'elle mette a jour la position des Livreurs
+     * @param update Contient pour chaque Livreur une Paire avec sa position
+     */
     public void updatePositionLivreurs(HashMap<Livreur, Paire<Double, Double>> update) {
         mainvue.updatePositionLivreurs(update);
     }
 
+    /**
+     * Appelle la vue pour qu'elle mette a jour le label du slider
+     * @param secondes Temps a mettre dans le slider en secondes
+     */
     public void updateLabelSliderHeure(int secondes){
         mainvue.updateLabelSliderHeure(secondes);
     }
 
+    /**
+     * Appelle la vue pour qu'elle mettre a jour la position des livreurs a l'instant "secondes"
+     * @param secondes
+     */
     public void updateMapVueAvecPositionAt(int secondes){
         HashMap positionLivreur = new HashMap();
         for(Tournee t : plan.getTournees()){
@@ -171,6 +183,10 @@ public class Controler {
         mainvue.drawLegend(plan);
     }
 
+    /**
+     * Met a jour le nombre de Livreurs dans le Plan
+     * @param value Nombre de Livreurs
+     */
     public void updateNbLivreur(int value) {
         plan.setNbLivreurs(value);
     }

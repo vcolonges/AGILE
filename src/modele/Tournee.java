@@ -66,10 +66,18 @@ public class Tournee {
         return livreur;
     }
 
+    /**
+     * Ajoute une livraison à la tournee
+     * @param livraison Livraison à ajouter
+     */
     public void addLivraison(Livraison livraison){
         livraisons.add(livraison);
     }
 
+    /**
+     * Supprime une livraison de la tournee
+     * @param livraison Livraison à supprimer
+     */
     public void removeLivraison(Livraison livraison){
         livraisons.remove(livraison);
     }
@@ -95,10 +103,19 @@ public class Tournee {
         return heureActuelle.compareTo(heureDepart)<0;
     }
 
+    /**
+     *
+     * @return La date de retour à l'entrepot de cette Tournee
+     */
     public Date getRetourEntrepot() {
         return retourEntrepot;
     }
 
+    /**
+     *
+     * @param time Heure à laquelle on veut connaitre la position
+     * @return Une Paire<Latitude,Longitude> de la position à l'instant 'time'
+     */
     public Paire<Double,Double> getPositionAt(Date time)
     {
         Noeud entrepot = chemins.get(0).getOrigine().getNoeud();
@@ -147,6 +164,11 @@ public class Tournee {
         return new Paire<>((lastTroncon.getOrigine().getLongitude() + lastTroncon.getDestination().getLongitude())/2,(lastTroncon.getOrigine().getLatitude() + lastTroncon.getDestination().getLatitude())/2);
     }
 
+    /**
+     *
+     * @param livraison Livraison a ajouter
+     * @param entrepot Entrepot d'ou il faut partir
+     */
     public void ajouteLivraisonFinTournee(Livraison livraison, Livraison entrepot) {
         Chemin cheminVersLivraison = livraisons.get(livraisons.size() - 1).getCheminVers(livraison);
         Chemin cheminVersEntrepot = livraison.getCheminVers(entrepot);

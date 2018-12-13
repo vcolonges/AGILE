@@ -207,6 +207,10 @@ public class MainVue extends JFrame {
         mapPanel.selectNode(point,e);
     }
 
+    /**
+     * Assigne "heureDepart" dans le JLabel prevu a cet effet
+     * @param heureDepart Heure de Depart des Tournees
+     */
     public void setLabelHeureDepart(Date heureDepart){
         Calendar cal = Calendar.getInstance();
         cal.setTime(heureDepart);
@@ -256,6 +260,10 @@ public class MainVue extends JFrame {
         mapPanel.updatePositionLivreurs(update);
     }
 
+    /**
+     * Met à jour le Label d'affichage de la valeur de Slider
+     * @param secondes Valeur du JSlider
+     */
     public void updateLabelSliderHeure(int secondes){
         labelSliderHeure.setText(secondes/3600+":"+String.format("%02d", secondes%3600/60));
     }
@@ -302,6 +310,10 @@ public class MainVue extends JFrame {
         validate();
     }
 
+    /**
+     *
+     * @return La Date cree grace a la valeur du JSlider
+     */
     public Date getHeureSlider() {
         return new Date(sliderHeure.getValue()*1000);
     }
