@@ -39,19 +39,16 @@ public class EtatTournesGeneres extends Etat{
                         nomLivreursEnCours.get(0));
 
                 if(name != null && name.length() > 0) {
+                    System.out.println("OK1");
                     Livraison livraison = plan.getLivraisons().get(n.getId());
 
                     Tournee tournee = plan.getTourneeParLivraison(livraison);
-                    if(tournee.getLivreur().getPrenom().equals(name)) {
+                    if(!tournee.getLivreur().getPrenom().equals(name)) {
                         if (tournee != null) {
                             plan.removeTournee(tournee);
                             tournee.removeLivraison(livraison);
-
                             Tournee t1 = TSP.calculerTournee(tournee.getLivraisons(),plan.getEntrepot(),plan.getHeureDepart(),tournee.getLivreur());
                             controler.tourneeGeneree(t1);
-                            /*ThreadTSP t = ThreadTSPFactory.getTSPThread(tournee.getLivraisons(), plan.getEntrepot(), plan.getHeureDepart(), tournee.getLivreur());
-                            t.addThreadListener(controler.getEcouteurDeTache());
-                            t.start();*/
                         }
 
                         Livreur nouveauLivreur = ListeLivreurs.getLivreurParPrenom(name);
@@ -59,12 +56,8 @@ public class EtatTournesGeneres extends Etat{
                         if (tournee != null) {
                             plan.removeTournee(tournee);
                             tournee.addLivraison(livraison);
-
                             Tournee t1 = TSP.calculerTournee(tournee.getLivraisons(),plan.getEntrepot(),plan.getHeureDepart(),tournee.getLivreur());
                             controler.tourneeGeneree(t1);
-                            /*ThreadTSP t = ThreadTSPFactory.getTSPThread(tournee.getLivraisons(), plan.getEntrepot(), plan.getHeureDepart(), nouveauLivreur);
-                            t.addThreadListener(controler.getEcouteurDeTache());
-                            t.start();*/
                         }
                     }
                 }
