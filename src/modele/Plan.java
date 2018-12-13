@@ -124,6 +124,11 @@ public class Plan {
         tournees.remove(tournee);
     }
 
+    /**
+     * Renvoie le nombre de livreur max que peut gerer le plan
+     *
+     * @return nblivreurs
+     */
     public int getNbLivreurs() {
         return nbLivreurs;
     }
@@ -147,6 +152,11 @@ public class Plan {
         tournees.clear();
     }
 
+    /**
+     * Definit le nombre de livreur max que peut gerer le plan
+     *
+     * @param nbLivreurs Nombre de livreur maximum
+     */
     public void setNbLivreurs(int nbLivreurs) {
         this.nbLivreurs = nbLivreurs;
     }
@@ -184,6 +194,12 @@ public class Plan {
         return result;
     }
 
+    /**
+     * Renvoie la tournee associee a un livreur donne
+     *
+     * @param livreur livreur dont on veut connaitre la tournee
+     * @return tournee ou null
+     */
     public Tournee getTourneeParLivreur(Livreur livreur){
         for(Tournee tournee : tournees){
             if(tournee.getLivreur() == livreur)
@@ -192,6 +208,11 @@ public class Plan {
         return null;
     }
 
+    /**
+     * Renvoie la liste des livreurs en charge d'une tournee
+     *
+     * @return liste des livreurs
+     */
     public ArrayList<Livreur> getLivreursEnCours() {
         ArrayList<Livreur> livreursCourants = new ArrayList<>();
         for (Tournee tournee : tournees) {
@@ -201,6 +222,12 @@ public class Plan {
         return livreursCourants;
     }
 
+    /**
+     * Renvoie la tournee dans laquelle se trouve la livraison donnee
+     *
+     * @param livraison livraison dont on veut connaitre la tournee
+     * @return tournee ou null
+     */
     public Tournee getTourneeParLivraison(Livraison livraison){
         for(Tournee tournee : tournees) {
             for(Livraison liv : tournee.getLivraisons())
