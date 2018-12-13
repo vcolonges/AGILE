@@ -217,9 +217,10 @@ public class MapVue extends JPanel {
 
     /**
      * Methode a appeler au clic sur la plan
+     * @param point
      * @param e l' evenement du clic
      */
-    public void selectNode(MouseEvent e){
+    public void selectNode(Point point, MouseEvent e){
         if(resizePlan == null) return;
 
         Noeud n = getNearestResizedNode(e.getPoint());

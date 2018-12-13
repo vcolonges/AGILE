@@ -54,8 +54,8 @@ public class AlgoParcourTest {
         c2.setTroncons(al2);
 
         result = new Livraison(n1, 1);
-        result.addChemin(c1);
-        result.addChemin(c2);
+        result.getChemins().add(c1);
+        result.getChemins().add(c2);
 
         n1.addTronconAdjacent(t1);
         n1.addTronconAdjacent(t4);

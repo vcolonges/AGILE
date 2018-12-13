@@ -20,7 +20,7 @@ public class AlgoParcour {
         Noeud depart = departLiv.getNoeud();
 
         // ensemble des troncons adjacents à un noeud
-        HashSet<Troncon> curNoeudTroncons = null;
+        HashSet<Troncon> curNoeudTroncons;
         // Noeud dont tous les succeeceurs sont grisés
         ArrayList<Noeud> blackNoeud = new ArrayList<>();
         //Ensemble de noeuds decouverts
@@ -29,16 +29,18 @@ public class AlgoParcour {
         // Collection des noeuds, leur prédécesseur et la distance jusqu'à ce noeud depuis le noeud départ
         HashMap<Long, Paire<Troncon, Double>> successorDistance = new HashMap<Long, Paire<Troncon, Double>>();
         //initialisation de collection avec le noeud départ
-        successorDistance.put(depart.getId(), new Paire(null,0.0));
+        successorDistance.put(depart.getId(), new Paire<>(null,0.0));
         //on parcourt tous les noeuds gris
         for(int curNoeudIndex=0; curNoeudIndex<greyNoeuds.size(); curNoeudIndex++)
         {   //si le noeud gris est celui de la fin, on ne calcule pas ses successeurs car c'est la fin de chemin
             Noeud curNoeud = greyNoeuds.get(curNoeudIndex);
+
             Noeud tmpGreyNoeud = null;
             if(blackNoeud.contains(curNoeud)) //****Complexité O(n), peut être amélioré
             {
                 continue;
             }
+
             curNoeudTroncons=curNoeud.getTronconsAdjacents();
             //On récupère la distance du depart jusquà noeud prédécesseur forcement définie dans la collection
             double travelDistance = successorDistance.get(curNoeud.getId()).getSecond();
@@ -60,7 +62,6 @@ public class AlgoParcour {
                     successorDistance.put(tmpGreyNoeud.getId(), new Paire(tmpTroncon,curTravelDistance));
                 }
             }
-
             //une fois tous les noeud adjacents du curNoeud parcouru, on l'ajoute dans blackNoeud
             blackNoeud.add(curNoeud);
         }
@@ -121,19 +122,6 @@ public class AlgoParcour {
        allCircle.addAll(circle2);
        return initCircleData(allCircle);
     }
-
-
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //Mettre à jour les données d'un cercle
-    private static ArrayList<Double> MAJCircleData(Noeud curNoeud, ArrayList<Double> circleData, double newTaille) {
-        double xG=circleData.get(0);
-        double yG=circleData.get(1);
-
-        circleData.set(0, (xG*(newTaille-1)+curNoeud.getLatitude())/newTaille);
-        circleData.set(1, (yG*(newTaille-1)+curNoeud.getLongitude())/newTaille);
-        return circleData;
-    }
-
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //test validité d'échange de livraisons entre cercles
