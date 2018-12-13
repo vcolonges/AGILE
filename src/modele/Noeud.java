@@ -49,14 +49,4 @@ public class Noeud {
     public int hashCode() {
         return Objects.hash(id);
     }
-
-    @Override
-    public String toString() {
-        return "Noeud{" +
-                "id=" + id +
-                ", latitude=" + latitude +
-                ", longitude=" + longitude +
-                ", tronconsAdjacents=" + tronconsAdjacents +
-                "}\r\n";
-    }
 }
