@@ -15,7 +15,7 @@ public class EcouteurDeSpinner implements ChangeListener {
     @Override
     public void stateChanged(ChangeEvent e) {
         if(e.getSource() instanceof JSpinner){
-            this.controleur.getPlan().setNbLivreurs((int)(((JSpinner)e.getSource()).getValue()));
+            this.controleur.updateNbLivreur((int)(((JSpinner)e.getSource()).getValue()));
         }
     }
 }

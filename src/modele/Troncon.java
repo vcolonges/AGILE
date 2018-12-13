@@ -19,26 +19,17 @@ public class Troncon {
     public Noeud getOrigine() {
         return origine;
     }
-    public void setOrigine(Noeud origine) {
-        this.origine = origine;
-    }
+
     public Noeud getDestination() {
         return destination;
     }
-    public void setDestination(Noeud destination) {
-        this.destination = destination;
-    }
+
     public double getLongueur() {
         return longueur;
     }
-    public void setLongueur(double longueur) {
-        this.longueur = longueur;
-    }
+
     public String getNomRue() {
         return nomRue;
-    }
-    public void setNomRue(String nomRue) {
-        this.nomRue = nomRue;
     }
 
     @Override
@@ -63,5 +54,15 @@ public class Troncon {
                 ", longueur=" + longueur +
                 ", nomRue='" + nomRue + '\'' +
                 "}\r\n";
+    }
+
+    /**
+     *
+     * @param vitesse Vitesse en m/s
+     * @return duree en ms
+     */
+    public long getDuree(double vitesse)
+    {
+        return (long)((longueur/vitesse)*1000);
     }
 }

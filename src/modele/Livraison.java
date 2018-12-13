@@ -7,7 +7,7 @@ import java.util.Objects;
 public class Livraison {
 
     private Noeud noeud;
-    private int duree;
+    private int duree; //en secondes
     private HashSet<Chemin> chemins;
     private Date heureArrivee;
 
@@ -34,14 +34,6 @@ public class Livraison {
     }
 
     @Override
-    public String toString() {
-        return "Livraison{" +
-                "noeud=" + noeud +
-                ", duree=" + duree +
-                '}';
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -59,16 +51,11 @@ public class Livraison {
         return chemins;
     }
 
-    public boolean addChemin(Chemin chemin){
-        return this.chemins.add(chemin);
-    }
-
     public void resetChemin(){
         chemins.clear();
     }
 
     public Chemin getCheminVers(Livraison destination){
-        //System.out.println(chemins.size());
         for (Chemin item: chemins) {
             if(item.getDestination() == destination){
                 return item;

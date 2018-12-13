@@ -48,13 +48,4 @@ public class Chemin {
         destination.resetChemin();
         troncons.clear();
     }
-
-    @Override
-    public String toString() {
-        return "Chemin{" +
-                "origine=" + origine.getNoeud().getId() +
-                ", destination=" + destination.getNoeud().getId() +
-                ", longueur=" + longueur +
-                '}';
-    }
 }

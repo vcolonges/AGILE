@@ -3,7 +3,11 @@ package utils;
 import modele.Livreur;
 
 import java.awt.*;
+import java.util.ArrayList;
 
+/**
+ * Classe statique contenant une liste de livreurs factices pour la simulation
+ */
 public final class ListeLivreurs {
 
     public static final Livreur[] livreurs = {
@@ -23,4 +27,31 @@ public final class ListeLivreurs {
             new Livreur("Matheo",new Color(245,130,48)),
             new Livreur("Eloïse",new Color(210,245,60))
     };
+
+    /**
+     * Renvoie la liste des prenoms des livreurs
+     *
+     * @return liste des prenoms
+     */
+    public static ArrayList<String> getListePrenomsLivreurs(){
+        ArrayList<String> prenomsLivreurs = new ArrayList<>();
+        for (Livreur livreur : ListeLivreurs.livreurs){
+            prenomsLivreurs.add(livreur.getPrenom());
+        }
+        return prenomsLivreurs;
+    }
+
+    /**
+     * Renvoie le livreur dont le prenom est nom
+     *
+     * @param nom prenom du livreur que l'on cherche
+     * @return livreur ou null
+     */
+    public static Livreur getLivreurParPrenom(String nom){
+        for (Livreur livreur : ListeLivreurs.livreurs){
+            if(livreur.getPrenom().equals(nom))
+                return livreur;
+        }
+        return null;
+    }
 }
