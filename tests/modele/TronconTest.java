@@ -40,7 +40,7 @@ class TronconTest {
 
     @Test
     void getDuree() {
-        long duree = (long)((154/15)*1000);
+        long duree = ((154/15)*1000);
         assertEquals(t.getDuree(15),duree);
     }
 }
