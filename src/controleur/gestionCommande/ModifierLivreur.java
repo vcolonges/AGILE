@@ -12,7 +12,7 @@ public class ModifierLivreur implements Commande {
     }
 
     public void undo(){
-        controler.setPlan(this.plan);
+        //controler.setPlan(this.plan);
         controler.tourneesGenerees(this.plan.getTournees());
     }
 }
