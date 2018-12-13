@@ -9,8 +9,6 @@ import exceptions.XMLException;
 import modele.*;
 import thread.threadtsp.*;
 import utils.Paire;
-import thread.ThreadTSP;
-import thread.ThreadTSPFactory;
 import utils.XMLParser;
 import vue.MainVue;
 
