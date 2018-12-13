@@ -5,6 +5,10 @@ import controleur.*;
 import controleur.etat.*;
 import modele.*;
 import utils.Paire;
+import controleur.*;
+import controleur.etat.*;
+import modele.Noeud;
+import modele.Livraison;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -250,6 +254,14 @@ public class MainVue extends JFrame {
 
     public void deletePoint(Noeud n){
         mapPanel.deletePoint(n);
+    }
+
+    public void supprimerLivraison(Noeud n){
+        mapPanel.supprimerLivraison(n);
+    }
+
+    public void revertAjouterLivraison(Livraison l){
+        mapPanel.revertAjouterLivraison(l);
     }
 
     public void mouseDragged(Point point) {

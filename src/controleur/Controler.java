@@ -4,6 +4,7 @@ package controleur;
 import algorithmes.AlgoLivraisonUrgente;
 import algorithmes.AlgoParcour;
 import controleur.etat.*;
+import controleur.gestionCommande.*;
 import exceptions.XMLException;
 import modele.*;
 import thread.threadtsp.*;
@@ -25,6 +26,7 @@ public class Controler {
     private Point lastDragMousePosition;
     private EcouteurDeTacheTSP ecouteurDeTacheTSP;
 
+    private CommandeManager ctrlZ;
     /**
      * Cree le controleur de l'application
      */
@@ -33,6 +35,7 @@ public class Controler {
         etat = new EtatDebut(this);
         mainvue.setEtat(etat);
         ecouteurDeTacheTSP = new EcouteurDeTacheTSP(this);
+        this.ctrlZ = new CommandeManager();
     }
 
     public void chargerPlan(String lienPlan){
@@ -96,11 +99,25 @@ public class Controler {
 
     public void supprimerLivraison(Noeud n){
 
-        mainvue.deletePoint(n);
+        mainvue.supprimerLivraison(n);
+        System.out.println(plan.getLivraisons().get(n.getId()));
+        ctrlZ.add(new SupprimerCommande(plan.getLivraisons().get(n.getId()),this));
+        this.plan.getLivraisons().remove(n.getId());
     }
+
+    public void revertAjouterLivraison(Livraison l){
+        this.plan.getLivraisons().put(l.getNoeud().getId(),l);
+        mainvue.revertAjouterLivraison(l);
+    }
+
     public void demarrerTournees() {
         etat = new EtatClientsAvertis(this);
         mainvue.setEtat(etat);
+    }
+
+    public void ctrlZ(){
+
+        ctrlZ.undo();
     }
 
     public Point getLastDragMousePosition() {

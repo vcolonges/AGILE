@@ -3,6 +3,7 @@ package vue;
 import controleur.Controler;
 import controleur.etat.EtatClientsAvertis;
 import modele.*;
+import utils.ListeLivreurs;
 import utils.Paire;
 import utils.Star;
 
@@ -13,6 +14,9 @@ import java.util.Queue;
 import java.util.*;
 import java.util.concurrent.LinkedBlockingDeque;
 
+/**
+ * Représente la carte de l'application, pour l'affichage
+ */
 public class MapVue extends JPanel {
 
 
@@ -30,6 +34,9 @@ public class MapVue extends JPanel {
     private HashMap<Livreur, Point> positionLivreurs;
     private double ratioPlanResizedPlan;
 
+    /**
+     * Creer un Jpanel permettant d'afficher une map
+     */
     public MapVue(){
         hoveredNodes = new LinkedBlockingDeque<>();
         deletedNodes = new ArrayList<>();
@@ -115,6 +122,10 @@ public class MapVue extends JPanel {
         }
     }
 
+    /**
+     * charge un plan a afficher
+     * @param p le plan a charger
+     */
     public void loadPlan(Plan p)
     {
         updateZoomArea();
@@ -174,6 +185,10 @@ public class MapVue extends JPanel {
         this.controler = controler;
     }
 
+    /**
+     * Methode a appeler au mouvement de la souris
+     * @param point la position de la souris
+     */
     public void onMouseMove(Point point) {
         if(resizePlan == null) return;
 
@@ -201,6 +216,11 @@ public class MapVue extends JPanel {
 
     }
 
+    /**
+     * Methode a appeler au clic sur la plan
+     * @param point
+     * @param e l' evenement du clic
+     */
     public void selectNode(Point point, MouseEvent e){
         if(resizePlan == null) return;
 
@@ -215,7 +235,6 @@ public class MapVue extends JPanel {
 
     /**
      * Met les tournees en parametre a l'echelle du plan de l'ihm et les trace
-     *
      * @param tournees tournees a tracer
      */
     public void tracerTournee(ArrayList<Tournee> tournees) {
@@ -268,10 +287,25 @@ public class MapVue extends JPanel {
         return null;
     }
 
+    /**
+     * Supprime une livraison sur la carte
+     * @param n le noeud de la livraison
+     */
+
     public void deletePoint(Noeud n){
         deletedNodes.add(this.resizePlan.getNoeuds().get(n.getId()));
     }
 
+    public void supprimerLivraison(Noeud n){
+        resizePlan.getLivraisons().remove(n.getId()); //Suppression de la livraison dans le resize.
+
+        deletedNodes.add(this.resizePlan.getNoeuds().get(n.getId()));
+    }
+
+    /**
+     * A appeler au scroll vers le haut
+     * @param wheelRotation nombre de tics
+     */
     public void wheelMovedUp(int wheelRotation) {
         zoom+=0.1;
         if(zoom>ZOOM_MAX) zoom = ZOOM_MAX;
@@ -296,12 +330,20 @@ public class MapVue extends JPanel {
         repaint();
     }
 
+    /**
+     * A appeler au scroll vers le bas
+     * @param wheelRotation nombre de tics
+     */
     public void wheelMovedDown(int wheelRotation) {
         zoom-=0.1;
         if(zoom<ZOOM_MIN) zoom = ZOOM_MIN;
         updateZoomArea();
     }
 
+    /**
+     * A apeler au drag de la souris
+     * @param point position actuelle de la souris
+     */
     public void mouseDragged(Point point) {
         Point oldPosition = controler.getLastDragMousePosition();
         Point vectorInZoom = new Point(point.x-oldPosition.x, point.y-oldPosition.y);
@@ -349,6 +391,10 @@ public class MapVue extends JPanel {
         g.drawLine(start.x, start.y, end.x, end.y);
     }
 
+    /**
+     * Met a jour la position des livreurs a l'ecran
+     * @param update lien entre un livreur et sa postition
+     */
     public void updatePositionLivreurs(HashMap<Livreur, Paire<Double, Double>> update) {
         double minLongPlan = controler.getPlan().getMinLong();
         double minLatPlan = controler.getPlan().getMinLat();
@@ -360,5 +406,15 @@ public class MapVue extends JPanel {
             positionLivreurs.put(e.getKey(),new Point((int)newLongitude,(int)newLatitude));
         }
         repaint();
+    }
+
+    public void revertAjouterLivraison(Livraison l){
+        resizePlan.getLivraisons().put(l.getNoeud().getId(),l);
+        for(int index=0;index<deletedNodes.size();index++){
+            if(deletedNodes.get(index).getId()==l.getNoeud().getId()){
+                deletedNodes.remove(index);
+                System.out.println("Deleted");
+            }
+        }
     }
 }
