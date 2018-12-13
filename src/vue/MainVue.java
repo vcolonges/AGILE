@@ -3,11 +3,7 @@ package vue;
 
 import controleur.*;
 import controleur.etat.*;
-import modele.Livreur;
-import modele.Noeud;
-import modele.Plan;
-import modele.Tournee;
-import utils.ListeLivreurs;
+import modele.*;
 import utils.Paire;
 
 import javax.swing.*;
@@ -16,7 +12,6 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -35,25 +30,17 @@ public class MainVue extends JFrame {
     public static final int DIFF_HEURE = 1800;
 
 
-    private EcouteurDeBoutons ecouteurDeBoutons;
-    private EcouteurDeSouris ecouteurDeSouris;
-    private EcouteurDeComposant ecouteurDeComposant;
-    private EcouteurDeSpinner ecouteurDeSpinner;
-    private EcouteurDeSlider ecouteurDeSlider;
-    private JMenuBar menuBar;
     private MapVue mapPanel;
     private JSpinner spinnerLivreur;
     private JPanel panelHeureDebut;
     private JLabel labelHeureDepart;
     private final JButton genererTournees;
     private final JButton demarrerTournees;
-    private final JMenuItem chargerPlanXML;
     private final JMenuItem chargerLivraisonXML;
 
     private JSlider sliderHeure;
     private JLabel labelSliderHeure;
     private JLabel zoomLabel;
-    private JPanel livreursPanel;
     private  JPanel livreursInnerPanel;
     private GridBagConstraints constraints;
 
@@ -65,11 +52,12 @@ public class MainVue extends JFrame {
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         ImageIcon imageIcon = new ImageIcon("src\\bike_icon.png");
         setIconImage(imageIcon.getImage());
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         // Init map
         mapPanel = new MapVue();
 
         // Création de la menubar
-        menuBar = new JMenuBar();
+        JMenuBar menuBar = new JMenuBar();
 
 
         // Layout de la fenetre
@@ -79,9 +67,11 @@ public class MainVue extends JFrame {
         //mapPanel.setBackground(Color.BLUE);
 
         // Ajout panel legende livreurs
-        livreursPanel = new JPanel(new BorderLayout());
+        JPanel livreursPanel = new JPanel(new BorderLayout());
+        JScrollPane scrollPane = new JScrollPane(livreursPanel);
+        scrollPane.setBorder(new EmptyBorder(0, 10, 0, 10));
         livreursInnerPanel = new JPanel();
-        livreursInnerPanel.setBorder(new EmptyBorder(20, 10, 0, 10));
+        //livreursInnerPanel.setBorder(new EmptyBorder(0, 10, 0, 10));
         livreursInnerPanel.setLayout(new GridBagLayout());
         constraints = new GridBagConstraints();
         constraints.gridx = 0;
@@ -91,7 +81,7 @@ public class MainVue extends JFrame {
         // Création Debug Panel
         JPanel debugPanel = new JPanel(new BorderLayout());
         sliderHeure = new JSlider(JSlider.HORIZONTAL,HEURE_DEBUT, HEURE_FIN, HEURE_DEBUT);
-        Hashtable labelTable = new Hashtable();
+        Hashtable<Integer, JLabel> labelTable = new Hashtable<>();
         for(int i = HEURE_DEBUT ; i<=HEURE_FIN ; i++){
             if(i%DIFF_HEURE==0){
                 labelTable.put(i,new JLabel(i/3600+":"+String.format("%02d", i%3600/60)));
@@ -113,11 +103,11 @@ public class MainVue extends JFrame {
         mapPanel.setControler(controler);
 
         // Crétion des listener
-        ecouteurDeSlider = new EcouteurDeSlider(controler);
-        ecouteurDeBoutons = new EcouteurDeBoutons(controler);
-        ecouteurDeSouris = new EcouteurDeSouris(controler);
-        ecouteurDeComposant = new EcouteurDeComposant(controler);
-        ecouteurDeSpinner = new EcouteurDeSpinner(controler);
+        EcouteurDeSlider ecouteurDeSlider = new EcouteurDeSlider(controler);
+        EcouteurDeBoutons ecouteurDeBoutons = new EcouteurDeBoutons(controler);
+        EcouteurDeSouris ecouteurDeSouris = new EcouteurDeSouris(controler);
+        EcouteurDeComposant ecouteurDeComposant = new EcouteurDeComposant(controler);
+        EcouteurDeSpinner ecouteurDeSpinner = new EcouteurDeSpinner(controler);
         mapPanel.addMouseListener(ecouteurDeSouris);
         mapPanel.addMouseMotionListener(ecouteurDeSouris);
         mapPanel.addComponentListener(ecouteurDeComposant);
@@ -137,13 +127,6 @@ public class MainVue extends JFrame {
         spinnerLivreur.addChangeListener(ecouteurDeSpinner);
         spinnerLivreur.setEnabled(false);
         nbPersonPanel.add(spinnerLivreur);
-
-        /*JComboBox nbLivreurs = new JComboBox();
-        nbLivreurs.addActionListener(ecouteurDeBoutons);
-        for(int i = 1; i < 16; i++)
-            nbLivreurs.addItem(""+i);
-        nbLivreurs.setMaximumSize( nbLivreurs.getPreferredSize() );
-        nbPersonPanel.add(nbLivreurs);*/
 
         panelHeureDebut = new JPanel();
         panelHeureDebut.setLayout(new GridBagLayout());
@@ -174,12 +157,12 @@ public class MainVue extends JFrame {
         toolPanel.add(demarrerTourneesPanel);
         this.add(debugPanel,BorderLayout.SOUTH);
         this.add(mapPanel,BorderLayout.CENTER);
-        this.add(livreursPanel,BorderLayout.EAST);
+        this.add(scrollPane,BorderLayout.EAST);
         this.add(toolPanel,BorderLayout.NORTH);
 
 
         //Poptlation de la menubar
-        chargerPlanXML = new JMenuItem(CHARGER_PLAN);
+        JMenuItem chargerPlanXML = new JMenuItem(CHARGER_PLAN);
         chargerLivraisonXML = new JMenuItem(CHARGER_LIVRAISON);
         chargerLivraisonXML.setEnabled(false);
         chargerPlanXML.addActionListener(ecouteurDeBoutons);
@@ -202,14 +185,7 @@ public class MainVue extends JFrame {
     }
 
     public void updateMousePosition(Point point) {
-        //XPosition.setText(""+point.x);
-        //YPosition.setText(""+point.y);
         mapPanel.onMouseMove(point);
-    }
-
-    public void setSelectedNode(Noeud n)
-    {
-        //selectedNode.setText(n.toString());
     }
 
     public void displayMenuNode(Noeud n, MouseEvent e, PopUpMenu popUpMenu)
@@ -231,6 +207,10 @@ public class MainVue extends JFrame {
         mapPanel.selectNode(point,e);
     }
 
+    /**
+     * Assigne "heureDepart" dans le JLabel prevu a cet effet
+     * @param heureDepart Heure de Depart des Tournees
+     */
     public void setLabelHeureDepart(Date heureDepart){
         Calendar cal = Calendar.getInstance();
         cal.setTime(heureDepart);
@@ -280,22 +260,30 @@ public class MainVue extends JFrame {
         mapPanel.updatePositionLivreurs(update);
     }
 
+    /**
+     * Met à jour le Label d'affichage de la valeur de Slider
+     * @param secondes Valeur du JSlider
+     */
     public void updateLabelSliderHeure(int secondes){
         labelSliderHeure.setText(secondes/3600+":"+String.format("%02d", secondes%3600/60));
     }
 
+    /**
+     * Affiche la legende des livreurs
+     *
+     * @param plan Plan de l'application dans lequel se trouve les livreurs
+     */
     public void drawLegend(Plan plan) {
         livreursInnerPanel.removeAll();
         int i = 0;
         if(plan!=null)
         {
-            for (Livreur livreur : plan.getLivreursEnCours()){
+            for (Tournee tournee : plan.getTournees()){
+                Livreur livreur = tournee.getLivreur();
                 constraints.gridy = i++;
 
                 JPanel livreurPan = new JPanel();
-                livreurPan.setBorder(new EmptyBorder(-5, 0, 10, 0));
 
-                Tournee tournee = plan.getTourneeParLivreur(livreur);
                 SimpleDateFormat format = new SimpleDateFormat("HH:mm");
                 JLabel nomLivreur = new JLabel(livreur.getPrenom() + " | Fin : "+format.format(tournee.getRetourEntrepot()));
                 nomLivreur.setBorder(new EmptyBorder(0, 20, 0, 0));
@@ -308,10 +296,26 @@ public class MainVue extends JFrame {
 
                 livreurPan.add(new JLabel(imageIcon));
                 livreurPan.add(nomLivreur);
+                JPanel livraisonsPanel = new JPanel(new GridLayout(tournee.getLivraisons().size(),1));
+                for(Livraison l : tournee.getLivraisons()){
+                    JLabel jl = new JLabel("("+(tournee.getLivraisons().indexOf(l)+1)+") - "+format.format(l.getHeureArrivee())+" -> "+format.format(new Date(l.getHeureArrivee().getTime() + l.getDuree()*1000)));
+                    livraisonsPanel.add(jl);
+                }
+                livraisonsPanel.setBorder(new EmptyBorder(0, 10, 10, 10));
                 livreursInnerPanel.add(livreurPan,constraints);
+                constraints.gridy = i++;
+                livreursInnerPanel.add(livraisonsPanel,constraints);
             }
         }
         validate();
+    }
+
+    /**
+     *
+     * @return La Date cree grace a la valeur du JSlider
+     */
+    public Date getHeureSlider() {
+        return new Date(sliderHeure.getValue()*1000);
     }
 }
 

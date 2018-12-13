@@ -6,7 +6,6 @@ import modele.Plan;
 import vue.PopUpMenu;
 
 import javax.swing.*;
-import java.awt.*;
 
 public class EtatClientsAvertis extends Etat {
     public EtatClientsAvertis(Controler c) {
@@ -17,7 +16,7 @@ public class EtatClientsAvertis extends Etat {
     @Override
     public PopUpMenu getPopUpMenu(Plan plan, Noeud n) {
         PopUpMenu popUpMenu = super.getPopUpMenu(plan,n);
-        if(!plan.getLivraisons().containsKey(n.getId()))
+        if(!plan.getLivraisons().containsKey(n.getId()) && !plan.getLivraisonsUrgentes().containsKey(n.getId()))
         {
             JMenuItem menuItem = new JMenuItem("Ajouter une livraison");
             popUpMenu.add(menuItem);
@@ -38,7 +37,20 @@ public class EtatClientsAvertis extends Etat {
     }
 
     public void ajouterLivraisonApresLancement(Noeud n){
-        System.out.println("Ajout du noeud "+n.getId()+" au trajets.");
-        System.out.println("test");
+        boolean good;
+        int duree = 0;
+        do {
+            try {
+                String ret = JOptionPane.showInputDialog("Entrez la durée de livraison", 60);
+                if(ret == null)
+                    return;
+                duree = Integer.parseInt(ret);
+                good=true;
+            }catch(NumberFormatException e)
+            {
+                good=false;
+            }
+        }while(!good);
+        controler.ajouterLivraisonUrgente(n,duree);
     }
 }

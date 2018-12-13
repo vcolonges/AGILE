@@ -10,6 +10,7 @@ public class Plan {
     private HashMap<Long, Noeud> noeuds;
     private HashSet<Troncon> troncons;
     private HashMap<Long, Livraison> livraisons;
+    private HashMap<Long, Livraison> livraisonsUrgentes;
     private Livraison entrepot;
     private Date heureDepart;
     private ArrayList<Tournee> tournees;
@@ -21,6 +22,7 @@ public class Plan {
         this.livraisons = new HashMap<>();
         this.tournees = new ArrayList<>();
         this.nbLivreurs = 1;
+        this.livraisonsUrgentes = new HashMap<>();
     }
 
     public HashMap<Long, Noeud> getNoeuds(){
@@ -122,29 +124,20 @@ public class Plan {
         tournees.remove(tournee);
     }
 
+    /**
+     * Renvoie le nombre de livreur max que peut gerer le plan
+     *
+     * @return nblivreurs
+     */
     public int getNbLivreurs() {
         return nbLivreurs;
     }
 
-    public void resetLivraisons(){
-        for(Livraison livraison : livraisons.values()){
-            for (Chemin chemin : livraison.getChemins()) {
-                chemin.resetChemin();
-            }
-            livraison.resetChemin();
-        }
-        livraisons.clear();
-    }
-
-    public void resetTournees(){
-        for(Tournee tournee : tournees) {
-            for (Chemin chemin : tournee.getChemins()) {
-                chemin.resetChemin();
-            }
-        }
-        tournees.clear();
-    }
-
+    /**
+     * Definit le nombre de livreur max que peut gerer le plan
+     *
+     * @param nbLivreurs Nombre de livreur maximum
+     */
     public void setNbLivreurs(int nbLivreurs) {
         this.nbLivreurs = nbLivreurs;
     }
@@ -182,6 +175,12 @@ public class Plan {
         return result;
     }
 
+    /**
+     * Renvoie la tournee associee a un livreur donne
+     *
+     * @param livreur livreur dont on veut connaitre la tournee
+     * @return tournee ou null
+     */
     public Tournee getTourneeParLivreur(Livreur livreur){
         for(Tournee tournee : tournees){
             if(tournee.getLivreur() == livreur)
@@ -190,6 +189,11 @@ public class Plan {
         return null;
     }
 
+    /**
+     * Renvoie la liste des livreurs en charge d'une tournee
+     *
+     * @return liste des livreurs
+     */
     public ArrayList<Livreur> getLivreursEnCours() {
         ArrayList<Livreur> livreursCourants = new ArrayList<>();
         for (Tournee tournee : tournees) {
@@ -199,6 +203,12 @@ public class Plan {
         return livreursCourants;
     }
 
+    /**
+     * Renvoie la tournee dans laquelle se trouve la livraison donnee
+     *
+     * @param livraison livraison dont on veut connaitre la tournee
+     * @return tournee ou null
+     */
     public Tournee getTourneeParLivraison(Livraison livraison){
         for(Tournee tournee : tournees) {
             for(Livraison liv : tournee.getLivraisons())
@@ -206,5 +216,13 @@ public class Plan {
                     return tournee;
         }
         return null;
+    }
+
+    public HashMap<Long, Livraison> getLivraisonsUrgentes() {
+        return livraisonsUrgentes;
+    }
+
+    public void addLivraisonUrgente(Livraison livraison) {
+        livraisonsUrgentes.put(livraison.getNoeud().getId(),livraison);
     }
 }

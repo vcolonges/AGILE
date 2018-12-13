@@ -24,7 +24,7 @@ public class AlgoLivraisonUrgente {
         this.finTravailleLivreur = new HashMap<>();
         this.tourneeModifiable = new HashMap<>();
         this.idLivreur = 0;
-        this.heureRetourMin = new Date(0);
+        this.heureRetourMin = new Date(Long.MAX_VALUE);
     }
 
     private void remplirMap(Collection<Tournee> tournees, Date heureActuelle){
@@ -49,9 +49,18 @@ public class AlgoLivraisonUrgente {
         }
     }
 
-    public Tournee modifiTournee(Livraison livraison, Livraison entrepot, Collection<Tournee> tournees, Date heureActuelle, int nbLivreurs)
+    public Tournee modifiTournee(Livraison livraison, Collection<Livraison> livraisonsUrgentes, Livraison entrepot, Collection<Tournee> tournees, Date heureActuelle, int nbLivreurs)
     {
         Tournee tournee;
+
+        AlgoParcour algoParcour = new AlgoParcour();
+        ArrayList<Livraison> livraisonsEntrepot = new ArrayList<>(livraisonsUrgentes);
+        livraisonsEntrepot.add(entrepot);
+        for (Livraison depart: livraisonsEntrepot) {
+            ArrayList<Chemin> chemins = algoParcour.calculChemin(depart, livraisonsEntrepot);
+            depart.getChemins().addAll(chemins);
+        }
+
         remplirMap(tournees,heureActuelle);
 
         for (int i = 0; i < nbLivreurs; i++) {
@@ -74,7 +83,7 @@ public class AlgoLivraisonUrgente {
 
             tournee = new Tournee(livraisons,chemins,heureDepart,ListeLivreurs.livreurs[idLivreur]);
         }
-
+        tournee.calculeHoraire();
         return tournee;
     }
 
