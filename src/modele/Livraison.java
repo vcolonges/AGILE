@@ -7,7 +7,7 @@ import java.util.Objects;
 public class Livraison {
 
     private Noeud noeud;
-    private int duree;
+    private int duree; //en secondes
     private HashSet<Chemin> chemins;
     private Date heureArrivee;
 
@@ -68,7 +68,6 @@ public class Livraison {
     }
 
     public Chemin getCheminVers(Livraison destination){
-        //System.out.println(chemins.size());
         for (Chemin item: chemins) {
             if(item.getDestination() == destination){
                 return item;

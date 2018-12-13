@@ -3,17 +3,15 @@ package vue;
 import controleur.Controler;
 import controleur.etat.EtatClientsAvertis;
 import modele.*;
-import utils.ListeLivreurs;
 import utils.Paire;
+import utils.Star;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
-import java.awt.geom.Line2D;
-import java.lang.reflect.Array;
+import java.util.Queue;
 import java.util.*;
 import java.util.concurrent.LinkedBlockingDeque;
-import java.awt.BasicStroke;
 
 public class MapVue extends JPanel {
 
@@ -22,10 +20,9 @@ public class MapVue extends JPanel {
     private Plan resizePlan;
     private Queue<Noeud> hoveredNodes;
     private ArrayList<Noeud> deletedNodes;
-    private final static int WIDTH_DOT = 10;
+    private final static int WIDTH_DOT = 13;
     private final static int PADDING = 10;
 
-    private final Color[] colors = {Color.GREEN,Color.ORANGE,Color.RED,Color.YELLOW,Color.WHITE,Color.PINK,Color.CYAN,Color.BLUE};
     private double zoom;
     private static final double ZOOM_MAX = 2;
     private static final double ZOOM_MIN = 1;
@@ -40,13 +37,9 @@ public class MapVue extends JPanel {
         zoomArea = new Rectangle(0,0,getWidth(),getHeight());
     }
 
-    double phi = Math.toRadians(40);
-    int barb = 10;
-
-
     @Override
     protected void paintComponent(Graphics g) {
-        // boolean flag=false;
+       // boolean flag=false;
         super.paintComponent(g);
 
         g.setColor(Color.BLACK);
@@ -61,7 +54,6 @@ public class MapVue extends JPanel {
                 drawLine(start,stop,g);
             }
 
-
             if(!resizePlan.getTournees().isEmpty()){
 
                 for(Tournee tournee : resizePlan.getTournees()) {
@@ -73,8 +65,8 @@ public class MapVue extends JPanel {
                             drawLine(new Point((int)start_tournee.getLongitude(),(int)start_tournee.getLatitude()),new Point((int)end_tournee.getLongitude(),(int)end_tournee.getLatitude()),g,3);
                             if(tournee.getLivraisons().contains(resizePlan.getLivraisons().get(start_tournee.getId()))){
                                 drawNode(new Point((int)start_tournee.getLongitude(),(int)start_tournee.getLatitude()),g);
-                            }else if(tournee.getLivraisons().contains(resizePlan.getLivraisons().get(end_tournee.getId()))){
-                                drawNode(new Point((int)end_tournee.getLongitude(),(int)end_tournee.getLatitude()),g);
+                            }else if(tournee.getLivraisons().contains(controler.getPlan().getLivraisonsUrgentes().get(start_tournee.getId()))){
+                                drawNode(new Point((int)start_tournee.getLongitude(),(int)start_tournee.getLatitude()),g);
                             }
                         }
                     }
@@ -88,9 +80,13 @@ public class MapVue extends JPanel {
             }
 
             if(resizePlan.getEntrepot()!=null){
-                g.setColor(Color.MAGENTA);
+                g.setColor(Color.RED);
                 Point p = new Point((int)resizePlan.getEntrepot().getNoeud().getLongitude(),(int)resizePlan.getEntrepot().getNoeud().getLatitude());
-                drawNode(p,g);
+                //drawNode(p,g);
+                p = resizedNodeToZoom(p);
+                Star star = new Star(p.x,p.y,15,6,5);
+                Graphics2D g2 = (Graphics2D)g;
+                g2.fill(star);
             }
             if(deletedNodes!= null){
                 for(Noeud n : deletedNodes){
@@ -107,7 +103,7 @@ public class MapVue extends JPanel {
                 }
             }
 
-            g.setColor(Color.yellow);
+            g.setColor(Color.YELLOW);
             while(!hoveredNodes.isEmpty())
             {
                 Noeud hoveredNode = hoveredNodes.poll();
@@ -150,8 +146,8 @@ public class MapVue extends JPanel {
         long originID;
         long destinationID;
 
-        Noeud newOriginTroncon = null;
-        Noeud newDestinationTroncon = null;
+        Noeud newOriginTroncon;
+        Noeud newDestinationTroncon;
 
         for(Troncon t : controler.getPlan().getTroncons()){
             originID = t.getOrigine().getId();
@@ -161,21 +157,21 @@ public class MapVue extends JPanel {
             newDestinationTroncon = this.resizePlan.getNoeuds().get(destinationID);
 
             this.resizePlan.addTroncon(new Troncon(newOriginTroncon,newDestinationTroncon,t.getLongueur(),t.getNomRue()));
-        }
 
+        }
         for(Livraison l : controler.getPlan().getLivraisons().values()){
             this.resizePlan.addLivraison(new Livraison(this.resizePlan.getNoeuds().get(l.getNoeud().getId()),l.getDuree()));
         }
         if(controler.getPlan().getEntrepot()!=null)
             this.resizePlan.setEntrepot(new Livraison(this.resizePlan.getNoeuds().get(controler.getPlan().getEntrepot().getNoeud().getId()),0));
 
-        tracerTournee(controler.getPlan().getTournees());
+        tracerTournee(p.getTournees());
         repaint();
 
     }
 
-    public void setControler(Controler c) {
-        this.controler = c;
+    public void setControler(Controler controler) {
+        this.controler = controler;
     }
 
     public void onMouseMove(Point point) {
@@ -185,8 +181,20 @@ public class MapVue extends JPanel {
         Noeud n = getNearestResizedNode(point);
         if(n != null)
         {
+            Iterator itr = resizePlan.getTournees().listIterator();
+            while(itr.hasNext()) {
+                Tournee t = (Tournee)itr.next();
+                for(Chemin c : t.getChemins()){
+                    for(Troncon tr : c.getTroncons()){
+                        if(n.equals(tr.getOrigine())||n.equals(tr.getDestination())){
+                            Collections.swap(resizePlan.getTournees(),resizePlan.getTournees().indexOf(t),resizePlan.getTournees().size()-1);
+                        }
+                    }
+
+                }
+            }
+
             hoveredNodes.add(n);
-            controler.onHoverNode(n);
         }
 
         repaint();
@@ -205,13 +213,17 @@ public class MapVue extends JPanel {
         repaint();
     }
 
+    /**
+     * Met les tournees en parametre a l'echelle du plan de l'ihm et les trace
+     *
+     * @param tournees tournees a tracer
+     */
     public void tracerTournee(ArrayList<Tournee> tournees) {
         long originID;
         long destinationID;
-        Noeud newOriginTroncon = null;
-        Noeud newDestinationTroncon = null;
+        Noeud newOriginTroncon;
+        Noeud newDestinationTroncon;
         ArrayList<Tournee> newTournees = new ArrayList<>();
-        int livreur = 0;
         for(Tournee tournee : tournees) {
             ArrayList<Chemin> chemins = new ArrayList<>();
             for (Chemin chemin : tournee.getChemins()) {
@@ -235,6 +247,8 @@ public class MapVue extends JPanel {
         }
 
         resizePlan.setTournees(newTournees);
+
+        controler.drawLegende();
         repaint();
     }
 
@@ -254,25 +268,14 @@ public class MapVue extends JPanel {
         return null;
     }
 
-    public void supprimerLivraison(Noeud n){
-        resizePlan.getLivraisons().remove(n.getId());
+    public void deletePoint(Noeud n){
         deletedNodes.add(this.resizePlan.getNoeuds().get(n.getId()));
     }
 
-    public void revertAjouterLivraison(Livraison l){
-        resizePlan.getLivraisons().put(l.getNoeud().getId(),l);
-        for(int index=0;index<deletedNodes.size();index++){
-            if(deletedNodes.get(index).getId()==l.getNoeud().getId()){
-                deletedNodes.remove(index);
-                System.out.println("Deleted");
-            }
-        }
-    }
     public void wheelMovedUp(int wheelRotation) {
         zoom+=0.1;
         if(zoom>ZOOM_MAX) zoom = ZOOM_MAX;
         updateZoomArea();
-        controler.setZoom(zoom);
     }
 
     private void updateZoomAreaLocation(int x, int y)
@@ -297,12 +300,11 @@ public class MapVue extends JPanel {
         zoom-=0.1;
         if(zoom<ZOOM_MIN) zoom = ZOOM_MIN;
         updateZoomArea();
-        controler.setZoom(zoom);
     }
+
     public void mouseDragged(Point point) {
         Point oldPosition = controler.getLastDragMousePosition();
-        Point newPosition = point;
-        Point vectorInZoom = new Point(newPosition.x-oldPosition.x,newPosition.y-oldPosition.y);
+        Point vectorInZoom = new Point(point.x-oldPosition.x, point.y-oldPosition.y);
         Point vectorReal = new Point(-vectorInZoom.x*(this.getWidth()/(int)zoomArea.getWidth()),-vectorInZoom.y*(this.getHeight()/(int)zoomArea.getHeight()));
         Point newOrigineZoomAreaPosition = new Point(zoomArea.getLocation().x+vectorReal.x,zoomArea.getLocation().y+vectorReal.y);
         updateZoomAreaLocation(newOrigineZoomAreaPosition.x,newOrigineZoomAreaPosition.y);
@@ -321,8 +323,15 @@ public class MapVue extends JPanel {
 
     private void drawNode(Point p, Graphics g)
     {
+        drawNode(p,g,WIDTH_DOT);
+        /*Point pointInZoom = resizedNodeToZoom(p);
+        g.fillOval( pointInZoom.x - WIDTH_DOT / 2,  pointInZoom.y - WIDTH_DOT / 2, WIDTH_DOT, WIDTH_DOT);*/
+    }
+
+    private void drawNode(Point p, Graphics g, int size)
+    {
         Point pointInZoom = resizedNodeToZoom(p);
-        g.fillOval( pointInZoom.x - WIDTH_DOT / 2,  pointInZoom.y - WIDTH_DOT / 2, WIDTH_DOT, WIDTH_DOT);
+        g.fillOval( pointInZoom.x - WIDTH_DOT / 2,  pointInZoom.y - WIDTH_DOT / 2, size, size);
     }
 
     private void drawLine(Point p1, Point p2, Graphics g)
@@ -352,6 +361,4 @@ public class MapVue extends JPanel {
         }
         repaint();
     }
-
-
 }

@@ -1,16 +1,12 @@
 package controleur;
 
 
+import algorithmes.AlgoLivraisonUrgente;
 import algorithmes.AlgoParcour;
-import com.sun.tools.javac.Main;
 import controleur.etat.*;
-import controleur.gestionCommande.*;
 import exceptions.XMLException;
 import modele.*;
-import thread.threadsimulation.ThreadSimulation;
-import thread.threadtsp.ThreadTSP;
-import thread.threadtsp.ThreadTSPFactory;
-import utils.ListeLivreurs;
+import thread.threadtsp.*;
 import utils.Paire;
 import utils.XMLParser;
 import vue.MainVue;
@@ -18,6 +14,7 @@ import vue.MainVue;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 
 public class Controler {
@@ -25,13 +22,9 @@ public class Controler {
     private Plan plan;
     private MainVue mainvue;
     private Etat etat;
-    private AlgoParcour algo;
     private Point lastDragMousePosition;
     private EcouteurDeTacheTSP ecouteurDeTacheTSP;
-    private EcouteurDeTacheSimulation ecouteurDeTacheSimulation;
 
-
-    private CommandeManager ctrlZ;
     /**
      * Cree le controleur de l'application
      */
@@ -39,10 +32,7 @@ public class Controler {
         this.mainvue = vue;
         etat = new EtatDebut(this);
         mainvue.setEtat(etat);
-        algo = new AlgoParcour();
         ecouteurDeTacheTSP = new EcouteurDeTacheTSP(this);
-        this.ecouteurDeTacheSimulation = new EcouteurDeTacheSimulation(this);
-        this.ctrlZ = new CommandeManager();
     }
 
     public void chargerPlan(String lienPlan){
@@ -63,10 +53,11 @@ public class Controler {
         else{
             try {
                 plan.getLivraisons().clear();
-                plan = XMLParser.parseTrajets(lienLivraisons, plan);
+                plan = XMLParser.parseLivraisons(lienLivraisons, plan);
                 mainvue.getMapPanel().loadPlan(plan);
                 etat = new EtatLivraisonsCharges(this);
                 mainvue.setEtat(etat);
+                mainvue.setLabelHeureDepart(plan.getHeureDepart());
             } catch (XMLException e) {
                 e.printStackTrace();
                 mainvue.errorMessage(e.getMessage());
@@ -76,11 +67,6 @@ public class Controler {
 
     public void mouseMoved(Point point) {
         mainvue.updateMousePosition(point);
-    }
-
-    public void onHoverNode(Noeud n)
-    {
-        mainvue.setSelectedNode(n);
     }
 
     public void onPressNode(Noeud n, MouseEvent e) {
@@ -102,36 +88,19 @@ public class Controler {
     public void genererTournees() {
         etat = new EtatTournesGeneres(this);
         mainvue.setEtat(etat);
-        ArrayList<Livraison> livraisons = new ArrayList<>();
-        livraisons.addAll(plan.getLivraisons().values());
+        ArrayList<Livraison> livraisons = new ArrayList<>(plan.getLivraisons().values());
         ThreadTSP tsp = ThreadTSPFactory.getTSPThread(livraisons,plan.getNbLivreurs(),plan.getEntrepot(),plan.getHeureDepart());
         tsp.addThreadListener(ecouteurDeTacheTSP);
         tsp.start();
     }
 
     public void supprimerLivraison(Noeud n){
-        mainvue.supprimerLivraison(n);
-        System.out.println(plan.getLivraisons().get(n.getId()));
-        ctrlZ.add(new SupprimerCommande(plan.getLivraisons().get(n.getId()),this));
-        this.plan.getLivraisons().remove(n.getId()); // Suppression dans la structure de donnée.
-    }
 
-    public void revertAjouterLivraison(Livraison l){
-        this.plan.getLivraisons().put(l.getNoeud().getId(),l);
-        mainvue.revertAjouterLivraison(l);
-    }
-
-
-    public void ctrlZ() {
-        ctrlZ.undo();
+        mainvue.deletePoint(n);
     }
     public void demarrerTournees() {
         etat = new EtatClientsAvertis(this);
         mainvue.setEtat(etat);
-
-        ThreadSimulation t = new ThreadSimulation(plan.getTournees(),plan.getHeureDepart());
-        t.addThreadListener(ecouteurDeTacheSimulation);
-        t.start();
     }
 
     public Point getLastDragMousePosition() {
@@ -145,12 +114,6 @@ public class Controler {
     public void wheelMovedUp(int wheelRotation) {
         mainvue.getMapPanel().wheelMovedUp(wheelRotation);
     }
-
-    public void setZoom(double zoom) {
-        mainvue.setZoom((int)(zoom*100.0));
-    }
-
-    public void setPlan(Plan p){ this.plan = p;}
 
     public void wheelMovedDown(int wheelRotation) {
         mainvue.getMapPanel().wheelMovedDown(wheelRotation);
@@ -175,47 +138,67 @@ public class Controler {
         return ecouteurDeTacheTSP;
     }
 
+    /**
+     * Appelle la vue pour qu'elle mette a jour la position des Livreurs
+     * @param update Contient pour chaque Livreur une Paire avec sa position
+     */
     public void updatePositionLivreurs(HashMap<Livreur, Paire<Double, Double>> update) {
         mainvue.updatePositionLivreurs(update);
+    }
+
+    /**
+     * Appelle la vue pour qu'elle mette a jour le label du slider
+     * @param secondes Temps a mettre dans le slider en secondes
+     */
+    public void updateLabelSliderHeure(int secondes){
+        mainvue.updateLabelSliderHeure(secondes);
+    }
+
+    /**
+     * Appelle la vue pour qu'elle mettre a jour la position des livreurs a l'instant "secondes"
+     * @param secondes
+     */
+    public void updateMapVueAvecPositionAt(int secondes){
+        HashMap positionLivreur = new HashMap();
+        for(Tournee t : plan.getTournees()){
+            if(t.getHeureDepart().getTime() <= new Date((secondes*1000)-(3600*1000)).getTime())
+            {
+                // -3600*1000 car la date commence à 1h
+                Paire<Double,Double> p = t.getPositionAt(new Date((secondes*1000) - (3600*1000)));
+                positionLivreur.put(t.getLivreur(),p);
+            }
+
+        }
+        updatePositionLivreurs(positionLivreur);
     }
 
     public Etat getEtat() {
         return etat;
     }
 
-
-    public void setMainvue(MainVue v){
-        this.mainvue = v;
+    /**
+     * Affiche la légende des livreurs
+     */
+    public void drawLegende(){
+        mainvue.drawLegend(plan);
     }
 
-    public MainVue getMainVue(){
-        return this.mainvue;
+    /**
+     * Met a jour le nombre de Livreurs dans le Plan
+     * @param value Nombre de Livreurs
+     */
+    public void updateNbLivreur(int value) {
+        plan.setNbLivreurs(value);
     }
-    public void updateDeliverer(String name,Noeud n,Plan p){
-        if(name != null && name.length() > 0) {
-            ctrlZ.add(new ModifierLivreur(p,this));
-            Livraison livraison = p.getLivraisons().get(n.getId());
-            for(Tournee tournee : p.getTournees()){
-                if(tournee.getLivraisons().get(0) == livraison){
-                    p.removeTournee(tournee);
-                    tournee.removeLivraison(livraison);
 
-                    ThreadTSP t = ThreadTSPFactory.getTSPThread(tournee.getLivraisons(),p.getEntrepot(),p.getHeureDepart(), tournee.getLivreur());
-                    t.addThreadListener(this.getEcouteurDeTacheTSP());
-                    t.start();
-                    break;
-                }
-            }
-            Livreur nouveauLivreur = ListeLivreurs.getLivreurParPrenom(name);
-            Tournee tournee = p.getTourneeParLivreur(nouveauLivreur);
-            if(tournee != null){
-                p.removeTournee(tournee);
-                tournee.addLivraison(livraison);
-
-                ThreadTSP t = ThreadTSPFactory.getTSPThread(tournee.getLivraisons(),p.getEntrepot(),p.getHeureDepart(), nouveauLivreur);
-                t.addThreadListener(this.getEcouteurDeTacheTSP());
-                t.start();
-            }
-        }
+    public void ajouterLivraisonUrgente(Noeud n, int duree) {
+        AlgoLivraisonUrgente algo = new AlgoLivraisonUrgente();
+        AlgoParcour algoParcour = new AlgoParcour();
+        Livraison livraison = new Livraison(n,duree);
+        plan.addLivraisonUrgente(livraison);
+        Tournee t = algo.modifiTournee(livraison,plan.getLivraisonsUrgentes().values(),plan.getEntrepot(),plan.getTournees(),mainvue.getHeureSlider(),plan.getNbLivreurs());
+        if(!plan.getTournees().contains(t))
+            plan.addTournee(t);
+        mainvue.getMapPanel().tracerTournee(plan.getTournees());
     }
 }
