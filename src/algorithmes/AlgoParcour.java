@@ -12,8 +12,13 @@ import java.util.HashSet;
 
 
 public class AlgoParcour {
-    //calculer 1e plus court chemin entre 2 livraisons
-    // à recoder avec une somme pour eviter des boucles
+    /**
+     * Effectue un calcul de plus court chemin à partir d'une livraison vers tous les autres livraisons
+     * @param departLiv la livraison à partir de laquelle sont calcules les plus courts chemins
+     * @param livraisons la liste de toutes les livraisons present sur la carte
+     * @return une liste de chemin contenant l'ensemble de tronons du plus cours chemin de la livraison de depart vers
+     * toute autre livraison
+     */
     public static ArrayList<Chemin> calculChemin(Livraison departLiv, ArrayList<Livraison> livraisons) {
         //initialisation
         ArrayList<Chemin> result = new ArrayList<>();
@@ -35,8 +40,8 @@ public class AlgoParcour {
         {   //si le noeud gris est celui de la fin, on ne calcule pas ses successeurs car c'est la fin de chemin
             Noeud curNoeud = greyNoeuds.get(curNoeudIndex);
 
-            Noeud tmpGreyNoeud = null;
-            if(blackNoeud.contains(curNoeud)) //****Complexité O(n), peut être amélioré
+            Noeud tmpGreyNoeud;
+            if(blackNoeud.contains(curNoeud)) //Complexité O(n), peut être amélioré
             {
                 continue;
             }
@@ -87,14 +92,26 @@ public class AlgoParcour {
 
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //Calculer la distance entre 2 points.
+    /**
+     * calcule la distance entre deux points
+     * @param x1 coordonee latitude du point 1
+     * @param y1 coordonee longitude du point 1
+     * @param x2 coordonee latitude du point 2
+     * @param y2 coordonee longitude du point 2
+     * @return distance entre deux points sous format double
+     */
     private static Double pointsDistance(double x1, double y1, double x2, double y2) {
         return Math.sqrt(Math.pow((x2 - x1), 2.0) + Math.pow((y2 - y1),2.0 ));
     }
 
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //calculer les données d'un cercle
+    /**
+     * Initialise les donnees : coordonnees de barycentre de l'ensemble de livraisons
+     * @param circle est une liste des livraisons qui represente une partition de toutes les livraisons
+     * @return une liste de coordonees ou le premier element est la coordonnee latitude et le deuxième element
+     * la coordonee longitude du barycentre
+     */
     private static ArrayList<Double> initCircleData(ArrayList<Livraison> circle) {
 
         ArrayList<Double> circleData = new ArrayList<>();
@@ -115,7 +132,13 @@ public class AlgoParcour {
 
 
     /////////////////////////////////////////////////////////////////////////////
-
+    /**
+     *Initialise les donnees : coordonnees de barycentre de l'ensemble de livraisons à partir de deux listes
+     * @param circle est une liste des livraisons qui represente une partition de toutes les livraisons
+     * @param circle2 est une liste des livraisons validees pour circle
+     * @return une liste de coordonees ou le premier element est la coordonnee latitude et le deuxieme element
+     * la coordonee longitude du barycentre
+     */
     private static ArrayList<Double> initCircleData(ArrayList<Livraison> circle, ArrayList<Livraison> circle2) {
 
        ArrayList<Livraison> allCircle = new ArrayList<>(circle);
@@ -124,7 +147,15 @@ public class AlgoParcour {
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //test validité d'échange de livraisons entre cercles
+    /**
+     * verifier si lors de reajustement des ensembles de livraisons un echange potentiel entre deux cercles proches
+     * de 2 livraisons est benefique pour les deux cercles.
+     * @param origin la liste contenant les coordonees du barycentre du cercle d'origine
+     * @param l1 livraison appartenant a l'ensemble de livraison d'origine
+     * @param target la liste contenant les coordonees du barycentre du cercle recepteur
+     * @param l2 livraison appartenant a l'ensemble de livraisons recepteur
+     * @return vrai si l'echange de livraison est benefique et faux sinon
+     */
     private static boolean exchangeTest(ArrayList<Double> origin, Livraison l1, ArrayList<Double> target, Livraison l2)
     {
         double distanceL1ToOrigin = pointsDistance(l1.getNoeud().getLatitude(), l1.getNoeud().getLongitude(), origin.get(0), origin.get(1));
@@ -145,7 +176,15 @@ public class AlgoParcour {
 
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //optimiser le contenu d'un cercle
+    /**
+     * Optimise le contenu des ensembles de livraison au nombre de livreurs equitablement repartie.
+     * @param result une liste contenant des listes (sous-ensembles) de livraisons qui devrons etre associees à chaque livreur
+     * @param circlesData une liste de couple de coordonnes de barycentres de chaque ensemble de livraison
+     * @param nbrLivreur le nombre de livreurs correspondant au nombre de sous ensembles de livraisons
+     * @param nLimMin le cardinal minimal d'un sous ensemble de livraisons
+     * @param nLimMax le cardinal maximal d'un sous ensemble de livraisons
+     * @return une liste de listes (ensembles) de livraisons
+     */
     private static ArrayList<ArrayList<Livraison>> circleOpt(ArrayList<ArrayList<Livraison>> result, ArrayList<ArrayList<Double>> circlesData, int nbrLivreur, int nLimMin, int nLimMax)
     {
         ArrayList<ArrayList<Livraison>> tmpResult = new ArrayList<ArrayList<Livraison>>();
@@ -154,10 +193,11 @@ public class AlgoParcour {
             ArrayList<Livraison> tmpResultList = new ArrayList<Livraison>();
             tmpResult.add(tmpResultList);
         }
-
+        // on optimise les ensembles de livraison sans prendre en compte la cardinalité
         for (int iterationTime = 0; iterationTime < nbrLivreur; iterationTime++) {
             int indexCircle = 0;
             int loopCounter = nbrLivreur;
+            boolean testStable = true;
             while (loopCounter != 0) {
                 boolean testNoChange = true;
                 int lastCircleIndex = indexCircle;
@@ -176,7 +216,7 @@ public class AlgoParcour {
                                 lastCircleIndex = tmpIndexCircle;
                             }
                         }
-                        //si le noeud est plus pres du centre d'un autre cercle que du sien, on le transmet à resultat final du cercle ciblé et on redemarre l'algorithme
+                        //si le noeud est plus pres du centre d'un autre cercle que du sien, on le transmet au resultat final du cercle ciblé et on redemarre l'algorithme
                         //pour le cercle cible
                         //possible d'optimiser
                         if (lastCircleIndex != indexCircle) {
@@ -186,12 +226,14 @@ public class AlgoParcour {
 
                             indexCircle = lastCircleIndex;
                             testNoChange = false;
+                            testStable = false;
                             loopCounter = nbrLivreur;
                             break;
                         } else {
                             tmpResult.get(indexCircle).add(result.get(indexCircle).remove(indexNoeud));
                         }
                     }
+                    //si un sous-ensemble (cercle) est stable, on itere sur le suivant
                     if (testNoChange) {
                         indexCircle = (indexCircle + 1) % nbrLivreur;
                     }
@@ -200,27 +242,40 @@ public class AlgoParcour {
                     indexCircle = (indexCircle + 1) % nbrLivreur;
                 }
             }
-
+            //on concatène la partie stable de livraison avec la partie reattribué dans result
             for (int i = tmpResult.size() - 1; i >= 0; --i) {
                 result.get(i).addAll(tmpResult.get(i));
                 tmpResult.get(i).clear();
             }
+
+            //si les sous-ensembles de livraisons sont stables, on a pas besoin de continuer d'iterer
+            if(testStable)
+            {
+                break;
+            }
         }
 
+        //on complète les sous ensembles possedant moins de noeuds nécessaires même si c'est à l'encontre d'optimalité par effet absorbeur
+        //on parcourt tous les sous-ensembles
         for (int indexCurCircle = 0; indexCurCircle < result.size(); indexCurCircle++) {
+            //si la taille d'un sous-ensemble est inferieurs à celui attendu on itère sur les sous ensemble voisins
             if (result.get(indexCurCircle).size() < nLimMin && tmpResult.get(indexCurCircle).size() == 0) {
+                // tant que la taille du sous ensemble est inférieurs à la taille minimal on absorbe les noeuds voisins
                 while (result.get(indexCurCircle).size() < nLimMin) {
                     int indexTarget = -1;
                     int indexMoveFrom = -1;
                     double distanceToCenter = 1000000;
-
+                    //pour chaque sous-ensemble
                     for (int indexTargetCircle = 0; indexTargetCircle < nbrLivreur; indexTargetCircle++) {
+                        //si le sous ensemble est l'absorbeur, on continue
                         if (indexTargetCircle == indexCurCircle) {
                             continue;
                         }
+                        //on itere sur chaque noeud du sous-ensemble visé
                         for (int indexTargetNoeud = 0; indexTargetNoeud < result.get(indexTargetCircle).size(); indexTargetNoeud++) {
                             Livraison tmpLiv = result.get(indexTargetCircle).get(indexTargetNoeud);
                             double tmpDistance = pointsDistance(tmpLiv.getNoeud().getLatitude(), tmpLiv.getNoeud().getLongitude(), circlesData.get(indexCurCircle).get(0), circlesData.get(indexCurCircle).get(1));
+                            //si la distance entre noeud visé et le centre absorant est la plus petite possible
                             if (distanceToCenter > tmpDistance) {
                                 distanceToCenter = tmpDistance;
                                 indexTarget = indexTargetNoeud;
@@ -229,23 +284,27 @@ public class AlgoParcour {
 
                         }
                     }
+                    // on ajoute le noeud à l'ensemble absorbant
                     result.get(indexCurCircle).add(result.get(indexMoveFrom).remove(indexTarget));
                     circlesData.set(indexCurCircle, initCircleData(result.get(indexCurCircle)));
+                    //si le noeud absorbé n'est pas le dernier, on met à jour les coordonées du barycentre de l'ensemble visé
                     if (result.get(indexMoveFrom).size() != 0) {
                         circlesData.set(indexMoveFrom, initCircleData(result.get(indexMoveFrom)));
                     }
                 }
+                //quand l'ensemble absorbant est complet, il est transferé dans tmpResult pour éviter les boucles infinies
                 tmpResult.get(indexCurCircle).addAll(result.get(indexCurCircle));
                 result.get(indexCurCircle).clear();
                 indexCurCircle = -1;
             }
         }
-
+        //on concatène les listes de result et tmpResult
         for (int i = tmpResult.size() - 1; i >= 0; --i) {
             result.get(i).addAll(tmpResult.get(i));
             tmpResult.get(i).clear();
         }
 
+        //on distribue les noeuds des ensembles possedant plus de noeud que necessaires
         for (int indexCurCircle = 0; indexCurCircle < result.size(); indexCurCircle++) {
             if (result.get(indexCurCircle).size() > nLimMax ) {
                 while (result.get(indexCurCircle).size() > nLimMax) {
@@ -284,10 +343,11 @@ public class AlgoParcour {
             tmpResult.get(i).clear();
         }
 
+        //reajustement des sous ensembles
         tmpResult.clear();
         int indexCircle = 0;
         int loopCounter=nbrLivreur;
-        while (loopCounter!=0/*result.size()!=0*/) {
+        while (loopCounter!=0) {
             int indexTargetCircleToMove = -1;
             int indexNoeudToMove = -1;
             boolean testNoChange = true;
@@ -310,10 +370,8 @@ public class AlgoParcour {
                     int indexNoeudToReturn = -1;
                     for(int indexTargetNoeud = 0; indexTargetNoeud<result.get(indexTargetCircleToMove).size(); indexTargetNoeud++)
                     {
-                        double distanceCircleNoeudToCenter = pointsDistance(curLiv.getNoeud().getLatitude(), curLiv.getNoeud().getLongitude(), circlesData.get(indexCircle).get(0), circlesData.get(indexCircle).get(1));
                         Livraison targetCurLiv = result.get(indexTargetCircleToMove).get(indexTargetNoeud);
                         double tmpDistanceToOriginCenter = pointsDistance(targetCurLiv.getNoeud().getLatitude(), targetCurLiv.getNoeud().getLongitude(), circlesData.get(indexCircle).get(0), circlesData.get(indexCircle).get(1));
-                        //double distanceToCurCenter = PointsDistance(targetCurLiv.getNoeud().getLatitude(), targetCurLiv.getNoeud().getLongitude(), circlesData.get(indexTargetCircleToMove).get(0), circlesData.get(indexTargetCircleToMove).get(1));
                         if(distanceToOriginCenter>tmpDistanceToOriginCenter && exchangeTest(circlesData.get(indexCircle), result.get(indexCircle).get(indexNoeudToMove), circlesData.get(indexTargetCircleToMove), result.get(indexTargetCircleToMove).get(indexTargetNoeud)))
                         {
                             distanceToOriginCenter=tmpDistanceToOriginCenter;
@@ -345,8 +403,15 @@ public class AlgoParcour {
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //separer l'ensemble de livraisons en n listes de taille k correspondant au nombre de livraisons
-    //chaque liste represente un cercle avec la plus grande densité des k livraison adjacent
+    /**
+     * divise un ensemble de livraisons en differents sous-ensembles de livraisons dont le nombre est egale au nombre
+     * de livreurs
+     * @param livraisons liste de livraisons
+     * @param nbrLivreur le nombre de livreurs
+     * @param nLimMin le cardinal minimal d'un sous ensemble de livraisons
+     * @param nLimMax le cardinal maximal d'un sous ensemble de livraisons
+     * @return une liste de listes (sous-ensembles) de livraisons destinees a chaque livreur
+     */
     private static ArrayList<ArrayList<Livraison>> toCircle(ArrayList<Livraison> livraisons, int nbrLivreur, int nLimMin, int nLimMax) {
         //stocker aleatoirement k livraisons en nbrLivreur listes
         ArrayList<ArrayList<Livraison>> result = new ArrayList<ArrayList<Livraison>>();
@@ -387,6 +452,12 @@ public class AlgoParcour {
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /**
+     * Definit les parametres des ensembles : cardinalite et calcul les sous-ensembles de livraisons
+     * @param livraisons l'ensemble de livraisons
+     * @param nbrLivreur nombre de livreurs
+     * @return une liste de listes (sous-ensembles) de livraisons destinees a chaque livreur
+     */
     public static ArrayList<ArrayList<Livraison>> getLivraisons(ArrayList<Livraison> livraisons, int nbrLivreur) {
         int nLimMin = livraisons.size()/nbrLivreur;
         int nLimMax = nLimMin;

@@ -42,7 +42,7 @@ public class EtatTournesGeneres extends Etat{
                     Livraison livraison = plan.getLivraisons().get(n.getId());
 
                     Tournee tournee = plan.getTourneeParLivraison(livraison);
-                    if(tournee.getLivreur().getPrenom().equals(name)) {
+                    if(!tournee.getLivreur().getPrenom().equals(name)) {
                         if (tournee != null) {
                             plan.removeTournee(tournee);
                             tournee.removeLivraison(livraison);
