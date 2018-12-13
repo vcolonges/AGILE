@@ -64,6 +64,7 @@ public class MainVue extends JFrame {
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         ImageIcon imageIcon = new ImageIcon("src\\bike_icon.png");
         setIconImage(imageIcon.getImage());
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         // Init map
         mapPanel = new MapVue();
 
