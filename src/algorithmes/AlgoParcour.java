@@ -14,7 +14,7 @@ import java.util.HashSet;
 public class AlgoParcour {
     //calculer 1e plus court chemin entre 2 livraisons
     // à recoder avec une somme pour eviter des boucles
-    public ArrayList<Chemin> calculChemin(Livraison departLiv, ArrayList<Livraison> livraisons) {
+    public static ArrayList<Chemin> calculChemin(Livraison departLiv, ArrayList<Livraison> livraisons) {
         //initialisation
         ArrayList<Chemin> result = new ArrayList<>();
         Noeud depart = departLiv.getNoeud();
@@ -35,33 +35,34 @@ public class AlgoParcour {
         {   //si le noeud gris est celui de la fin, on ne calcule pas ses successeurs car c'est la fin de chemin
             Noeud curNoeud = greyNoeuds.get(curNoeudIndex);
             Noeud tmpGreyNoeud = null;
+            if(blackNoeud.contains(curNoeud)) //****Complexité O(n), peut être amélioré
+            {
+                continue;
+            }
             curNoeudTroncons=curNoeud.getTronconsAdjacents();
             //On récupère la distance du depart jusquà noeud prédécesseur forcement définie dans la collection
-            double curTravelDistance = successorDistance.get(curNoeud.getId()).getSecond();
+            double travelDistance = successorDistance.get(curNoeud.getId()).getSecond();
             //on parcourt les Noeud adjacents via les troncons
             for(Troncon tmpTroncon : curNoeudTroncons)
             {
-                //on calcule la distance au noeud seulement s'il n'est pas dans blackNoeud
-                if(!blackNoeud.contains(tmpTroncon.getDestination())) //****Complexité O(n), peut être amélioré
+
+                tmpGreyNoeud=tmpTroncon.getDestination();
+                //On ajoute les noeuds découverts dans greyNoeud seulement s'il n'est pasdéjà present (complexité O(1))
+                if(!greyNoeuds.contains(tmpGreyNoeud))
                 {
-                    tmpGreyNoeud=tmpTroncon.getDestination();
-                    //On ajoute les noeuds découverts dans greyNoeud seulement s'il n'est pasdéjà present (complexité O(1))
-                    if(!greyNoeuds.contains(tmpGreyNoeud))
-                    {
-                        greyNoeuds.add(tmpGreyNoeud);
-                    }
-                    curTravelDistance+=tmpTroncon.getLongueur();
-                    //Si le noeud gris courant (tmpGreyNoeud) possède une distance plus courte à atteindre dépuis son nouveau predecesseur, on met à jour
-                    // la collection
-                    if(successorDistance.get(tmpGreyNoeud.getId())==null || successorDistance.get(tmpGreyNoeud.getId()).getSecond()>curTravelDistance)
-                    {
-                        successorDistance.put(tmpGreyNoeud.getId(), new Paire(tmpTroncon,curTravelDistance));
-                    }
+                    greyNoeuds.add(tmpGreyNoeud);
+                }
+                double curTravelDistance = travelDistance + tmpTroncon.getLongueur();
+                //Si le noeud gris courant (tmpGreyNoeud) possède une distance plus courte à atteindre dépuis son nouveau predecesseur, on met à jour
+                // la collection
+                if(successorDistance.get(tmpGreyNoeud.getId())==null || successorDistance.get(tmpGreyNoeud.getId()).getSecond()>curTravelDistance)
+                {
+                    successorDistance.put(tmpGreyNoeud.getId(), new Paire(tmpTroncon,curTravelDistance));
                 }
             }
+
             //une fois tous les noeud adjacents du curNoeud parcouru, on l'ajoute dans blackNoeud
             blackNoeud.add(curNoeud);
-            //greyNoeuds.remove(curNoeud); //probablément juste une perte de temps
         }
 
         for(Livraison livraison : livraisons) {
@@ -69,11 +70,14 @@ public class AlgoParcour {
                 Troncon sortTroncon = successorDistance.get(livraison.getNoeud().getId()).getPremier();
                 Chemin tmpChemin = new Chemin(departLiv, livraison, successorDistance.get(livraison.getNoeud().getId()).getSecond());
                 tmpChemin.getTroncons().add(sortTroncon);
+                double longueur = sortTroncon.getLongueur();
                 while (sortTroncon.getOrigine() != depart) {
                     sortTroncon = successorDistance.get(sortTroncon.getOrigine().getId()).getPremier();
+                    longueur+=sortTroncon.getLongueur();
                     tmpChemin.getTroncons().add(0, sortTroncon);
                 }
                 result.add(tmpChemin);
+                tmpChemin.setLongueur(longueur);
             }
         }
 
@@ -83,14 +87,14 @@ public class AlgoParcour {
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //Calculer la distance entre 2 points.
-    private Double PointsDistance(double x1, double y1, double x2, double y2) {
+    private static Double pointsDistance(double x1, double y1, double x2, double y2) {
         return Math.sqrt(Math.pow((x2 - x1), 2.0) + Math.pow((y2 - y1),2.0 ));
     }
 
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //calculer les données d'un cercle
-    private ArrayList<Double> initCircleData(ArrayList<Livraison> circle) {
+    private static ArrayList<Double> initCircleData(ArrayList<Livraison> circle) {
 
         ArrayList<Double> circleData = new ArrayList<>();
 
@@ -111,7 +115,7 @@ public class AlgoParcour {
 
     /////////////////////////////////////////////////////////////////////////////
 
-    private ArrayList<Double> initCircleData(ArrayList<Livraison> circle, ArrayList<Livraison> circle2) {
+    private static ArrayList<Double> initCircleData(ArrayList<Livraison> circle, ArrayList<Livraison> circle2) {
 
        ArrayList<Livraison> allCircle = new ArrayList<>(circle);
        allCircle.addAll(circle2);
@@ -121,7 +125,7 @@ public class AlgoParcour {
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //Mettre à jour les données d'un cercle
-    private ArrayList<Double> MAJCircleData(Noeud curNoeud, ArrayList<Double> circleData, double newTaille) {
+    private static ArrayList<Double> MAJCircleData(Noeud curNoeud, ArrayList<Double> circleData, double newTaille) {
         double xG=circleData.get(0);
         double yG=circleData.get(1);
 
@@ -131,10 +135,30 @@ public class AlgoParcour {
     }
 
 
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //test validité d'échange de livraisons entre cercles
+    private static boolean exchangeTest(ArrayList<Double> origin, Livraison l1, ArrayList<Double> target, Livraison l2)
+    {
+        double distanceL1ToOrigin = pointsDistance(l1.getNoeud().getLatitude(), l1.getNoeud().getLongitude(), origin.get(0), origin.get(1));
+        double distanceL1ToTarget = pointsDistance(l1.getNoeud().getLatitude(), l1.getNoeud().getLongitude(), target.get(0), target.get(1));
+        double distanceL2ToOrigin = pointsDistance(l2.getNoeud().getLatitude(), l2.getNoeud().getLongitude(), origin.get(0), origin.get(1));
+        double distanceL2ToTarget = pointsDistance(l2.getNoeud().getLatitude(), l2.getNoeud().getLongitude(), target.get(0), target.get(1));
+
+        if(distanceL1ToOrigin - distanceL2ToOrigin> distanceL1ToTarget-distanceL2ToTarget)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//optimiser le contenu d'un cercle
-    private ArrayList<ArrayList<Livraison>> circleOpt(ArrayList<ArrayList<Livraison>> result, ArrayList<ArrayList<Double>> circlesData, int nbrLivreur, int nLimMin, int nLimMax)
+    //optimiser le contenu d'un cercle
+    private static ArrayList<ArrayList<Livraison>> circleOpt(ArrayList<ArrayList<Livraison>> result, ArrayList<ArrayList<Double>> circlesData, int nbrLivreur, int nLimMin, int nLimMax)
     {
         ArrayList<ArrayList<Livraison>> tmpResult = new ArrayList<ArrayList<Livraison>>();
         for (int i = 0; i < nbrLivreur; i++)
@@ -154,11 +178,11 @@ public class AlgoParcour {
                     for (int indexNoeud = 0; indexNoeud < result.get(indexCircle).size(); indexNoeud++) {
                         //pour chaque noeud on récupère sa distance au centre de son cercle
                         Noeud curNoeud = result.get(indexCircle).get(indexNoeud).getNoeud();
-                        double distanceToCenter = PointsDistance(curNoeud.getLatitude(), curNoeud.getLongitude(), circlesData.get(indexCircle).get(0), circlesData.get(indexCircle).get(1));
+                        double distanceToCenter = pointsDistance(curNoeud.getLatitude(), curNoeud.getLongitude(), circlesData.get(indexCircle).get(0), circlesData.get(indexCircle).get(1));
                         //on compare la distance entre noeud et son cercle à la distance du noeud et autres cercles
                         double tmpDistance;
                         for (int tmpIndexCircle = 0; tmpIndexCircle < nbrLivreur; tmpIndexCircle++) {
-                            tmpDistance = PointsDistance(curNoeud.getLatitude(), curNoeud.getLongitude(), circlesData.get(tmpIndexCircle).get(0), circlesData.get(tmpIndexCircle).get(1));
+                            tmpDistance = pointsDistance(curNoeud.getLatitude(), curNoeud.getLongitude(), circlesData.get(tmpIndexCircle).get(0), circlesData.get(tmpIndexCircle).get(1));
                             if (tmpDistance < distanceToCenter) {
                                 distanceToCenter = tmpDistance;
                                 lastCircleIndex = tmpIndexCircle;
@@ -195,7 +219,6 @@ public class AlgoParcour {
             }
         }
 
-        int sertARien = 0;
         for (int indexCurCircle = 0; indexCurCircle < result.size(); indexCurCircle++) {
             if (result.get(indexCurCircle).size() < nLimMin && tmpResult.get(indexCurCircle).size() == 0) {
                 while (result.get(indexCurCircle).size() < nLimMin) {
@@ -209,7 +232,7 @@ public class AlgoParcour {
                         }
                         for (int indexTargetNoeud = 0; indexTargetNoeud < result.get(indexTargetCircle).size(); indexTargetNoeud++) {
                             Livraison tmpLiv = result.get(indexTargetCircle).get(indexTargetNoeud);
-                            double tmpDistance = PointsDistance(tmpLiv.getNoeud().getLatitude(), tmpLiv.getNoeud().getLongitude(), circlesData.get(indexCurCircle).get(0), circlesData.get(indexCurCircle).get(1));
+                            double tmpDistance = pointsDistance(tmpLiv.getNoeud().getLatitude(), tmpLiv.getNoeud().getLongitude(), circlesData.get(indexCurCircle).get(0), circlesData.get(indexCurCircle).get(1));
                             if (distanceToCenter > tmpDistance) {
                                 distanceToCenter = tmpDistance;
                                 indexTarget = indexTargetNoeud;
@@ -235,7 +258,6 @@ public class AlgoParcour {
             tmpResult.get(i).clear();
         }
 
-        int sertARien2 = 0;
         for (int indexCurCircle = 0; indexCurCircle < result.size(); indexCurCircle++) {
             if (result.get(indexCurCircle).size() > nLimMax ) {
                 while (result.get(indexCurCircle).size() > nLimMax) {
@@ -250,7 +272,7 @@ public class AlgoParcour {
                             if (indexTargetCircle == indexCurCircle || result.get(indexTargetCircle).size() == 0) {
                                 continue;
                             }
-                            double tmpDistance = PointsDistance(tmpLiv.getNoeud().getLatitude(), tmpLiv.getNoeud().getLongitude(), circlesData.get(indexTargetCircle).get(0), circlesData.get(indexTargetCircle).get(1));
+                            double tmpDistance = pointsDistance(tmpLiv.getNoeud().getLatitude(), tmpLiv.getNoeud().getLongitude(), circlesData.get(indexTargetCircle).get(0), circlesData.get(indexTargetCircle).get(1));
 
                             if (distanceToCenter > tmpDistance) {
                                 distanceToCenter = tmpDistance;
@@ -283,10 +305,9 @@ public class AlgoParcour {
             boolean testNoChange = true;
             for (int indexNoeud = 0; indexNoeud < result.get(indexCircle).size(); indexNoeud++) {
                 Livraison curLiv = result.get(indexCircle).get(indexNoeud);
-
-                double distanceToCenter = PointsDistance(curLiv.getNoeud().getLatitude(), curLiv.getNoeud().getLongitude(), circlesData.get(indexCircle).get(0), circlesData.get(indexCircle).get(1));
+                double distanceToCenter = pointsDistance(curLiv.getNoeud().getLatitude(), curLiv.getNoeud().getLongitude(), circlesData.get(indexCircle).get(0), circlesData.get(indexCircle).get(1));
                 for (int indexTargetCircle = 0; indexTargetCircle < result.size(); indexTargetCircle++) {
-                    double distanceToTargetCenter = PointsDistance(curLiv.getNoeud().getLatitude(), curLiv.getNoeud().getLongitude(), circlesData.get(indexTargetCircle).get(0), circlesData.get(indexTargetCircle).get(1));
+                    double distanceToTargetCenter = pointsDistance(curLiv.getNoeud().getLatitude(), curLiv.getNoeud().getLongitude(), circlesData.get(indexTargetCircle).get(0), circlesData.get(indexTargetCircle).get(1));
                     if(distanceToTargetCenter<distanceToCenter)
                     {
                         distanceToCenter=distanceToTargetCenter;
@@ -301,16 +322,15 @@ public class AlgoParcour {
                     int indexNoeudToReturn = -1;
                     for(int indexTargetNoeud = 0; indexTargetNoeud<result.get(indexTargetCircleToMove).size(); indexTargetNoeud++)
                     {
-                        double distanceCircleNoeudToCenter = PointsDistance(curLiv.getNoeud().getLatitude(), curLiv.getNoeud().getLongitude(), circlesData.get(indexCircle).get(0), circlesData.get(indexCircle).get(1));
+                        double distanceCircleNoeudToCenter = pointsDistance(curLiv.getNoeud().getLatitude(), curLiv.getNoeud().getLongitude(), circlesData.get(indexCircle).get(0), circlesData.get(indexCircle).get(1));
                         Livraison targetCurLiv = result.get(indexTargetCircleToMove).get(indexTargetNoeud);
-                        double tmpDistanceToOriginCenter = PointsDistance(targetCurLiv.getNoeud().getLatitude(), targetCurLiv.getNoeud().getLongitude(), circlesData.get(indexCircle).get(0), circlesData.get(indexCircle).get(1));
+                        double tmpDistanceToOriginCenter = pointsDistance(targetCurLiv.getNoeud().getLatitude(), targetCurLiv.getNoeud().getLongitude(), circlesData.get(indexCircle).get(0), circlesData.get(indexCircle).get(1));
                         //double distanceToCurCenter = PointsDistance(targetCurLiv.getNoeud().getLatitude(), targetCurLiv.getNoeud().getLongitude(), circlesData.get(indexTargetCircleToMove).get(0), circlesData.get(indexTargetCircleToMove).get(1));
-                        if(distanceToOriginCenter>tmpDistanceToOriginCenter && distanceCircleNoeudToCenter> tmpDistanceToOriginCenter)
+                        if(distanceToOriginCenter>tmpDistanceToOriginCenter && exchangeTest(circlesData.get(indexCircle), result.get(indexCircle).get(indexNoeudToMove), circlesData.get(indexTargetCircleToMove), result.get(indexTargetCircleToMove).get(indexTargetNoeud)))
                         {
                             distanceToOriginCenter=tmpDistanceToOriginCenter;
                             indexNoeudToReturn = indexTargetNoeud;
                         }
-
                     }
 
                     if(indexNoeudToReturn!= -1)
@@ -325,12 +345,9 @@ public class AlgoParcour {
                         break;
                     }
                 }
-
             }
             if(testNoChange)
             {
-                //tmpResult.add(result.remove(indexCircle));
-                //circlesData.remove(indexCircle);
                 indexCircle = (indexCircle+1) % result.size();
                 loopCounter--;
             }
@@ -342,7 +359,7 @@ public class AlgoParcour {
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //separer l'ensemble de livraisons en n listes de taille k correspondant au nombre de livraisons
     //chaque liste represente un cercle avec la plus grande densité des k livraison adjacent
-    private ArrayList<ArrayList<Livraison>> toCircle(ArrayList<Livraison> livraisons, int nbrLivreur, int nLimMin, int nLimMax) {
+    private static ArrayList<ArrayList<Livraison>> toCircle(ArrayList<Livraison> livraisons, int nbrLivreur, int nLimMin, int nLimMax) {
         //stocker aleatoirement k livraisons en nbrLivreur listes
         ArrayList<ArrayList<Livraison>> result = new ArrayList<ArrayList<Livraison>>();
         int indexLivraison = 0;
@@ -377,14 +394,12 @@ public class AlgoParcour {
             //initialiser les données d'un cercle
             circlesData.add(initCircleData(result.get(indexCircle)));
         }
-
         result = circleOpt( result, circlesData, nbrLivreur, nLimMin, nLimMax);
-
         return result;
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    public ArrayList<ArrayList<Livraison>> getLivraisons(ArrayList<Livraison> livraisons, int nbrLivreur) {
+    public static ArrayList<ArrayList<Livraison>> getLivraisons(ArrayList<Livraison> livraisons, int nbrLivreur) {
         int nLimMin = livraisons.size()/nbrLivreur;
         int nLimMax = nLimMin;
 
@@ -394,7 +409,5 @@ public class AlgoParcour {
         }
         return toCircle(livraisons, nbrLivreur, nLimMin, nLimMax);
     }
-
-
 }
 
