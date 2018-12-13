@@ -1,6 +1,7 @@
 package controleur;
 
 
+import algorithmes.AlgoLivraisonUrgente;
 import algorithmes.AlgoParcour;
 import controleur.etat.*;
 import exceptions.XMLException;
@@ -159,9 +160,13 @@ public class Controler {
     public void updateMapVueAvecPositionAt(int secondes){
         HashMap positionLivreur = new HashMap();
         for(Tournee t : plan.getTournees()){
-            // -3600*1000 car la date commence à 1h
-            Paire<Double,Double> p = t.getPositionAt(new Date((secondes*1000) - (3600*1000)));
-            positionLivreur.put(t.getLivreur(),p);
+            if(t.getHeureDepart().getTime() <= new Date((secondes*1000)-(3600*1000)).getTime())
+            {
+                // -3600*1000 car la date commence à 1h
+                Paire<Double,Double> p = t.getPositionAt(new Date((secondes*1000) - (3600*1000)));
+                positionLivreur.put(t.getLivreur(),p);
+            }
+
         }
         updatePositionLivreurs(positionLivreur);
     }
@@ -176,5 +181,16 @@ public class Controler {
 
     public void updateNbLivreur(int value) {
         plan.setNbLivreurs(value);
+    }
+
+    public void ajouterLivraisonUrgente(Noeud n, int duree) {
+        AlgoLivraisonUrgente algo = new AlgoLivraisonUrgente();
+        AlgoParcour algoParcour = new AlgoParcour();
+        Livraison livraison = new Livraison(n,duree);
+        plan.addLivraisonUrgente(livraison);
+        Tournee t = algo.modifiTournee(livraison,plan.getLivraisonsUrgentes().values(),plan.getEntrepot(),plan.getTournees(),mainvue.getHeureSlider(),plan.getNbLivreurs());
+        if(!plan.getTournees().contains(t))
+            plan.addTournee(t);
+        mainvue.getMapPanel().tracerTournee(plan.getTournees());
     }
 }
