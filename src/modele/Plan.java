@@ -133,25 +133,6 @@ public class Plan {
         return nbLivreurs;
     }
 
-    public void resetLivraisons(){
-        for(Livraison livraison : livraisons.values()){
-            for (Chemin chemin : livraison.getChemins()) {
-                chemin.resetChemin();
-            }
-            livraison.resetChemin();
-        }
-        livraisons.clear();
-    }
-
-    public void resetTournees(){
-        for(Tournee tournee : tournees) {
-            for (Chemin chemin : tournee.getChemins()) {
-                chemin.resetChemin();
-            }
-        }
-        tournees.clear();
-    }
-
     /**
      * Definit le nombre de livreur max que peut gerer le plan
      *
