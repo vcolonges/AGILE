@@ -14,7 +14,6 @@ public class EtatDebut extends Etat {
 
     @Override
     public PopUpMenu getPopUpMenu(Plan plan, Noeud n) {
-        PopUpMenu popUpMenu = super.getPopUpMenu(plan,n);
-        return popUpMenu;
+        return super.getPopUpMenu(plan,n);
     }
 }

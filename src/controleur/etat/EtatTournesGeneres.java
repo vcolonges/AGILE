@@ -7,7 +7,6 @@ import utils.ListeLivreurs;
 import vue.PopUpMenu;
 
 import javax.swing.*;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 public class EtatTournesGeneres extends Etat{
@@ -43,7 +42,7 @@ public class EtatTournesGeneres extends Etat{
                     Livraison livraison = plan.getLivraisons().get(n.getId());
 
                     Tournee tournee = plan.getTourneeParLivraison(livraison);
-                    if(tournee.getLivreur().getPrenom() != name) {
+                    if(tournee.getLivreur().getPrenom().equals(name)) {
                         if (tournee != null) {
                             plan.removeTournee(tournee);
                             tournee.removeLivraison(livraison);

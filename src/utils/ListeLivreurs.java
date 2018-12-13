@@ -49,7 +49,7 @@ public final class ListeLivreurs {
      */
     public static Livreur getLivreurParPrenom(String nom){
         for (Livreur livreur : ListeLivreurs.livreurs){
-            if(livreur.getPrenom() == nom)
+            if(livreur.getPrenom().equals(nom))
                 return livreur;
         }
         return null;

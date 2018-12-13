@@ -16,7 +16,7 @@ public class EtatClientsAvertis extends Etat {
     @Override
     public PopUpMenu getPopUpMenu(Plan plan, Noeud n) {
         PopUpMenu popUpMenu = super.getPopUpMenu(plan,n);
-        if(!plan.getLivraisons().containsKey(n.getId()))
+        if(!plan.getLivraisons().containsKey(n.getId()) && !plan.getLivraisonsUrgentes().containsKey(n.getId()))
         {
             JMenuItem menuItem = new JMenuItem("Ajouter une livraison");
             popUpMenu.add(menuItem);
@@ -37,7 +37,7 @@ public class EtatClientsAvertis extends Etat {
     }
 
     public void ajouterLivraisonApresLancement(Noeud n){
-        boolean good = false;
+        boolean good;
         int duree = 0;
         do {
             try {

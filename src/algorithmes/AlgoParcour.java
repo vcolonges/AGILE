@@ -20,7 +20,7 @@ public class AlgoParcour {
         Noeud depart = departLiv.getNoeud();
 
         // ensemble des troncons adjacents à un noeud
-        HashSet<Troncon> curNoeudTroncons = null;
+        HashSet<Troncon> curNoeudTroncons;
         // Noeud dont tous les succeeceurs sont grisés
         ArrayList<Noeud> blackNoeud = new ArrayList<>();
         //Ensemble de noeuds decouverts
@@ -29,12 +29,12 @@ public class AlgoParcour {
         // Collection des noeuds, leur prédécesseur et la distance jusqu'à ce noeud depuis le noeud départ
         HashMap<Long, Paire<Troncon, Double>> successorDistance = new HashMap<Long, Paire<Troncon, Double>>();
         //initialisation de collection avec le noeud départ
-        successorDistance.put(depart.getId(), new Paire(null,0.0));
+        successorDistance.put(depart.getId(), new Paire<>(null,0.0));
         //on parcourt tous les noeuds gris
         for(int curNoeudIndex=0; curNoeudIndex<greyNoeuds.size(); curNoeudIndex++)
         {   //si le noeud gris est celui de la fin, on ne calcule pas ses successeurs car c'est la fin de chemin
             Noeud curNoeud = greyNoeuds.get(curNoeudIndex);
-            Noeud tmpGreyNoeud = null;
+            Noeud tmpGreyNoeud;
             curNoeudTroncons=curNoeud.getTronconsAdjacents();
             //On récupère la distance du depart jusquà noeud prédécesseur forcement définie dans la collection
             double curTravelDistance = successorDistance.get(curNoeud.getId()).getSecond();
@@ -55,7 +55,7 @@ public class AlgoParcour {
                     // la collection
                     if(successorDistance.get(tmpGreyNoeud.getId())==null || successorDistance.get(tmpGreyNoeud.getId()).getSecond()>curTravelDistance)
                     {
-                        successorDistance.put(tmpGreyNoeud.getId(), new Paire(tmpTroncon,curTravelDistance));
+                        successorDistance.put(tmpGreyNoeud.getId(), new Paire<>(tmpTroncon,curTravelDistance));
                     }
                 }
             }

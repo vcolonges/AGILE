@@ -4,7 +4,6 @@ import utils.Paire;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 
 public class Tournee {
     private ArrayList<Livraison> livraisons;
@@ -47,8 +46,7 @@ public class Tournee {
         double dureeCheminVersEntrepot = livraison.getCheminVers(entrepot).getLongueur()/VITESSE;
         double dureeCheminVersLivraison = livraisons.get(livraisons.size()-1).getCheminVers(livraison).getLongueur()/VITESSE;
 
-        Date ret = new Date((long) (retourEntrepot.getTime()+(dureeCheminVersEntrepot+dureeCheminVersLivraison-dureeCheminRetirer)*1000));
-        return  ret;
+        return new Date((long) (retourEntrepot.getTime()+(dureeCheminVersEntrepot+dureeCheminVersLivraison-dureeCheminRetirer)*1000));
     }
 
     public ArrayList<Livraison> getLivraisons() {
@@ -68,10 +66,18 @@ public class Tournee {
         return livreur;
     }
 
+    /**
+     * Ajoute une livraison à la tournee
+     * @param livraison Livraison à ajouter
+     */
     public void addLivraison(Livraison livraison){
         livraisons.add(livraison);
     }
 
+    /**
+     * Supprime une livraison de la tournee
+     * @param livraison Livraison à supprimer
+     */
     public void removeLivraison(Livraison livraison){
         livraisons.remove(livraison);
     }
@@ -97,14 +103,23 @@ public class Tournee {
         return heureActuelle.compareTo(heureDepart)<0;
     }
 
+    /**
+     *
+     * @return La date de retour à l'entrepot de cette Tournee
+     */
     public Date getRetourEntrepot() {
         return retourEntrepot;
     }
 
+    /**
+     *
+     * @param time Heure à laquelle on veut connaitre la position
+     * @return Une Paire<Latitude,Longitude> de la position à l'instant 'time'
+     */
     public Paire<Double,Double> getPositionAt(Date time)
     {
         Noeud entrepot = chemins.get(0).getOrigine().getNoeud();
-        if(time.compareTo(retourEntrepot) >= 0) return new Paire(entrepot.getLongitude(),entrepot.getLatitude()); // si la livraison est fini, on renvoie la position de l'entrepot
+        if(time.compareTo(retourEntrepot) >= 0) return new Paire<>(entrepot.getLongitude(),entrepot.getLatitude()); // si la livraison est fini, on renvoie la position de l'entrepot
 
         Livraison firstLivraison = chemins.get(0).getOrigine(); // l'entrepot
         Chemin currentChemin = chemins.get(0);
@@ -132,7 +147,7 @@ public class Tournee {
         Date heureDepartFirstNode = new Date(heureArriveeFirstNode.getTime() + firstLivraison.getDuree()*1000);
         // si le livreur sera encore sur le lieu de livraison, on renvoie ses coordonnées
         if(time.before(heureDepartFirstNode)){
-            return new Paire(firstLivraison.getNoeud().getLongitude(),firstLivraison.getNoeud().getLatitude());
+            return new Paire<>(firstLivraison.getNoeud().getLongitude(),firstLivraison.getNoeud().getLatitude());
         }
 
 
@@ -146,11 +161,14 @@ public class Tournee {
             lastTroncon = currentChemin.troncons.get(indexTroncon++);
         }
 
-        Paire<Double,Double> averagePos = new Paire((lastTroncon.getOrigine().getLongitude() + lastTroncon.getDestination().getLongitude())/2,(lastTroncon.getOrigine().getLatitude() + lastTroncon.getDestination().getLatitude())/2);
-
-        return averagePos;
+        return new Paire<>((lastTroncon.getOrigine().getLongitude() + lastTroncon.getDestination().getLongitude())/2,(lastTroncon.getOrigine().getLatitude() + lastTroncon.getDestination().getLatitude())/2);
     }
 
+    /**
+     *
+     * @param livraison Livraison a ajouter
+     * @param entrepot Entrepot d'ou il faut partir
+     */
     public void ajouteLivraisonFinTournee(Livraison livraison, Livraison entrepot) {
         Chemin cheminVersLivraison = livraisons.get(livraisons.size() - 1).getCheminVers(livraison);
         Chemin cheminVersEntrepot = livraison.getCheminVers(entrepot);
