@@ -213,6 +213,11 @@ public class MapVue extends JPanel {
         repaint();
     }
 
+    /**
+     * Met les tournees en parametre a l'echelle du plan de l'ihm et les trace
+     *
+     * @param tournees tournees a tracer
+     */
     public void tracerTournee(ArrayList<Tournee> tournees) {
         long originID;
         long destinationID;

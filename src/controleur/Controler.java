@@ -164,6 +164,9 @@ public class Controler {
         return etat;
     }
 
+    /**
+     * Affiche la légende des livreurs
+     */
     public void drawLegende(){
         mainvue.drawLegend(plan);
     }
