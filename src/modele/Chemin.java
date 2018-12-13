@@ -27,6 +27,10 @@ public class Chemin {
         this.troncons = troncons;
     }
 
+    public void setLongueur(double longueur) {
+        this.longueur = longueur;
+    }
+
     public Livraison getOrigine() {
         return origine;
     }
