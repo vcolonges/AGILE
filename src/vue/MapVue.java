@@ -7,18 +7,11 @@ import utils.Paire;
 import utils.Star;
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.MouseEvent;
-import java.awt.geom.Line2D;
-import java.awt.image.BufferedImage;
-import java.lang.reflect.Array;
-import java.util.ArrayList;
 import java.util.Queue;
-import java.util.Random;
 import java.util.*;
 import java.util.concurrent.LinkedBlockingDeque;
-import java.awt.BasicStroke;
 
 public class MapVue extends JPanel {
 
@@ -153,8 +146,8 @@ public class MapVue extends JPanel {
         long originID;
         long destinationID;
 
-        Noeud newOriginTroncon = null;
-        Noeud newDestinationTroncon = null;
+        Noeud newOriginTroncon;
+        Noeud newDestinationTroncon;
 
         for(Troncon t : controler.getPlan().getTroncons()){
             originID = t.getOrigine().getId();
@@ -202,7 +195,6 @@ public class MapVue extends JPanel {
             }
 
             hoveredNodes.add(n);
-            controler.onHoverNode(n);
         }
 
         repaint();
@@ -224,8 +216,8 @@ public class MapVue extends JPanel {
     public void tracerTournee(ArrayList<Tournee> tournees) {
         long originID;
         long destinationID;
-        Noeud newOriginTroncon = null;
-        Noeud newDestinationTroncon = null;
+        Noeud newOriginTroncon;
+        Noeud newDestinationTroncon;
         ArrayList<Tournee> newTournees = new ArrayList<>();
         for(Tournee tournee : tournees) {
             ArrayList<Chemin> chemins = new ArrayList<>();
@@ -307,8 +299,7 @@ public class MapVue extends JPanel {
 
     public void mouseDragged(Point point) {
         Point oldPosition = controler.getLastDragMousePosition();
-        Point newPosition = point;
-        Point vectorInZoom = new Point(newPosition.x-oldPosition.x,newPosition.y-oldPosition.y);
+        Point vectorInZoom = new Point(point.x-oldPosition.x, point.y-oldPosition.y);
         Point vectorReal = new Point(-vectorInZoom.x*(this.getWidth()/(int)zoomArea.getWidth()),-vectorInZoom.y*(this.getHeight()/(int)zoomArea.getHeight()));
         Point newOrigineZoomAreaPosition = new Point(zoomArea.getLocation().x+vectorReal.x,zoomArea.getLocation().y+vectorReal.y);
         updateZoomAreaLocation(newOrigineZoomAreaPosition.x,newOrigineZoomAreaPosition.y);

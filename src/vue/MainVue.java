@@ -4,7 +4,6 @@ package vue;
 import controleur.*;
 import controleur.etat.*;
 import modele.*;
-import utils.ListeLivreurs;
 import utils.Paire;
 
 import javax.swing.*;
@@ -13,13 +12,10 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Hashtable;
-
-import static javax.swing.BorderFactory.createEmptyBorder;
 
 public class MainVue extends JFrame {
 
@@ -34,25 +30,17 @@ public class MainVue extends JFrame {
     public static final int DIFF_HEURE = 1800;
 
 
-    private EcouteurDeBoutons ecouteurDeBoutons;
-    private EcouteurDeSouris ecouteurDeSouris;
-    private EcouteurDeComposant ecouteurDeComposant;
-    private EcouteurDeSpinner ecouteurDeSpinner;
-    private EcouteurDeSlider ecouteurDeSlider;
-    private JMenuBar menuBar;
     private MapVue mapPanel;
     private JSpinner spinnerLivreur;
     private JPanel panelHeureDebut;
     private JLabel labelHeureDepart;
     private final JButton genererTournees;
     private final JButton demarrerTournees;
-    private final JMenuItem chargerPlanXML;
     private final JMenuItem chargerLivraisonXML;
 
     private JSlider sliderHeure;
     private JLabel labelSliderHeure;
     private JLabel zoomLabel;
-    private JPanel livreursPanel;
     private  JPanel livreursInnerPanel;
     private GridBagConstraints constraints;
 
@@ -69,7 +57,7 @@ public class MainVue extends JFrame {
         mapPanel = new MapVue();
 
         // Création de la menubar
-        menuBar = new JMenuBar();
+        JMenuBar menuBar = new JMenuBar();
 
 
         // Layout de la fenetre
@@ -79,7 +67,7 @@ public class MainVue extends JFrame {
         //mapPanel.setBackground(Color.BLUE);
 
         // Ajout panel legende livreurs
-        livreursPanel = new JPanel(new BorderLayout());
+        JPanel livreursPanel = new JPanel(new BorderLayout());
         JScrollPane scrollPane = new JScrollPane(livreursPanel);
         scrollPane.setBorder(new EmptyBorder(0, 10, 0, 10));
         livreursInnerPanel = new JPanel();
@@ -93,7 +81,7 @@ public class MainVue extends JFrame {
         // Création Debug Panel
         JPanel debugPanel = new JPanel(new BorderLayout());
         sliderHeure = new JSlider(JSlider.HORIZONTAL,HEURE_DEBUT, HEURE_FIN, HEURE_DEBUT);
-        Hashtable labelTable = new Hashtable();
+        Hashtable<Integer, JLabel> labelTable = new Hashtable<>();
         for(int i = HEURE_DEBUT ; i<=HEURE_FIN ; i++){
             if(i%DIFF_HEURE==0){
                 labelTable.put(i,new JLabel(i/3600+":"+String.format("%02d", i%3600/60)));
@@ -115,11 +103,11 @@ public class MainVue extends JFrame {
         mapPanel.setControler(controler);
 
         // Crétion des listener
-        ecouteurDeSlider = new EcouteurDeSlider(controler);
-        ecouteurDeBoutons = new EcouteurDeBoutons(controler);
-        ecouteurDeSouris = new EcouteurDeSouris(controler);
-        ecouteurDeComposant = new EcouteurDeComposant(controler);
-        ecouteurDeSpinner = new EcouteurDeSpinner(controler);
+        EcouteurDeSlider ecouteurDeSlider = new EcouteurDeSlider(controler);
+        EcouteurDeBoutons ecouteurDeBoutons = new EcouteurDeBoutons(controler);
+        EcouteurDeSouris ecouteurDeSouris = new EcouteurDeSouris(controler);
+        EcouteurDeComposant ecouteurDeComposant = new EcouteurDeComposant(controler);
+        EcouteurDeSpinner ecouteurDeSpinner = new EcouteurDeSpinner(controler);
         mapPanel.addMouseListener(ecouteurDeSouris);
         mapPanel.addMouseMotionListener(ecouteurDeSouris);
         mapPanel.addComponentListener(ecouteurDeComposant);
@@ -139,13 +127,6 @@ public class MainVue extends JFrame {
         spinnerLivreur.addChangeListener(ecouteurDeSpinner);
         spinnerLivreur.setEnabled(false);
         nbPersonPanel.add(spinnerLivreur);
-
-        /*JComboBox nbLivreurs = new JComboBox();
-        nbLivreurs.addActionListener(ecouteurDeBoutons);
-        for(int i = 1; i < 16; i++)
-            nbLivreurs.addItem(""+i);
-        nbLivreurs.setMaximumSize( nbLivreurs.getPreferredSize() );
-        nbPersonPanel.add(nbLivreurs);*/
 
         panelHeureDebut = new JPanel();
         panelHeureDebut.setLayout(new GridBagLayout());
@@ -181,7 +162,7 @@ public class MainVue extends JFrame {
 
 
         //Poptlation de la menubar
-        chargerPlanXML = new JMenuItem(CHARGER_PLAN);
+        JMenuItem chargerPlanXML = new JMenuItem(CHARGER_PLAN);
         chargerLivraisonXML = new JMenuItem(CHARGER_LIVRAISON);
         chargerLivraisonXML.setEnabled(false);
         chargerPlanXML.addActionListener(ecouteurDeBoutons);
@@ -204,14 +185,7 @@ public class MainVue extends JFrame {
     }
 
     public void updateMousePosition(Point point) {
-        //XPosition.setText(""+point.x);
-        //YPosition.setText(""+point.y);
         mapPanel.onMouseMove(point);
-    }
-
-    public void setSelectedNode(Noeud n)
-    {
-        //selectedNode.setText(n.toString());
     }
 
     public void displayMenuNode(Noeud n, MouseEvent e, PopUpMenu popUpMenu)

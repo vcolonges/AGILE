@@ -22,7 +22,7 @@ public class Etat {
         PopUpMenu popUpMenu = new PopUpMenu();
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JLabel label;
-        if(!plan.getLivraisons().containsKey(n.getId()))
+        if(!plan.getLivraisons().containsKey(n.getId()) && !plan.getLivraisonsUrgentes().containsKey(n.getId()))
         {
             label = new JLabel("Adresse : lat." + n.getLatitude() + " long." + n.getLongitude(),SwingConstants.LEFT);
         }
@@ -41,6 +41,9 @@ public class Etat {
 
     protected PopUpMenu ajoutInfosLivraisonsToPopUpMenu(PopUpMenu popUpMenu, Plan p, Noeud n){
         Livraison livraison = p.getLivraisons().get(n.getId());
+        if(livraison == null){
+            livraison = p.getLivraisonsUrgentes().get(n.getId());
+        }
         Tournee tournee = p.getTourneeParLivraison(livraison);
         if(tournee != null){
             JPanel panelLivreur = new JPanel(new FlowLayout(FlowLayout.LEFT));

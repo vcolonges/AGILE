@@ -11,11 +11,8 @@ import utils.Paire;
 import utils.XMLParser;
 import vue.MainVue;
 
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.MouseEvent;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -25,7 +22,6 @@ public class Controler {
     private Plan plan;
     private MainVue mainvue;
     private Etat etat;
-    private AlgoParcour algo;
     private Point lastDragMousePosition;
     private EcouteurDeTacheTSP ecouteurDeTacheTSP;
 
@@ -36,7 +32,6 @@ public class Controler {
         this.mainvue = vue;
         etat = new EtatDebut(this);
         mainvue.setEtat(etat);
-        algo = new AlgoParcour();
         ecouteurDeTacheTSP = new EcouteurDeTacheTSP(this);
     }
 
@@ -74,11 +69,6 @@ public class Controler {
         mainvue.updateMousePosition(point);
     }
 
-    public void onHoverNode(Noeud n)
-    {
-        mainvue.setSelectedNode(n);
-    }
-
     public void onPressNode(Noeud n, MouseEvent e) {
         mainvue.displayMenuNode(n,e,etat.getPopUpMenu(plan,n));
     }
@@ -98,8 +88,7 @@ public class Controler {
     public void genererTournees() {
         etat = new EtatTournesGeneres(this);
         mainvue.setEtat(etat);
-        ArrayList<Livraison> livraisons = new ArrayList<>();
-        livraisons.addAll(plan.getLivraisons().values());
+        ArrayList<Livraison> livraisons = new ArrayList<>(plan.getLivraisons().values());
         ThreadTSP tsp = ThreadTSPFactory.getTSPThread(livraisons,plan.getNbLivreurs(),plan.getEntrepot(),plan.getHeureDepart());
         tsp.addThreadListener(ecouteurDeTacheTSP);
         tsp.start();

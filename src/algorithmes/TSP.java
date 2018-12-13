@@ -9,7 +9,6 @@ import utils.ListeLivreurs;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashSet;
 
 /*
  * Cette classe sert à résoudre le problème du voyageur de commerce pour un groupe de livraison

@@ -67,7 +67,7 @@ public class Troncon {
 
     /**
      *
-     * @param vitesse
+     * @param vitesse Vitesse en m/s
      * @return duree en ms
      */
     public long getDuree(double vitesse)

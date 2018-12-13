@@ -19,10 +19,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class XMLParserTest {
 
-    private Throwable thrown;
-
     @Test
-    void testParsePlanNoeud() throws XMLException, ParserConfigurationException, SAXException, IOException {
+    void testParsePlanNoeud() throws XMLException {
         Plan plan = new Plan();
         Noeud noeud = new Noeud(123,1.23,4.56);
         plan.addNoeud(noeud);
@@ -33,7 +31,7 @@ class XMLParserTest {
     }
 
     @Test
-    void testParsePlanTroncon() throws XMLException, ParserConfigurationException, SAXException, IOException {
+    void testParsePlanTroncon() throws XMLException {
         Plan plan = new Plan();
         Noeud origine = new Noeud(123,1.23,4.56);
         Noeud destination = new Noeud(456,4.56,1.23);
@@ -49,7 +47,7 @@ class XMLParserTest {
 
     @Test
     void testParsePlanDoubleNoeud() {
-        thrown =  assertThrows(XMLException.class, () -> XMLParser.parsePlan("tests/test_files/plan_double_noeud.xml"));
+        Throwable thrown = assertThrows(XMLException.class, () -> XMLParser.parsePlan("tests/test_files/plan_double_noeud.xml"));
         assertEquals("Présence d'un doublon de noeud.", thrown.getMessage());
     }
 
@@ -79,7 +77,7 @@ class XMLParserTest {
     }
 
     @Test
-    void testParsePlanLivraison() throws XMLException, ParserConfigurationException, SAXException, IOException, ParseException {
+    void testParsePlanLivraison() throws XMLException, ParseException {
         Plan plan = new Plan();
         Noeud origine = new Noeud(123,1.23,4.56);
         Noeud destination = new Noeud(456,4.56,1.23);
