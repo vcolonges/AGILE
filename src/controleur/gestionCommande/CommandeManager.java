@@ -26,4 +26,8 @@ public class CommandeManager {
             commandes.pop().undo();
         }
     }
+
+    public void clean(){
+        commandes.clear();
+    }
 }
