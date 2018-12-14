@@ -30,8 +30,9 @@ public class MapVue extends JPanel {
     private static final double ZOOM_MAX = 2;
     private static final double ZOOM_MIN = 1;
     private Rectangle zoomArea;
-    private HashMap<Livreur, Point> positionLivreurs;
+    private HashMap<Livreur, Point> positionLivreursOnMap;
     private double ratioPlanResizedPlan;
+    private HashMap<Livreur, Paire<Double, Double>> positionLivreursReal;
 
     /**
      * Creer un Jpanel permettant d'afficher une map
@@ -42,7 +43,7 @@ public class MapVue extends JPanel {
         zoom = ZOOM_MIN;
         zoomArea = new Rectangle(0,0,getWidth(),getHeight());
     }
-    
+
     @Override
     protected void paintComponent(Graphics g) {
        // boolean flag=false;
@@ -100,10 +101,10 @@ public class MapVue extends JPanel {
                     drawNode(new Point((int)n.getLongitude(),(int)n.getLatitude()),g);
                 }
             }
-            if(controler.getEtat() instanceof EtatClientsAvertis && positionLivreurs != null)
+            if(controler.getEtat() instanceof EtatClientsAvertis && positionLivreursOnMap != null)
             {
                 g.setColor(Color.BLACK);
-                for(Point p : positionLivreurs.values())
+                for(Point p : positionLivreursOnMap.values())
                 {
                     drawNode(p,g);
                 }
@@ -176,6 +177,27 @@ public class MapVue extends JPanel {
             this.resizePlan.setEntrepot(new Livraison(this.resizePlan.getNoeuds().get(controler.getPlan().getEntrepot().getNoeud().getId()),0));
 
         tracerTournee(p.getTournees());
+
+        if(deletedNodes != null) {
+            ArrayList<Noeud> newDeletedNodes = new ArrayList<>();
+            for (Noeud n : deletedNodes) {
+                newDeletedNodes.add(resizePlan.getNoeuds().get(n.getId()));
+            }
+            deletedNodes = newDeletedNodes;
+        }
+
+        if(positionLivreursReal != null)
+        {
+            HashMap<Livreur,Point> newPositionLivreurOnMap = new HashMap<>();
+            for(Map.Entry<Livreur,Paire<Double,Double>> e : positionLivreursReal.entrySet())
+            {
+                double newLatitude = (e.getValue().getSecond()-minLatPlan)* ratioPlanResizedPlan + PADDING;
+                double newLongitude = (e.getValue().getPremier()-minLongPlan)* ratioPlanResizedPlan + PADDING;
+                positionLivreursOnMap.put(e.getKey(),new Point((int)newLongitude,(int)newLatitude));
+            }
+            positionLivreursOnMap = newPositionLivreurOnMap;
+        }
+
         repaint();
 
     }
@@ -389,12 +411,13 @@ public class MapVue extends JPanel {
     public void updatePositionLivreurs(HashMap<Livreur, Paire<Double, Double>> update) {
         double minLongPlan = controler.getPlan().getMinLong();
         double minLatPlan = controler.getPlan().getMinLat();
-        positionLivreurs = new HashMap<>();
+        positionLivreursOnMap = new HashMap<>();
+        this.positionLivreursReal = update;
         for(Map.Entry<Livreur,Paire<Double,Double>> e : update.entrySet())
         {
             double newLatitude = (e.getValue().getSecond()-minLatPlan)* ratioPlanResizedPlan + PADDING;
             double newLongitude = (e.getValue().getPremier()-minLongPlan)* ratioPlanResizedPlan + PADDING;
-            positionLivreurs.put(e.getKey(),new Point((int)newLongitude,(int)newLatitude));
+            positionLivreursOnMap.put(e.getKey(),new Point((int)newLongitude,(int)newLatitude));
         }
         repaint();
     }
