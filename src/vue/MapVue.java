@@ -3,6 +3,7 @@ package vue;
 import controleur.Controler;
 import controleur.etat.EtatClientsAvertis;
 import modele.*;
+import utils.ListeLivreurs;
 import utils.Paire;
 import utils.Star;
 
@@ -42,7 +43,7 @@ public class MapVue extends JPanel {
         zoom = ZOOM_MIN;
         zoomArea = new Rectangle(0,0,getWidth(),getHeight());
     }
-    
+
     @Override
     protected void paintComponent(Graphics g) {
        // boolean flag=false;
@@ -96,7 +97,7 @@ public class MapVue extends JPanel {
             }
             if(deletedNodes!= null){
                 for(Noeud n : deletedNodes){
-                    g.setColor(Color.gray);
+                    g.setColor(Color.black);
                     drawNode(new Point((int)n.getLongitude(),(int)n.getLatitude()),g);
                 }
             }
@@ -290,8 +291,16 @@ public class MapVue extends JPanel {
      * Supprime une livraison sur la carte
      * @param n le noeud de la livraison
      */
+
     public void deletePoint(Noeud n){
         deletedNodes.add(this.resizePlan.getNoeuds().get(n.getId()));
+    }
+
+    public void supprimerLivraison(Noeud n){
+        resizePlan.getLivraisons().remove(n.getId()); //Suppression de la livraison dans le resize.
+
+        deletedNodes.add(this.resizePlan.getNoeuds().get(n.getId()));
+        repaint();
     }
 
     /**
@@ -396,6 +405,17 @@ public class MapVue extends JPanel {
             double newLatitude = (e.getValue().getSecond()-minLatPlan)* ratioPlanResizedPlan + PADDING;
             double newLongitude = (e.getValue().getPremier()-minLongPlan)* ratioPlanResizedPlan + PADDING;
             positionLivreurs.put(e.getKey(),new Point((int)newLongitude,(int)newLatitude));
+        }
+        repaint();
+    }
+
+    public void revertAjouterLivraison(Livraison l){
+        resizePlan.getLivraisons().put(l.getNoeud().getId(),l);
+        for(int index=0;index<deletedNodes.size();index++){
+            if(deletedNodes.get(index).getId()==l.getNoeud().getId()){
+                deletedNodes.remove(index);
+                System.out.println("Deleted");
+            }
         }
         repaint();
     }
