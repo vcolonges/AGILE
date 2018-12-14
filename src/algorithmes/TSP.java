@@ -146,6 +146,7 @@ public class TSP {
 
 
     public static Tournee calculerTournee(ArrayList<Livraison> livraisonCollection, Livraison entrepot, Date heureDepart, Livreur livreur){
+        if(livraisonCollection.isEmpty()) return null;
         livraisons = new ArrayList<>(livraisonCollection);
         livraisons.add(0,entrepot);
 

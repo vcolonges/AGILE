@@ -16,7 +16,6 @@ public class EcouteurDeClavier implements KeyListener {
     public void keyPressed(KeyEvent e) {
         if(e.isControlDown() && e.getKeyCode() == KeyEvent.VK_Z){
             controler.ctrlZ();
-            System.out.println("here");
         }
 
     }
