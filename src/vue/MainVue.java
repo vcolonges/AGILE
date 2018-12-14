@@ -227,7 +227,7 @@ public class MainVue extends JFrame {
 
 
     public void mousePressed(Point point, MouseEvent e) {
-        mapPanel.selectNode(point,e);
+        mapPanel.selectNode(e);
     }
 
     /**
