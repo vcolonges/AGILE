@@ -171,7 +171,6 @@ public class TSP {
 
         Tournee tournee = new Tournee(setLivraisons,listeChemins, heureDepart, livreur);
         tournee.calculeHoraire();
-
         return tournee;
     }
 
@@ -188,7 +187,6 @@ public class TSP {
 
         ArrayList<Chemin> chemins = algoParcour.calculChemin(entrepot, livraisons);
         entrepot.getChemins().addAll(chemins);
-
         ArrayList<ArrayList<Livraison>> listeGroupeLivraisons = algoParcour.getLivraisons(livraisons, nbrLivreur);
 
         ArrayList<Tournee> listeTournee = new ArrayList<>();

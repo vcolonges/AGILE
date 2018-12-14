@@ -97,7 +97,7 @@ public class MapVue extends JPanel {
             }
             if(deletedNodes!= null){
                 for(Noeud n : deletedNodes){
-                    g.setColor(Color.black);
+                    g.setColor(Color.gray);
                     drawNode(new Point((int)n.getLongitude(),(int)n.getLatitude()),g);
                 }
             }
