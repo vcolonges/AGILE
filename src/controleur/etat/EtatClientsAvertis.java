@@ -11,6 +11,7 @@ public class EtatClientsAvertis extends Etat {
     public EtatClientsAvertis(Controler c) {
         super(c);
         label = "Clients avertis";
+        c.cleanCtrlz();
     }
 
     @Override
@@ -19,8 +20,14 @@ public class EtatClientsAvertis extends Etat {
         if(!plan.getLivraisons().containsKey(n.getId()) && !plan.getLivraisonsUrgentes().containsKey(n.getId()))
         {
             JMenuItem menuItem = new JMenuItem("Ajouter une livraison");
+            JMenuItem ctrlz = new JMenuItem("Annuler");
+
+            ctrlz.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z,KeyEvent.CTRL_MASK));
+
             popUpMenu.add(menuItem);
+            popUpMenu.add(ctrlz);
             menuItem.addActionListener(e -> ajouterLivraisonApresLancement(n));
+            ctrlz.addActionListener(e-> ctrlz());
         }
         else
         {

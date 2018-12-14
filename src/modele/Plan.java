@@ -22,6 +22,15 @@ public class Plan {
         this.livraisonsUrgentes = new HashMap<>();
     }
 
+    public Plan(Plan p){
+        this.noeuds = p.getNoeuds();
+        this.troncons = p.getTroncons();
+        this.livraisons = p.getLivraisons();
+        this.tournees = p.getTournees();
+        this.nbLivreurs = p.getNbLivreurs();
+        this.livraisonsUrgentes = p.getLivraisonsUrgentes();
+    }
+
     public HashMap<Long, Noeud> getNoeuds(){
         return this.noeuds;
     }
@@ -228,13 +237,13 @@ public class Plan {
     }
 
     @Override
-    protected Object clone() throws CloneNotSupportedException {
+    public Object clone() throws CloneNotSupportedException {
         Plan clonePlan = new Plan();
         clonePlan.noeuds = this.noeuds;
         clonePlan.entrepot = this.entrepot;
         clonePlan.nbLivreurs = this.nbLivreurs;
         clonePlan.troncons = this.troncons;
-        clonePlan.heureDepart = (Date)this.heureDepart.clone();
+        clonePlan.heureDepart = this.heureDepart;
         clonePlan.livraisons = new HashMap<>();
         for(Map.Entry<Long,Livraison> e : this.livraisons.entrySet())
         {

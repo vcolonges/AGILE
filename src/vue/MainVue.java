@@ -85,6 +85,7 @@ public class MainVue extends JFrame {
         // Création Debug Panel
         JPanel debugPanel = new JPanel(new BorderLayout());
         sliderHeure = new JSlider(JSlider.HORIZONTAL,HEURE_DEBUT, HEURE_FIN, HEURE_DEBUT);
+
         Hashtable<Integer, JLabel> labelTable = new Hashtable<>();
         for(int i = HEURE_DEBUT ; i<=HEURE_FIN ; i++){
             if(i%DIFF_HEURE==0){
@@ -118,6 +119,17 @@ public class MainVue extends JFrame {
         mapPanel.addMouseWheelListener(ecouteurDeSouris);
         sliderHeure.addChangeListener(new EcouteurDeSlider(controler));
 
+
+        EcouteurDeClavier ecouteurDeClavier = new EcouteurDeClavier(controler);
+
+        addKeyListener(ecouteurDeClavier);
+
+        sliderHeure.addKeyListener(ecouteurDeClavier);
+
+        this.requestFocus();
+        setFocusable(true);
+        setFocusTraversalKeysEnabled(false);
+
         // Crétion toolPanel
         JPanel toolPanel = new JPanel();
         toolPanel.setLayout(new GridLayout(1,4));
@@ -126,11 +138,14 @@ public class MainVue extends JFrame {
         nbPersonPanel.setLayout(new FlowLayout());
         nbPersonPanel.add(new JLabel("Nombre de livreurs"));
 
+
+
         SpinnerModel model = new SpinnerNumberModel(1, 1,15,1);
         spinnerLivreur = new JSpinner(model);
         spinnerLivreur.addChangeListener(ecouteurDeSpinner);
         spinnerLivreur.setEnabled(false);
         nbPersonPanel.add(spinnerLivreur);
+
 
         panelHeureDebut = new JPanel();
         panelHeureDebut.setLayout(new GridBagLayout());
@@ -143,6 +158,8 @@ public class MainVue extends JFrame {
         genererTournees = new JButton(GENERER_TOURNEES);
         genererTournees.setEnabled(false);
         genererTournees.addActionListener(ecouteurDeBoutons);
+        genererTournees.addKeyListener(ecouteurDeClavier);
+
         JPanel genererTourneesPanel = new JPanel();
         genererTourneesPanel.setLayout(new FlowLayout());
         genererTourneesPanel.add(genererTournees);
@@ -150,6 +167,8 @@ public class MainVue extends JFrame {
         demarrerTournees = new JButton(DEMARRER_TOURNEES);
         demarrerTournees.setEnabled(false);
         demarrerTournees.addActionListener(ecouteurDeBoutons);
+        demarrerTournees.addKeyListener(ecouteurDeClavier);
+
         JPanel demarrerTourneesPanel = new JPanel();
         demarrerTourneesPanel.setLayout(new FlowLayout());
         demarrerTourneesPanel.add(demarrerTournees);

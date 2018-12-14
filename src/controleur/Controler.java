@@ -3,11 +3,13 @@ package controleur;
 
 import algorithmes.AlgoLivraisonUrgente;
 import algorithmes.AlgoParcour;
+import algorithmes.TSP;
 import controleur.etat.*;
 import controleur.gestionCommande.*;
 import exceptions.XMLException;
 import modele.*;
 import thread.threadtsp.*;
+import utils.ListeLivreurs;
 import utils.Paire;
 import utils.XMLParser;
 import vue.MainVue;
@@ -100,8 +102,7 @@ public class Controler {
     public void supprimerLivraison(Noeud n){
 
         mainvue.supprimerLivraison(n);
-        System.out.println(plan.getLivraisons().get(n.getId()));
-        ctrlZ.add(new SupprimerCommande(plan.getLivraisons().get(n.getId()),this));
+        ctrlZ.add(new SupprimerCommande(new Livraison(plan.getLivraisons().get(n.getId())),this));
         this.plan.getLivraisons().remove(n.getId());
     }
 
@@ -116,8 +117,9 @@ public class Controler {
     }
 
     public void ctrlZ(){
-
-        ctrlZ.undo();
+        if(!ctrlZ.getCommandes().isEmpty()) {
+            ctrlZ.undo();
+        }
     }
 
     public Point getLastDragMousePosition() {
@@ -209,13 +211,53 @@ public class Controler {
     }
 
     public void ajouterLivraisonUrgente(Noeud n, int duree) {
+
         AlgoLivraisonUrgente algo = new AlgoLivraisonUrgente();
         AlgoParcour algoParcour = new AlgoParcour();
         Livraison livraison = new Livraison(n,duree);
+        ctrlZ.add(new AjouterLivraisonUrgente(livraison,this));
         plan.addLivraisonUrgente(livraison);
         Tournee t = algo.modifiTournee(livraison,plan.getLivraisonsUrgentes().values(),plan.getEntrepot(),plan.getTournees(),mainvue.getHeureSlider(),plan.getNbLivreurs());
         if(!plan.getTournees().contains(t))
             plan.addTournee(t);
         mainvue.getMapPanel().tracerTournee(plan.getTournees());
+    }
+
+
+
+    public void modifierLivraisonGeneree(Plan p ,Noeud n ,String name){
+
+        if(name != null && name.length() > 0) {
+
+
+            ctrlZ.add(new ModifierLivraison(new Plan(p),this));
+            Livraison livraison = p.getLivraisons().get(n.getId());
+
+            Tournee tournee = p.getTourneeParLivraison(livraison);
+            if(!tournee.getLivreur().getPrenom().equals(name)) {
+                if (tournee != null) {
+                    p.removeTournee(tournee);
+                    tournee.removeLivraison(livraison);
+                    Tournee t1 = TSP.calculerTournee(tournee.getLivraisons(),p.getEntrepot(),p.getHeureDepart(),tournee.getLivreur());
+                    tourneeGeneree(t1);
+                }
+
+                Livreur nouveauLivreur = ListeLivreurs.getLivreurParPrenom(name);
+                tournee = p.getTourneeParLivreur(nouveauLivreur);
+                if (tournee != null) {
+                    p.removeTournee(tournee);
+                    tournee.addLivraison(livraison);
+                    Tournee t1 = TSP.calculerTournee(tournee.getLivraisons(),p.getEntrepot(),p.getHeureDepart(),tournee.getLivreur());
+                    tourneeGeneree(t1);
+                }
+            }
+        }
+    }
+    public void cleanCtrlz(){
+
+        ctrlZ.clean();
+    }
+    public void setPlan(Plan p){
+        this.plan = p;
     }
 }

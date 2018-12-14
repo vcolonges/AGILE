@@ -97,7 +97,7 @@ public class MapVue extends JPanel {
             }
             if(deletedNodes!= null){
                 for(Noeud n : deletedNodes){
-                    g.setColor(Color.gray);
+                    g.setColor(Color.black);
                     drawNode(new Point((int)n.getLongitude(),(int)n.getLatitude()),g);
                 }
             }
@@ -300,6 +300,7 @@ public class MapVue extends JPanel {
         resizePlan.getLivraisons().remove(n.getId()); //Suppression de la livraison dans le resize.
 
         deletedNodes.add(this.resizePlan.getNoeuds().get(n.getId()));
+        repaint();
     }
 
     /**
@@ -416,5 +417,6 @@ public class MapVue extends JPanel {
                 System.out.println("Deleted");
             }
         }
+        repaint();
     }
 }
