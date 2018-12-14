@@ -17,6 +17,13 @@ public class Livraison {
         chemins = new HashSet<>();
     }
 
+    public Livraison(Livraison l){
+        this.noeud = l.getNoeud();
+        this.duree = l.getDuree();
+        this.chemins = l.getChemins();
+        this.heureArrivee = (Date)l.heureArrivee.clone();
+    }
+
     public Noeud getNoeud() {
         return noeud;
     }
@@ -70,5 +77,12 @@ public class Livraison {
 
     public void setHeureArrivee(Date heureArrivee) {
         this.heureArrivee = heureArrivee;
+    }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        Livraison cloneLivraison = new Livraison(this.noeud,this.duree);
+        cloneLivraison.heureArrivee = (Date)this.heureArrivee.clone();
+        return cloneLivraison;
     }
 }

@@ -7,6 +7,7 @@ import utils.ListeLivreurs;
 import vue.PopUpMenu;
 
 import javax.swing.*;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
 public class EtatTournesGeneres extends Etat{
@@ -24,7 +25,13 @@ public class EtatTournesGeneres extends Etat{
         {
             super.ajoutInfosLivraisonsToPopUpMenu(popUpMenu, plan, n);
             JMenuItem menuItem = new JMenuItem("Changer de livreur");
+            JMenuItem ctrlz = new JMenuItem("Annuler");
+
+
+            ctrlz.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z,KeyEvent.CTRL_MASK));
+            popUpMenu.add(ctrlz);
             popUpMenu.add(menuItem);
+            ctrlz.addActionListener(e-> ctrlz());
             menuItem.addActionListener(evt -> {
                 ArrayList<String> nomLivreursEnCours = new ArrayList<>();
                 for (Livreur livreur : plan.getLivreursEnCours()){
@@ -37,39 +44,20 @@ public class EtatTournesGeneres extends Etat{
                         null,
                         nomLivreursEnCours.toArray(),
                         nomLivreursEnCours.get(0));
+                this.controler.modifierLivraisonGeneree(plan,n,name);
 
-                if(name != null && name.length() > 0) {
-                    Livraison livraison = plan.getLivraisons().get(n.getId());
-
-                    Tournee tournee = plan.getTourneeParLivraison(livraison);
-                    if(tournee.getLivreur().getPrenom().equals(name)) {
-                        if (tournee != null) {
-                            plan.removeTournee(tournee);
-                            tournee.removeLivraison(livraison);
-
-                            Tournee t1 = TSP.calculerTournee(tournee.getLivraisons(),plan.getEntrepot(),plan.getHeureDepart(),tournee.getLivreur());
-                            controler.tourneeGeneree(t1);
-                            /*ThreadTSP t = ThreadTSPFactory.getTSPThread(tournee.getLivraisons(), plan.getEntrepot(), plan.getHeureDepart(), tournee.getLivreur());
-                            t.addThreadListener(controler.getEcouteurDeTache());
-                            t.start();*/
-                        }
-
-                        Livreur nouveauLivreur = ListeLivreurs.getLivreurParPrenom(name);
-                        tournee = plan.getTourneeParLivreur(nouveauLivreur);
-                        if (tournee != null) {
-                            plan.removeTournee(tournee);
-                            tournee.addLivraison(livraison);
-
-                            Tournee t1 = TSP.calculerTournee(tournee.getLivraisons(),plan.getEntrepot(),plan.getHeureDepart(),tournee.getLivreur());
-                            controler.tourneeGeneree(t1);
-                            /*ThreadTSP t = ThreadTSPFactory.getTSPThread(tournee.getLivraisons(), plan.getEntrepot(), plan.getHeureDepart(), nouveauLivreur);
-                            t.addThreadListener(controler.getEcouteurDeTache());
-                            t.start();*/
-                        }
-                    }
-                }
             });
         }
+        else{
+            JMenuItem ctrlz = new JMenuItem("Annuler");
+            ctrlz.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z,KeyEvent.CTRL_MASK));
+            popUpMenu.add(ctrlz);
+            ctrlz.addActionListener(e-> ctrlz());
+        }
         return popUpMenu;
+    }
+
+    public void ctrlz() {
+        controler.ctrlZ();
     }
 }

@@ -6,6 +6,7 @@ import java.awt.*;
  * Classe définissant l'entite livreur
  */
 public class Livreur {
+
     private String prenom;
     private Color couleur;
 
