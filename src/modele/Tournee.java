@@ -114,7 +114,7 @@ public class Tournee {
     /**
      *
      * @param time Heure à laquelle on veut connaitre la position
-     * @return Une Paire<Latitude,Longitude> de la position à l'instant 'time'
+     * @return Une Paire Latitude,Longitude de la position à l'instant 'time'
      */
     public Paire<Double,Double> getPositionAt(Date time)
     {

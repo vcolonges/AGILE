@@ -14,6 +14,7 @@ import utils.Paire;
 import utils.XMLParser;
 import vue.MainVue;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -144,11 +145,20 @@ public class Controler {
     }
 
     public void tourneesGenerees(ArrayList<Tournee> tournees) {
+        for (Tournee t : tournees)
+            if(t == null){
+                mainvue.errorMessage("Generation de tournees impossible pour cette configuration");
+                return;
+            }
+
         plan.setTournees(tournees);
         mainvue.getMapPanel().tracerTournee(tournees);
     }
 
     public void tourneeGeneree(Tournee tournee) {
+        if(tournee == null){
+            return;
+        }
         plan.addTournee(tournee);
         mainvue.getMapPanel().tracerTournee(plan.getTournees());
     }
@@ -259,5 +269,8 @@ public class Controler {
     }
     public void setPlan(Plan p){
         this.plan = p;
+    }
+    public void cleanDeleteNode(){
+        mainvue.cleanDeleteNode();
     }
 }

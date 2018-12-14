@@ -227,7 +227,7 @@ public class MainVue extends JFrame {
 
 
     public void mousePressed(Point point, MouseEvent e) {
-        mapPanel.selectNode(point,e);
+        mapPanel.selectNode(e);
     }
 
     /**
@@ -255,6 +255,7 @@ public class MainVue extends JFrame {
         if(etat instanceof EtatPlanCharge) {
             chargerLivraisonXML.setEnabled(true);
         }else if(etat instanceof EtatLivraisonsCharges) {
+            chargerLivraisonXML.setEnabled(true);
             genererTournees.setEnabled(true);
             panelHeureDebut.setVisible(true);
             spinnerLivreur.setEnabled(true);
@@ -347,6 +348,10 @@ public class MainVue extends JFrame {
      */
     public Date getHeureSlider() {
         return new Date(sliderHeure.getValue()*1000);
+    }
+
+    public void cleanDeleteNode(){
+        mapPanel.cleanDeleteNode();
     }
 }
 

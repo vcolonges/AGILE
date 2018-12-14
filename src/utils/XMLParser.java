@@ -32,7 +32,7 @@ public class XMLParser {
      * - Doublon de Noeud<br>
      * - Doublon de Troncon<br>
      * - Noeud sans ID ou Latitude ou Longitude<br>
-     * - Troncon sans Origine ou Destination ou Longueur<br>
+     * - Troncon sans Origine ou Destination ou Longueur
      */
     public static Plan parsePlan(String lienFichier) throws XMLException {
         Plan plan = new Plan();
@@ -185,9 +185,9 @@ public class XMLParser {
      * @throws XMLException Erreurs possibles :<br>
      * - Fichier introuvable<br>
      * - Le fichier n'est pas un Plan<br>
-     * - Deux entrepots
-     * - Adresse livraison invalide pour ce plan
-     * - Probleme de parsing de l'heure de depart (format hh:mm:ss)
+     * - Deux entrepots<br>
+     * - Adresse livraison invalide pour ce plan<br>
+     * - Probleme de parsing de l'heure de depart (format hh:mm:ss)<br>
      * - Livraison sans duree
      */
     public static Plan parseLivraisons(String lienFichier, Plan plan) throws XMLException {
