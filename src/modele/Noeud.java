@@ -63,16 +63,6 @@ public class Noeud {
     }
 
     @Override
-    public String toString() {
-        return "Noeud{" +
-                "id=" + id +
-                ", latitude=" + latitude +
-                ", longitude=" + longitude +
-                ", tronconsAdjacents=" + tronconsAdjacents +
-                "}\r\n";
-    }
-
-    @Override
     protected Object clone() throws CloneNotSupportedException {
         return new Noeud(this.id,this.latitude,this.longitude);
     }
