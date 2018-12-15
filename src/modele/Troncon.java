@@ -46,16 +46,6 @@ public class Troncon {
         return Objects.hash(origine, destination);
     }
 
-    @Override
-    public String toString() {
-        return "Troncon{" +
-                "origine=" + origine.getId() +
-                ", destination=" + destination.getId() +
-                ", longueur=" + longueur +
-                ", nomRue='" + nomRue + '\'' +
-                "}\r\n";
-    }
-
     /**
      *
      * @param vitesse Vitesse en m/s

@@ -91,13 +91,6 @@ public class Tournee {
         this.livreur = livreur;
     }
 
-    @Override
-    public String toString() {
-        return "Tournee{" +
-                "chemins=" + chemins +
-                '}';
-    }
-
     public boolean isModifiable(Date heureActuelle)
     {
         return heureActuelle.compareTo(heureDepart)<0;

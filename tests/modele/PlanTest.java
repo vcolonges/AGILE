@@ -4,7 +4,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import utils.ListeLivreurs;
 
-import java.lang.reflect.Array;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -21,6 +20,7 @@ class PlanTest {
     HashSet<Troncon> troncons;
     HashMap<Long, Livraison> livraisons;
     ArrayList<Livraison> listelivraisons;
+    HashMap<Long, Livraison> livraisonsUrgentes;
     ArrayList<Chemin> chemins;
     Livraison entrepot;
     Date heureDepart;
@@ -35,6 +35,7 @@ class PlanTest {
         troncons = new HashSet<>();
         livraisons = new HashMap<>();
         tournees = new ArrayList<>();
+        livraisonsUrgentes = new HashMap<>();
 
         Noeud n1 = new Noeud(156,2.154,6.25);
         Noeud n2 = new Noeud(542,5.214,1.32);
@@ -253,11 +254,33 @@ class PlanTest {
 
     @Test
     void getLivraisonsUrgentes() {
-        //TODO Victor | Anatolii
+        this.addLivraisonUrgente();
+        assertEquals(p.getLivraisonsUrgentes(),livraisonsUrgentes);
     }
 
     @Test
     void addLivraisonUrgente() {
-        //TODO Victor | Anatolii
+        Noeud n1 = new Noeud(205,1.214,2.02);
+        Livraison l1 = new Livraison(n1,154);
+        livraisonsUrgentes.put(l1.getNoeud().getId(),l1);
+        p.addLivraisonUrgente(l1);
+
+        assertEquals(p.getLivraisonsUrgentes(),livraisonsUrgentes);
     }
+
+    @Test
+    void setLivraisons() {
+        Noeud n1 = new Noeud(249,1.46,1.15);
+        Noeud n2 = new Noeud(105,2.46,2.461);
+
+        Livraison l1 = new Livraison(n1,201);
+        Livraison l2 = new Livraison(n2,311);
+        livraisons.clear();
+        livraisons.put(l1.getNoeud().getId(), l1);
+        livraisons.put(l2.getNoeud().getId(), l2);
+
+        p.setLivraisons(livraisons);
+        assertEquals(p.getLivraisons(), livraisons);
+    }
+
 }

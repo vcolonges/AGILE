@@ -47,9 +47,4 @@ public class Chemin {
         return troncons;
     }
 
-    public void resetChemin(){
-        origine.resetChemin();
-        destination.resetChemin();
-        troncons.clear();
-    }
 }
