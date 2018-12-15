@@ -58,8 +58,8 @@ public class Livraison {
         return chemins;
     }
 
-    public void resetChemin(){
-        chemins.clear();
+    public boolean addChemin(Chemin c){
+        return this.chemins.add(c);
     }
 
     public Chemin getCheminVers(Livraison destination){
