@@ -10,6 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class CheminTest {
 
     Chemin c;
+    Chemin c2;
     Livraison origine;
     Livraison destination;
     double longueur;
@@ -17,6 +18,7 @@ class CheminTest {
 
     @BeforeEach
     void setUp() {
+        c2 = new Chemin();
         origine = new Livraison(new Noeud(158,1.26,5.3),154);
         destination = new Livraison(new Noeud(175,1.156,5.215),451);
         longueur = 1500;

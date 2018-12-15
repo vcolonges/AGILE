@@ -27,6 +27,7 @@ class PlanTest {
     int nbLivreurs;
     ArrayList<Tournee> tournees;
     Date date;
+    Plan p2;
 
     @BeforeEach
     void setUp() {
@@ -80,6 +81,8 @@ class PlanTest {
         Tournee tournee1 = new Tournee(listelivraisons,chemins,date, ListeLivreurs.livreurs[0]);
         tournees.add(tournee1);
         p.addTournee(tournee1);
+
+        p2 = new Plan(p);
     }
 
     @Test
@@ -142,8 +145,10 @@ class PlanTest {
         Livraison l1 = new Livraison(n1,2065);
         p.addLivraison(l1);
         livraisons.put(l1.getNoeud().getId(), l1);
-
         assertEquals(p.getLivraisons(),livraisons);
+        p.addLivraison(l1);
+        assertEquals(p.getLivraisons(),livraisons);
+
     }
 
     @Test
@@ -225,6 +230,7 @@ class PlanTest {
         Tournee tournee1 = new Tournee(listelivraisons,chemins,date, ListeLivreurs.livreurs[1]);
         p.addTournee(tournee1);
         assertEquals(p.getTourneeParLivreur(ListeLivreurs.livreurs[1]),tournee1);
+        assertEquals(p.getTourneeParLivreur(ListeLivreurs.livreurs[10]),null);
     }
 
     @Test
@@ -250,6 +256,9 @@ class PlanTest {
         tournees = listeTournees;
         p.setTournees(listeTournees);
         assertEquals(p.getTourneeParLivraison(listelivraisons.get(0)),tournee1);
+        Livraison l = new Livraison(new Noeud(544524,1.7242,0.4524),1755);
+
+        assertEquals(p.getTourneeParLivraison(l),null);
     }
 
     @Test
