@@ -75,13 +75,20 @@ public class AlgoParcourTest {
         livraisons.add(liv1);
         livraisons.add(liv2);
 
-        Noeud no1 = new Noeud(1,-6,7);
+        Noeud no1 = new Noeud(1,-2,7);
+        Noeud no6 = new Noeud(6,2.3,4);
+        Noeud no3 = new Noeud(3,-6,3);
+        Noeud no4 = new Noeud(4,2,3);
+
         Noeud no2 = new Noeud(2,4,6);
-        Noeud no3 = new Noeud(3,-5,3);
-        Noeud no4 = new Noeud(4,6,2);
         Noeud no5 = new Noeud(5,7,5);
-        Noeud no6 = new Noeud(6,-8,4);
-        Noeud no7 = new Noeud(7,-2,7);
+        Noeud no7 = new Noeud(7,4,7);
+        Noeud no11 = new Noeud(11,5,3);
+
+        Noeud no8 = new Noeud(8,6,-1);
+        Noeud no9 = new Noeud(9,5,-1);
+        Noeud no10 = new Noeud(10,5,-2);
+
 
         Livraison l1 = new Livraison(no1, 1);
         Livraison l2 = new Livraison(no2, 1);
@@ -90,6 +97,10 @@ public class AlgoParcourTest {
         Livraison l5 = new Livraison(no5, 1);
         Livraison l6 = new Livraison(no6, 1);
         Livraison l7 = new Livraison(no7, 1);
+        Livraison l8 = new Livraison(no8, 1);
+        Livraison l9 = new Livraison(no9, 1);
+        Livraison l10 = new Livraison(no10, 1);
+        Livraison l11 = new Livraison(no11, 1);
 
         livraisonsMap = new ArrayList<>();
 
@@ -98,31 +109,40 @@ public class AlgoParcourTest {
         livraisonsMap.add(l3);
         livraisonsMap.add(l4);
         livraisonsMap.add(l5);
+        livraisonsMap.add(l8);
+        livraisonsMap.add(l9);
         livraisonsMap.add(l6);
         livraisonsMap.add(l7);
+        livraisonsMap.add(l10);
+        livraisonsMap.add(l11);
 
         resultMap = new ArrayList<>();
         ArrayList<Livraison> a1 = new ArrayList<>();
         ArrayList<Livraison> a2 = new ArrayList<>();
+        ArrayList<Livraison> a3 = new ArrayList<>();
 
         a1.add(l1);
         a1.add(l3);
+        a1.add(l4);
         a1.add(l6);
-        a1.add(l7);
 
-        a2.add(l2);
-        a2.add(l4);
-        a2.add(l5);
+        a2.add(l9);
+        a2.add(l8);
+        a2.add(l10);
+
+        a3.add(l5);
+        a3.add(l7);
+        a3.add(l11);
+        a3.add(l2);
 
         resultMap.add(a1);
         resultMap.add(a2);
+        resultMap.add(a3);
     }
 
     @Test
     void calculCheminTest()
     {
-        Noeud n1 = new Noeud(1,1,2);
-
         Livraison livDepart = livraisons.get(0);
         Livraison liv1 = livraisons.get(1);
         Livraison liv2 = livraisons.get(2);
@@ -135,10 +155,17 @@ public class AlgoParcourTest {
 
     @Test
     void getLivraisonsTest() {
-        ArrayList<ArrayList<Livraison>> test = AlgoParcour.getLivraisons(livraisonsMap, 2);
-        assertTrue(test.get(0).size()==resultMap.get(0).size() || test.get(0).size()==resultMap.get(1).size());
-        assertTrue(test.get(1).size()==resultMap.get(1).size() || test.get(1).size()==resultMap.get(0).size());
-        assertTrue(test.get(1).size() + test.get(0).size()==resultMap.get(0).size() + resultMap.get(1).size());
+        ArrayList<ArrayList<Livraison>> test = AlgoParcour.getLivraisons(livraisonsMap, 3);
+        boolean testEquality=true;
+        for(int indexCircle = 0; indexCircle<test.size(); indexCircle++)
+        {
+            for(int indexLivraison = 0; indexLivraison<test.get(indexCircle).size(); indexLivraison++)
+            {
+                if (resultMap.get(indexCircle).get(indexLivraison)!=test.get(indexCircle).get(indexLivraison))
+                    testEquality=false;
 
+            }
+        }
+        assertTrue(testEquality);
     }
 }
