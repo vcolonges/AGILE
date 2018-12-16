@@ -94,22 +94,6 @@ public class TSP {
         return s==0;
     }
 
-    private static void afficheOrdre()
-    {
-        int s= arrayListToInt(livraisons)-1;
-        int i, sommet;
-
-        sommet=0;
-        System.out.print("Ordre :\n{"+ sommet);
-        for (i = 1; i < nbLivraisons; ++i)
-        {
-            sommet = memNext[sommet][s];
-            System.out.print(" ; "+ sommet);
-            s = enleveElement(s,sommet);
-        }
-        System.out.print("}\n\n");
-    }
-
     private static void creerListeChemins(ArrayList<Chemin> chemins, ArrayList<Livraison> livraisonsOutput) {
         int s= arrayListToInt(livraisons)-1;
         int i, sommet;

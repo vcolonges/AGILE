@@ -192,31 +192,6 @@ class TSPTest {
         //nEntrepot-n3
         c20.getTroncons().add(t7);
 
-        /*l0.addChemin(c1);
-        l0.addChemin(c2);
-        l0.addChemin(c3);
-        l0.addChemin(c4);
-
-        l1.addChemin(c5);
-        l1.addChemin(c6);
-        l1.addChemin(c7);
-        l1.addChemin(c8);
-
-        l2.addChemin(c9);
-        l2.addChemin(c10);
-        l2.addChemin(c11);
-        l2.addChemin(c12);
-
-        l3.addChemin(c13);
-        l3.addChemin(c14);
-        l3.addChemin(c15);
-        l3.addChemin(c16);
-
-        lE.addChemin(c17);
-        lE.addChemin(c18);
-        lE.addChemin(c19);
-        lE.addChemin(c20);*/
-
         livraisons = new ArrayList<>();
         livraisons.add(l0);
         livraisons.add(l1);
