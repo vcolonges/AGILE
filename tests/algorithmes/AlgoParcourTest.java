@@ -19,8 +19,7 @@ public class AlgoParcourTest {
     private Livraison result;
     private ArrayList<ArrayList<Livraison>> resultMap;
 
-    @BeforeEach
-    void AlgoParcourTest()
+     AlgoParcourTest()
     {
         Noeud n1 = new Noeud(1,1,2);
         Noeud n2 = new Noeud(2,1,2);
