@@ -21,6 +21,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Hashtable;
 
+/**
+ * Classe representation l'interface de notre application
+ */
 public class MainVue extends JFrame {
 
     // Intitules des boutons de la fenetre
@@ -50,6 +53,9 @@ public class MainVue extends JFrame {
 
     private Controler controler;
 
+    /**
+     * Creation de l'ensemble de l'interface
+     */
     public MainVue(){
 
         super("Optimod'Lyon");
@@ -203,6 +209,11 @@ public class MainVue extends JFrame {
 
     }
 
+    /**
+     * Renvoie l'element graphique contenant la carte
+     *
+     * @return mappanel
+     */
     public MapVue getMapPanel() {
         return mapPanel;
     }
@@ -217,14 +228,19 @@ public class MainVue extends JFrame {
             popUpMenu.show(e.getComponent(), e.getX(), e.getY());
         }
     }
+
     public void resizeMap() {
         mapPanel.loadPlan(controler.getPlan());
     }
 
+    /**
+     * Ouvre une popup contenant un message d'erreur
+     *
+     * @param message message d'erreur affiche
+     */
     public void errorMessage(String message){
         JOptionPane.showMessageDialog(this,message);
     }
-
 
     public void mousePressed(Point point, MouseEvent e) {
         mapPanel.selectNode(e);
@@ -243,6 +259,11 @@ public class MainVue extends JFrame {
         labelHeureDepart.setText(strHeureDepart);
     }
 
+    /**
+     * En fonction de l'etat de l'application defini les actions possibles ou no nsur l'interface
+     *
+     * @param etat etat courant
+     */
     public void setEtat(Etat etat) {
         if(this.genererTournees==null)return;
         genererTournees.setEnabled(false);
@@ -272,14 +293,20 @@ public class MainVue extends JFrame {
         }
     }
 
-    public void deletePoint(Noeud n){
-        mapPanel.deletePoint(n);
-    }
-
+    /**
+     * Supprime une livraison
+     *
+     * @param n livraison a supprimer
+     */
     public void supprimerLivraison(Noeud n){
         mapPanel.supprimerLivraison(n);
     }
 
+    /**
+     * Annule l'ajout d'une livraison
+     *
+     * @param l livraison a supprimer
+     */
     public void revertAjouterLivraison(Livraison l){
         mapPanel.revertAjouterLivraison(l);
     }
