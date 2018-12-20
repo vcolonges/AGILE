@@ -30,7 +30,6 @@ public class AlgoLivraisonUrgente {
     private void remplirMap(Collection<Tournee> tournees, Date heureActuelle){
         for (Tournee item: tournees) {
             Livreur livreur = item.getLivreur();
-            Date debut = item.getHeureDepart();
             Date fin = item.getRetourEntrepot();
 
             if(finTravailleLivreur.containsKey(livreur))
