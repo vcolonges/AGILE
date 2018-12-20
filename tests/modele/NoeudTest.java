@@ -38,4 +38,22 @@ class NoeudTest {
     void getTronconsAdjacents() {
         //TODO Victor | Anatolii
     }
+
+    @Test
+    void setId() {
+        n.setId(145);
+        assertEquals(n.getId(),145);
+    }
+
+    @Test
+    void setLatitude() {
+        n.setLatitude(1.214);
+        assertEquals(n.getLatitude(),1.214);
+    }
+
+    @Test
+    void setLongitude() {
+        n.setLongitude(4.256);
+        assertEquals(n.getLongitude(),4.256);
+    }
 }

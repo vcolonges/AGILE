@@ -41,7 +41,7 @@ class TourneeTest {
 
     @Test
     void getChemins() {
-        //TODO Victor | Anatolii
+        assertEquals(t.getChemins(),chemins);
     }
 
     @Test

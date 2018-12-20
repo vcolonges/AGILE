@@ -86,7 +86,6 @@ public class AlgoParcour {
                 tmpChemin.setLongueur(longueur);
             }
         }
-
         return result;
     }
 
