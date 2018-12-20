@@ -2,6 +2,9 @@ package utils;
 
 import java.awt.*;
 
+/**
+ * Classe permettant de dessiner une Etoile sur la Map
+ */
 public class Star extends Polygon {
     public Star(int x, int y, int rayonExterieur, int rayonInterieur, int nbBranches) {
         this(x, y, rayonExterieur, rayonInterieur, nbBranches, 0);

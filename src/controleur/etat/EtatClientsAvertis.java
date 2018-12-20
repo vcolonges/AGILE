@@ -1,5 +1,5 @@
 package controleur.etat;
-
+import java.awt.event.KeyEvent;
 import controleur.Controler;
 import modele.Noeud;
 import modele.Plan;
@@ -11,23 +11,37 @@ public class EtatClientsAvertis extends Etat {
     public EtatClientsAvertis(Controler c) {
         super(c);
         label = "Clients avertis";
+        c.cleanCtrlz();
     }
 
     @Override
     public PopUpMenu getPopUpMenu(Plan plan, Noeud n) {
         PopUpMenu popUpMenu = super.getPopUpMenu(plan,n);
-        if(!plan.getLivraisons().containsKey(n.getId()))
+        if(!plan.getLivraisons().containsKey(n.getId()) && !plan.getLivraisonsUrgentes().containsKey(n.getId()))
         {
             JMenuItem menuItem = new JMenuItem("Ajouter une livraison");
+            //JMenuItem ctrlz = new JMenuItem("Annuler");
+
+            //ctrlz.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z,KeyEvent.CTRL_MASK));
+
             popUpMenu.add(menuItem);
+            //popUpMenu.add(ctrlz);
             menuItem.addActionListener(e -> ajouterLivraisonApresLancement(n));
+            //ctrlz.addActionListener(e-> ctrlz());
         }
         else
         {
             super.ajoutInfosLivraisonsToPopUpMenu(popUpMenu, plan, n);
-            JMenuItem menuItem = new JMenuItem("Supprimer une livraison");
-            popUpMenu.add(menuItem);
-            menuItem.addActionListener(e -> supprimerLivraisonApresLancement(n));
+            JMenuItem supprimerLivraison = new JMenuItem("Supprimer une livraison");
+            //JMenuItem ctrlz = new JMenuItem("Annuler");
+
+
+            //ctrlz.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z,KeyEvent.CTRL_MASK));
+            popUpMenu.add(supprimerLivraison);
+
+            //popUpMenu.add(ctrlz);
+            supprimerLivraison.addActionListener(e -> supprimerLivraisonApresLancement(n));
+            //ctrlz.addActionListener(e-> ctrlz());
         }
         return popUpMenu;
     }
@@ -36,8 +50,12 @@ public class EtatClientsAvertis extends Etat {
         controler.supprimerLivraison(n);
     }
 
+    /*public void ctrlz() {
+        controler.ctrlZ();
+    }*/
+
     public void ajouterLivraisonApresLancement(Noeud n){
-        boolean good = false;
+        boolean good;
         int duree = 0;
         do {
             try {
@@ -54,3 +72,4 @@ public class EtatClientsAvertis extends Etat {
         controler.ajouterLivraisonUrgente(n,duree);
     }
 }
+

@@ -3,19 +3,20 @@ package controleur;
 
 import algorithmes.AlgoLivraisonUrgente;
 import algorithmes.AlgoParcour;
+import algorithmes.TSP;
 import controleur.etat.*;
+import controleur.gestionCommande.*;
 import exceptions.XMLException;
 import modele.*;
 import thread.threadtsp.*;
+import utils.ListeLivreurs;
 import utils.Paire;
 import utils.XMLParser;
 import vue.MainVue;
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.MouseEvent;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -25,10 +26,10 @@ public class Controler {
     private Plan plan;
     private MainVue mainvue;
     private Etat etat;
-    private AlgoParcour algo;
     private Point lastDragMousePosition;
     private EcouteurDeTacheTSP ecouteurDeTacheTSP;
 
+    private CommandeManager ctrlZ;
     /**
      * Cree le controleur de l'application
      */
@@ -36,8 +37,8 @@ public class Controler {
         this.mainvue = vue;
         etat = new EtatDebut(this);
         mainvue.setEtat(etat);
-        algo = new AlgoParcour();
         ecouteurDeTacheTSP = new EcouteurDeTacheTSP(this);
+        this.ctrlZ = new CommandeManager();
     }
 
     public void chargerPlan(String lienPlan){
@@ -74,11 +75,6 @@ public class Controler {
         mainvue.updateMousePosition(point);
     }
 
-    public void onHoverNode(Noeud n)
-    {
-        mainvue.setSelectedNode(n);
-    }
-
     public void onPressNode(Noeud n, MouseEvent e) {
         mainvue.displayMenuNode(n,e,etat.getPopUpMenu(plan,n));
     }
@@ -98,8 +94,7 @@ public class Controler {
     public void genererTournees() {
         etat = new EtatTournesGeneres(this);
         mainvue.setEtat(etat);
-        ArrayList<Livraison> livraisons = new ArrayList<>();
-        livraisons.addAll(plan.getLivraisons().values());
+        ArrayList<Livraison> livraisons = new ArrayList<>(plan.getLivraisons().values());
         ThreadTSP tsp = ThreadTSPFactory.getTSPThread(livraisons,plan.getNbLivreurs(),plan.getEntrepot(),plan.getHeureDepart());
         tsp.addThreadListener(ecouteurDeTacheTSP);
         tsp.start();
@@ -107,11 +102,25 @@ public class Controler {
 
     public void supprimerLivraison(Noeud n){
 
-        mainvue.deletePoint(n);
+        mainvue.supprimerLivraison(n);
+        ctrlZ.add(new SupprimerCommande(new Livraison(plan.getLivraisons().get(n.getId())),this));
+        this.plan.getLivraisons().remove(n.getId());
     }
+
+    public void revertAjouterLivraison(Livraison l){
+        this.plan.getLivraisons().put(l.getNoeud().getId(),l);
+        mainvue.revertAjouterLivraison(l);
+    }
+
     public void demarrerTournees() {
         etat = new EtatClientsAvertis(this);
         mainvue.setEtat(etat);
+    }
+
+    public void ctrlZ(){
+        if(!ctrlZ.getCommandes().isEmpty()) {
+            ctrlZ.undo();
+        }
     }
 
     public Point getLastDragMousePosition() {
@@ -136,11 +145,20 @@ public class Controler {
     }
 
     public void tourneesGenerees(ArrayList<Tournee> tournees) {
+        for (Tournee t : tournees)
+            if(t == null){
+                mainvue.errorMessage("Generation de tournees impossible pour cette configuration");
+                return;
+            }
+
         plan.setTournees(tournees);
         mainvue.getMapPanel().tracerTournee(tournees);
     }
 
     public void tourneeGeneree(Tournee tournee) {
+        if(tournee == null){
+            return;
+        }
         plan.addTournee(tournee);
         mainvue.getMapPanel().tracerTournee(plan.getTournees());
     }
@@ -149,14 +167,26 @@ public class Controler {
         return ecouteurDeTacheTSP;
     }
 
+    /**
+     * Appelle la vue pour qu'elle mette a jour la position des Livreurs
+     * @param update Contient pour chaque Livreur une Paire avec sa position
+     */
     public void updatePositionLivreurs(HashMap<Livreur, Paire<Double, Double>> update) {
         mainvue.updatePositionLivreurs(update);
     }
 
+    /**
+     * Appelle la vue pour qu'elle mette a jour le label du slider
+     * @param secondes Temps a mettre dans le slider en secondes
+     */
     public void updateLabelSliderHeure(int secondes){
         mainvue.updateLabelSliderHeure(secondes);
     }
 
+    /**
+     * Appelle la vue pour qu'elle mettre a jour la position des livreurs a l'instant "secondes"
+     * @param secondes
+     */
     public void updateMapVueAvecPositionAt(int secondes){
         HashMap positionLivreur = new HashMap();
         for(Tournee t : plan.getTournees()){
@@ -182,18 +212,65 @@ public class Controler {
         mainvue.drawLegend(plan);
     }
 
+    /**
+     * Met a jour le nombre de Livreurs dans le Plan
+     * @param value Nombre de Livreurs
+     */
     public void updateNbLivreur(int value) {
         plan.setNbLivreurs(value);
     }
 
     public void ajouterLivraisonUrgente(Noeud n, int duree) {
+
         AlgoLivraisonUrgente algo = new AlgoLivraisonUrgente();
         AlgoParcour algoParcour = new AlgoParcour();
         Livraison livraison = new Livraison(n,duree);
+        ctrlZ.add(new AjouterLivraisonUrgente(livraison,this));
         plan.addLivraisonUrgente(livraison);
         Tournee t = algo.modifiTournee(livraison,plan.getLivraisonsUrgentes().values(),plan.getEntrepot(),plan.getTournees(),mainvue.getHeureSlider(),plan.getNbLivreurs());
         if(!plan.getTournees().contains(t))
             plan.addTournee(t);
         mainvue.getMapPanel().tracerTournee(plan.getTournees());
+    }
+
+
+
+    public void modifierLivraisonGeneree(Plan p ,Noeud n ,String name){
+
+        if(name != null && name.length() > 0) {
+
+
+            ctrlZ.add(new ModifierLivraison(new Plan(p),this));
+            Livraison livraison = p.getLivraisons().get(n.getId());
+
+            Tournee tournee = p.getTourneeParLivraison(livraison);
+            if(!tournee.getLivreur().getPrenom().equals(name)) {
+                if (tournee != null) {
+                    p.removeTournee(tournee);
+                    tournee.removeLivraison(livraison);
+                    Tournee t1 = TSP.calculerTournee(tournee.getLivraisons(),p.getEntrepot(),p.getHeureDepart(),tournee.getLivreur());
+                    tourneeGeneree(t1);
+                }
+
+                Livreur nouveauLivreur = ListeLivreurs.getLivreurParPrenom(name);
+                tournee = p.getTourneeParLivreur(nouveauLivreur);
+                if (tournee != null) {
+                    p.removeTournee(tournee);
+                    tournee.addLivraison(livraison);
+                    Tournee t1 = TSP.calculerTournee(tournee.getLivraisons(),p.getEntrepot(),p.getHeureDepart(),tournee.getLivreur());
+                    tourneeGeneree(t1);
+                }
+            }
+        }
+    }
+    public void cleanCtrlz(){
+
+        ctrlZ.clean();
+    }
+    public void setPlan(Plan p){
+        this.plan = p;
+    }
+    public void cleanDeleteNode(){
+        mainvue.cleanDeleteNode();
     }
 }

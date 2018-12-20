@@ -27,6 +27,10 @@ public class Chemin {
         this.troncons = troncons;
     }
 
+    public void setLongueur(double longueur) {
+        this.longueur = longueur;
+    }
+
     public Livraison getOrigine() {
         return origine;
     }
@@ -43,18 +47,4 @@ public class Chemin {
         return troncons;
     }
 
-    public void resetChemin(){
-        origine.resetChemin();
-        destination.resetChemin();
-        troncons.clear();
-    }
-
-    @Override
-    public String toString() {
-        return "Chemin{" +
-                "origine=" + origine.getNoeud().getId() +
-                ", destination=" + destination.getNoeud().getId() +
-                ", longueur=" + longueur +
-                '}';
-    }
 }

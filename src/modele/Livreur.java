@@ -6,6 +6,7 @@ import java.awt.*;
  * Classe définissant l'entite livreur
  */
 public class Livreur {
+
     private String prenom;
     private Color couleur;
 
@@ -54,5 +55,23 @@ public class Livreur {
      */
     public void setCouleur(Color couleur) {
         this.couleur = couleur;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Livreur livreur = (Livreur) o;
+
+        if (!prenom.equals(livreur.prenom)) return false;
+        return couleur.equals(livreur.couleur);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = prenom.hashCode();
+        result = 31 * result + couleur.hashCode();
+        return result;
     }
 }

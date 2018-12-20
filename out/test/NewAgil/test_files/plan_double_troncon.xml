@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<reseau>
+    <noeud id="123" latitude="1.23" longitude="4.56"/>
+    <noeud id="456" latitude="4.56" longitude="1.23"/>
+    <troncon destination="456" longueur="123" nomRue="Rue" origine="123"/>
+    <troncon destination="456" longueur="123" nomRue="Rue" origine="123"/>
+</reseau>

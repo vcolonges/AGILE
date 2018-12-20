@@ -9,9 +9,8 @@ import utils.ListeLivreurs;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashSet;
 
-/*
+/**
  * Cette classe sert à résoudre le problème du voyageur de commerce pour un groupe de livraison
  * Elle crée les Tournee décrivant les solutions optimales
  */
@@ -95,22 +94,6 @@ public class TSP {
         return s==0;
     }
 
-    private static void afficheOrdre()
-    {
-        int s= arrayListToInt(livraisons)-1;
-        int i, sommet;
-
-        sommet=0;
-        System.out.print("Ordre :\n{"+ sommet);
-        for (i = 1; i < nbLivraisons; ++i)
-        {
-            sommet = memNext[sommet][s];
-            System.out.print(" ; "+ sommet);
-            s = enleveElement(s,sommet);
-        }
-        System.out.print("}\n\n");
-    }
-
     private static void creerListeChemins(ArrayList<Chemin> chemins, ArrayList<Livraison> livraisonsOutput) {
         int s= arrayListToInt(livraisons)-1;
         int i, sommet;
@@ -147,6 +130,7 @@ public class TSP {
 
 
     public static Tournee calculerTournee(ArrayList<Livraison> livraisonCollection, Livraison entrepot, Date heureDepart, Livreur livreur){
+        if(livraisonCollection.isEmpty()) return null;
         livraisons = new ArrayList<>(livraisonCollection);
         livraisons.add(0,entrepot);
 
@@ -172,7 +156,6 @@ public class TSP {
 
         Tournee tournee = new Tournee(setLivraisons,listeChemins, heureDepart, livreur);
         tournee.calculeHoraire();
-
         return tournee;
     }
 
@@ -189,7 +172,6 @@ public class TSP {
 
         ArrayList<Chemin> chemins = algoParcour.calculChemin(entrepot, livraisons);
         entrepot.getChemins().addAll(chemins);
-
         ArrayList<ArrayList<Livraison>> listeGroupeLivraisons = algoParcour.getLivraisons(livraisons, nbrLivreur);
 
         ArrayList<Tournee> listeTournee = new ArrayList<>();

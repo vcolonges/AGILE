@@ -6,13 +6,17 @@ import org.junit.jupiter.api.Test;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.ListResourceBundle;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class LivraisonTest {
 
     Livraison l;
+    Livraison l2;
     Noeud n;
+    HashSet<Chemin> chemins;
 
     @BeforeEach
     void setUp() {
@@ -25,6 +29,16 @@ class LivraisonTest {
         } catch (ParseException e) {
             e.printStackTrace();
         }
+
+        Livraison origine = new Livraison(new Noeud(158,1.26,5.3),154);
+        Livraison destination = new Livraison(new Noeud(175,1.156,5.215),451);
+        double longueur = 1500;
+        Chemin c = new Chemin(origine,destination,longueur);
+        chemins = new HashSet<>();
+        chemins.add(c);
+        l.addChemin(c);
+
+        l2 = new Livraison(l);
     }
 
     @Test
@@ -52,22 +66,47 @@ class LivraisonTest {
 
     @Test
     void getChemins() {
-        //TODO Victor | Anatolii
+        assertEquals(l.getChemins(),chemins);
     }
 
     @Test
     void addChemin() {
-        //TODO Victor | Anatolii
-    }
+        Livraison origine = new Livraison(new Noeud(454,0.454,1.287),254);
+        Livraison destination = new Livraison(new Noeud(2542,0.5434,51.5727),456);
+        double longueur = 1246;
+        Chemin c = new Chemin(origine,destination,longueur);
 
-    @Test
-    void resetChemin() {
-        //TODO Victor | Anatolii
+        chemins.add(c);
+        l.addChemin(c);
+
+        assertEquals(l.getChemins(),chemins);
     }
 
     @Test
     void getCheminVers() {
-        //TODO Victor | Anatolii
+        Livraison livraison1 = new Livraison(new Noeud(454,0.454,1.287),254);
+        Livraison livraison2 = new Livraison(new Noeud(454,0.454,1.287),254);
+        Livraison livraison3 = new Livraison(new Noeud(454,0.454,1.287),254);
+
+        Chemin chemin = new Chemin(livraison1,livraison2,10);
+        livraison1.addChemin(chemin);
+
+        assertEquals(chemin,livraison1.getCheminVers(livraison2));
+        assertNull(livraison1.getCheminVers(livraison3));
+    }
+
+    @Test
+    void cloneTest()
+    {
+        Livraison livraison = new Livraison(new Noeud(454,0.454,1.287),254);
+        livraison.setHeureArrivee(new Date(0));
+        Livraison copie = null;
+        try {
+            copie = (Livraison) livraison.clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+        assertEquals(livraison,copie);
     }
 
     @Test

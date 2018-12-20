@@ -17,6 +17,13 @@ public class Livraison {
         chemins = new HashSet<>();
     }
 
+    public Livraison(Livraison l){
+        this.noeud = l.getNoeud();
+        this.duree = l.getDuree();
+        this.chemins = l.getChemins();
+        this.heureArrivee = (Date)l.heureArrivee.clone();
+    }
+
     public Noeud getNoeud() {
         return noeud;
     }
@@ -31,14 +38,6 @@ public class Livraison {
 
     public void setDuree(int duree) {
         this.duree = duree;
-    }
-
-    @Override
-    public String toString() {
-        return "Livraison{" +
-                "noeud=" + noeud +
-                ", duree=" + duree +
-                '}';
     }
 
     @Override
@@ -59,12 +58,8 @@ public class Livraison {
         return chemins;
     }
 
-    public boolean addChemin(Chemin chemin){
-        return this.chemins.add(chemin);
-    }
-
-    public void resetChemin(){
-        chemins.clear();
+    public boolean addChemin(Chemin c){
+        return this.chemins.add(c);
     }
 
     public Chemin getCheminVers(Livraison destination){
@@ -82,5 +77,12 @@ public class Livraison {
 
     public void setHeureArrivee(Date heureArrivee) {
         this.heureArrivee = heureArrivee;
+    }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        Livraison cloneLivraison = new Livraison(this.noeud,this.duree);
+        cloneLivraison.heureArrivee = (Date)this.heureArrivee.clone();
+        return cloneLivraison;
     }
 }
