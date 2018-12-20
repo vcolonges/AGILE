@@ -7,10 +7,18 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 
+/**
+ * Classe gerant les actions realisees sur les boutons de l'interface graphique
+ */
 public class EcouteurDeBoutons implements ActionListener{
 
     private Controler controler;
 
+    /**
+     * Construction de l'ecouteur grace au controleur
+     *
+     * @param controleur controleur
+     */
     public EcouteurDeBoutons(Controler controleur) {
         this.controler = controleur;
     }

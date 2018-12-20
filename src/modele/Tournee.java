@@ -5,6 +5,9 @@ import utils.Paire;
 import java.util.ArrayList;
 import java.util.Date;
 
+/**
+ * Classe utilisee pour definir les entites de tournees, une tournee etant associee a un livreur et contenant l'ensemble des points de livraisons que le livreur doit livrer
+ */
 public class Tournee {
     private ArrayList<Livraison> livraisons;
     private ArrayList<Chemin> chemins;
@@ -13,6 +16,15 @@ public class Tournee {
     public static final double VITESSE = 4.17;
     private Livreur livreur;
 
+    /**
+     * Creation de l'entite tournee a partir de la liste des livraisons a livrer, les chemins a emprunter durant la tournee, l'heure de depart du livreur ainsi que le livreur charge de cette tournee.
+     * Les livraisons et chemins sont ordonnes par ordre de passage
+     *
+     * @param livraisons livraisons a livrer
+     * @param chemins chemins a emprunter
+     * @param heureDepart heure de depart de l'entreprot
+     * @param livreur livreur en cahrge de la tournee
+     */
     public Tournee(ArrayList<Livraison> livraisons, ArrayList<Chemin> chemins, Date heureDepart, Livreur livreur)
     {
         this.livraisons = livraisons;
@@ -21,6 +33,11 @@ public class Tournee {
         this.livreur = livreur;
     }
 
+    /**
+     * Renvoie la liste des chemins qu'aura en emprunter le livreur durant se tournee
+     *
+     * @return chemins
+     */
     public ArrayList<Chemin> getChemins(){
         return this.chemins;
     }
@@ -49,10 +66,20 @@ public class Tournee {
         return new Date((long) (retourEntrepot.getTime()+(dureeCheminVersEntrepot+dureeCheminVersLivraison-dureeCheminRetirer)*1000));
     }
 
+    /**
+     * Renvoie la lsite des livraisons a livrer durant la tournee
+     *
+     * @return livraisons
+     */
     public ArrayList<Livraison> getLivraisons() {
         return livraisons;
     }
 
+    /**
+     * Renvoie l'heure de depart de l'entreprot du livreur
+     *
+     * @return heureDepart
+     */
     public Date getHeureDepart() {
         return heureDepart;
     }

@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 
-/*
+/**
  * Cette classe sert à résoudre le problème du voyageur de commerce pour un groupe de livraison
  * Elle crée les Tournee décrivant les solutions optimales
  */
