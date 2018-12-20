@@ -13,10 +13,6 @@ public class Tournee {
     private ArrayList<Chemin> chemins;
     private Date heureDepart;
 
-    public void setRetourEntrepot(Date retourEntrepot) {
-        this.retourEntrepot = retourEntrepot;
-    }
-
     private Date retourEntrepot;
     public static final double VITESSE = 4.17;
     private Livreur livreur;
@@ -47,6 +43,10 @@ public class Tournee {
         return this.chemins;
     }
 
+
+    /**
+     * Cette méthode calcule les horaires de passage du livreur aux Livraisons et l'heure de retour à l'entrepot
+     */
     public void calculeHoraire(){
         Date heure = new Date(heureDepart.getTime());
 
@@ -61,6 +61,14 @@ public class Tournee {
         heure.setTime((long) (heure.getTime()+dureeChemin*1000));
         retourEntrepot = new Date(heure.getTime());
     }
+
+    /**
+     * Cette méthode calcul l'heure de retour si on lui ajoutait la Livraison livraison en fin de tournee
+     * Cette méthode ne modifie pas la tournee !!
+     * @param livraison
+     * @param entrepot
+     * @return
+     */
 
     public Date getHeureAvecLivraisonSupplementaire(Livraison livraison, Livraison entrepot)
     {
@@ -123,6 +131,21 @@ public class Tournee {
         this.livreur = livreur;
     }
 
+    /**
+     * Definit la date de retour à l'entrepot
+     * @param retourEntrepot
+     */
+    public void setRetourEntrepot(Date retourEntrepot) {
+        this.retourEntrepot = retourEntrepot;
+    }
+
+
+    /**
+     * Renvoie true si la tournee est modifiable
+     * Une tournee est modifiable si elle n'a pas débuté
+     * @param heureActuelle
+     * @return
+     */
     public boolean isModifiable(Date heureActuelle)
     {
         return heureActuelle.compareTo(heureDepart)<0;
@@ -190,7 +213,7 @@ public class Tournee {
     }
 
     /**
-     *
+     * Ajoute la livraison en fin de tournee
      * @param livraison Livraison a ajouter
      * @param entrepot Entrepot d'ou il faut partir
      */
