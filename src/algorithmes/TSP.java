@@ -15,7 +15,6 @@ import java.util.Date;
  * Elle crée les Tournee décrivant les solutions optimales
  */
 
-
 public class TSP {
     static private ArrayList<Livraison> livraisons;
     static private int nbLivraisons;
@@ -94,6 +93,22 @@ public class TSP {
         return s==0;
     }
 
+    private static void afficheOrdre()
+    {
+        int s= arrayListToInt(livraisons)-1;
+        int i, sommet;
+
+        sommet=0;
+        System.out.print("Ordre :\n{"+ sommet);
+        for (i = 1; i < nbLivraisons; ++i)
+        {
+            sommet = memNext[sommet][s];
+            System.out.print(" ; "+ sommet);
+            s = enleveElement(s,sommet);
+        }
+        System.out.print("}\n\n");
+    }
+
     private static void creerListeChemins(ArrayList<Chemin> chemins, ArrayList<Livraison> livraisonsOutput) {
         int s= arrayListToInt(livraisons)-1;
         int i, sommet;
@@ -129,8 +144,17 @@ public class TSP {
     }
 
 
+    /**
+     * Calcule la solution optimale du voyageur de commerce pour le groupe de Livraison donn&eacute; en parametre
+     * Cree un objet Tournee correspondant &agrave; la solution et le retourne
+     *
+     * @param livraisonCollection
+     * @param entrepot
+     * @param heureDepart
+     * @param livreur
+     * @return
+     */
     public static Tournee calculerTournee(ArrayList<Livraison> livraisonCollection, Livraison entrepot, Date heureDepart, Livreur livreur){
-        if(livraisonCollection.isEmpty()) return null;
         livraisons = new ArrayList<>(livraisonCollection);
         livraisons.add(0,entrepot);
 
@@ -156,8 +180,22 @@ public class TSP {
 
         Tournee tournee = new Tournee(setLivraisons,listeChemins, heureDepart, livreur);
         tournee.calculeHoraire();
+
         return tournee;
     }
+
+    /**
+     * Cette methode permet de resoudre le VRP pour un ensemble de livraisons
+     * Cette methode utilise la classe AlgoParcour pour calculer les plus courts chemins entre les livraisons passées en paramètre
+     * Puis diviser les diviser en nbrLivreur sous-groupes
+     * Enfin elle appelle la méthode calculerTournee pour chacun des sous-groupes
+     * Cette méthode renvoie une ArrayList de Tournee contenant une Tournee pour chaque sous-groupe
+     * @param livraisons
+     * @param nbrLivreur
+     * @param entrepot
+     * @param heureDepart
+     * @return
+     */
 
     public static ArrayList<Tournee> calculerLesTournees(ArrayList<Livraison> livraisons, int nbrLivreur, Livraison entrepot, Date heureDepart){
         AlgoParcour algoParcour = new AlgoParcour();
@@ -172,6 +210,7 @@ public class TSP {
 
         ArrayList<Chemin> chemins = algoParcour.calculChemin(entrepot, livraisons);
         entrepot.getChemins().addAll(chemins);
+
         ArrayList<ArrayList<Livraison>> listeGroupeLivraisons = algoParcour.getLivraisons(livraisons, nbrLivreur);
 
         ArrayList<Tournee> listeTournee = new ArrayList<>();

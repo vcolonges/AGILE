@@ -12,6 +12,11 @@ public class Tournee {
     private ArrayList<Livraison> livraisons;
     private ArrayList<Chemin> chemins;
     private Date heureDepart;
+
+    public void setRetourEntrepot(Date retourEntrepot) {
+        this.retourEntrepot = retourEntrepot;
+    }
+
     private Date retourEntrepot;
     public static final double VITESSE = 4.17;
     private Livreur livreur;

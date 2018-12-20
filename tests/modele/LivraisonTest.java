@@ -84,7 +84,29 @@ class LivraisonTest {
 
     @Test
     void getCheminVers() {
-        //TODO Victor | Anatolii
+        Livraison livraison1 = new Livraison(new Noeud(454,0.454,1.287),254);
+        Livraison livraison2 = new Livraison(new Noeud(454,0.454,1.287),254);
+        Livraison livraison3 = new Livraison(new Noeud(454,0.454,1.287),254);
+
+        Chemin chemin = new Chemin(livraison1,livraison2,10);
+        livraison1.addChemin(chemin);
+
+        assertEquals(chemin,livraison1.getCheminVers(livraison2));
+        assertNull(livraison1.getCheminVers(livraison3));
+    }
+
+    @Test
+    void cloneTest()
+    {
+        Livraison livraison = new Livraison(new Noeud(454,0.454,1.287),254);
+        livraison.setHeureArrivee(new Date(0));
+        Livraison copie = null;
+        try {
+            copie = (Livraison) livraison.clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+        assertEquals(livraison,copie);
     }
 
     @Test
