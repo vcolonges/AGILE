@@ -11,8 +11,18 @@ import java.util.Date;
 
 public class ThreadTSPTournee extends ThreadTSP {
 
+    /**
+     * le livreur
+     */
     private Livreur livreur;
 
+    /**
+     * Creer un thread permettant de calculer une tournee
+     * @param livraisonCollection les livraisons
+     * @param entrepot l'entrepot
+     * @param heureDepart l'heure de depart
+     * @param livreur le livreur
+     */
     protected ThreadTSPTournee(ArrayList<Livraison> livraisonCollection, Livraison entrepot, Date heureDepart, Livreur livreur) {
         super(livraisonCollection,entrepot,heureDepart);
         this.livreur = livreur;
