@@ -10,11 +10,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 
-/*
+/**
  * Cette classe sert à résoudre le problème du voyageur de commerce pour un groupe de livraison
  * Elle crée les Tournee décrivant les solutions optimales
  */
-
 
 public class TSP {
     static private ArrayList<Livraison> livraisons;
@@ -145,8 +144,17 @@ public class TSP {
     }
 
 
+    /**
+     * Calcule la solution optimale du voyageur de commerce pour le groupe de Livraison donn&eacute; en parametre
+     * Cree un objet Tournee correspondant &agrave; la solution et le retourne
+     *
+     * @param livraisonCollection
+     * @param entrepot
+     * @param heureDepart
+     * @param livreur
+     * @return
+     */
     public static Tournee calculerTournee(ArrayList<Livraison> livraisonCollection, Livraison entrepot, Date heureDepart, Livreur livreur){
-        if(livraisonCollection.isEmpty()) return null;
         livraisons = new ArrayList<>(livraisonCollection);
         livraisons.add(0,entrepot);
 
@@ -175,6 +183,19 @@ public class TSP {
 
         return tournee;
     }
+
+    /**
+     * Cette methode permet de resoudre le VRP pour un ensemble de livraisons
+     * Cette methode utilise la classe AlgoParcour pour calculer les plus courts chemins entre les livraisons passées en paramètre
+     * Puis diviser les diviser en nbrLivreur sous-groupes
+     * Enfin elle appelle la méthode calculerTournee pour chacun des sous-groupes
+     * Cette méthode renvoie une ArrayList de Tournee contenant une Tournee pour chaque sous-groupe
+     * @param livraisons
+     * @param nbrLivreur
+     * @param entrepot
+     * @param heureDepart
+     * @return
+     */
 
     public static ArrayList<Tournee> calculerLesTournees(ArrayList<Livraison> livraisons, int nbrLivreur, Livraison entrepot, Date heureDepart){
         AlgoParcour algoParcour = new AlgoParcour();

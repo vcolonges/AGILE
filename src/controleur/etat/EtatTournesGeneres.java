@@ -1,16 +1,21 @@
 package controleur.etat;
 
-import algorithmes.TSP;
 import controleur.Controler;
 import modele.*;
-import utils.ListeLivreurs;
 import vue.PopUpMenu;
-
 import javax.swing.*;
-import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
+/**
+ * Classe definissant l'etat ou les tournees ont ete generees par l"application
+ */
 public class EtatTournesGeneres extends Etat{
+
+    /**
+     * construction de l'etat a partir du controleur
+     *
+     * @param c controleur
+     */
     public EtatTournesGeneres(Controler c) {
         super(c);
         label = "Tournés générés";
@@ -25,13 +30,8 @@ public class EtatTournesGeneres extends Etat{
         {
             super.ajoutInfosLivraisonsToPopUpMenu(popUpMenu, plan, n);
             JMenuItem menuItem = new JMenuItem("Changer de livreur");
-            //JMenuItem ctrlz = new JMenuItem("Annuler");
 
-
-           // ctrlz.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z,KeyEvent.CTRL_MASK));
-           // popUpMenu.add(ctrlz);
             popUpMenu.add(menuItem);
-            //ctrlz.addActionListener(e-> ctrlz());
             menuItem.addActionListener(evt -> {
                 ArrayList<String> nomLivreursEnCours = new ArrayList<>();
                 for (Livreur livreur : plan.getLivreursEnCours()){
@@ -48,16 +48,7 @@ public class EtatTournesGeneres extends Etat{
 
             });
         }
-        else{
-            //JMenuItem ctrlz = new JMenuItem("Annuler");
-            //ctrlz.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z,KeyEvent.CTRL_MASK));
-            //popUpMenu.add(ctrlz);
-            //ctrlz.addActionListener(e-> ctrlz());
-        }
         return popUpMenu;
     }
 
-    /*public void ctrlz() {
-        controler.ctrlZ();
-    }*/
 }

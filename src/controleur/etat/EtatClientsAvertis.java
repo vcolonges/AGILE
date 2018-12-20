@@ -7,7 +7,16 @@ import vue.PopUpMenu;
 
 import javax.swing.*;
 
+/**
+ * Etat ou les clients ont ete averti de leur livraison et les livreurs sont partis
+ */
 public class EtatClientsAvertis extends Etat {
+
+    /**
+     * construction de l'etat a partir du controleur
+     *
+     * @param c controleur
+     */
     public EtatClientsAvertis(Controler c) {
         super(c);
         label = "Clients avertis";
@@ -46,14 +55,20 @@ public class EtatClientsAvertis extends Etat {
         return popUpMenu;
     }
 
+    /**
+     * Permet de supprimer une livraison une fois celles-ci demarees
+     *
+     * @param n livraison a supprimer
+     */
     private void supprimerLivraisonApresLancement(Noeud n) {
         controler.supprimerLivraison(n);
     }
 
-    /*public void ctrlz() {
-        controler.ctrlZ();
-    }*/
-
+    /**
+     * Permet d'ajoute une livraison une fois que celles-ci sont demarrees
+     *
+     * @param n livraison a ajouter
+     */
     public void ajouterLivraisonApresLancement(Noeud n){
         boolean good;
         int duree = 0;

@@ -2,6 +2,9 @@ package modele;
 
 import java.util.Objects;
 
+/**
+ * Classe definissant une rue grace a son origine, sa destination, sa longueur et le nom de sa rue
+ */
 public class Troncon {
 
     private Noeud origine;
@@ -9,6 +12,14 @@ public class Troncon {
     private double longueur;
     private String nomRue;
 
+    /**
+     * Creation d'un troncon avec toutes les infromations necessaires
+     *
+     * @param origine noeud d'origine
+     * @param destination noeud de destination
+     * @param longueur longueur de la rue
+     * @param nomRue nom de la rue
+     */
     public Troncon(Noeud origine, Noeud destination, double longueur, String nomRue){
         this.origine = origine;
         this.destination = destination;
@@ -16,18 +27,37 @@ public class Troncon {
         this.nomRue = nomRue;
     }
 
+    /**
+     * Renvoie l'origine du troncon
+     *
+     * @return origine
+     */
     public Noeud getOrigine() {
         return origine;
     }
 
+    /**
+     * Renvoie la destination du troncon
+     *
+     * @return destination
+     */
     public Noeud getDestination() {
         return destination;
     }
 
+    /**
+     * Renvoie la longueur du troncon
+     *
+     * @return longueur
+     */
     public double getLongueur() {
         return longueur;
     }
-
+    /**
+     * Renvoie le nom de la rue du troncon
+     *
+     * @return nomRue
+     */
     public String getNomRue() {
         return nomRue;
     }

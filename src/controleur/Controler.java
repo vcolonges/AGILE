@@ -21,6 +21,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
+/**
+ * Classe gerant l'ensemble des entites de l'application
+ */
 public class Controler {
 
     private Plan plan;
@@ -41,6 +44,11 @@ public class Controler {
         this.ctrlZ = new CommandeManager();
     }
 
+    /**
+     * Chargement d'un plan a partir d'un fichier xml passe en parametre
+     *
+     * @param lienPlan chemin du fichier xml associe au plan
+     */
     public void chargerPlan(String lienPlan){
         try {
             plan = XMLParser.parsePlan(lienPlan);
@@ -53,6 +61,11 @@ public class Controler {
         }
     }
 
+    /**
+     * Chargement des livraisons a partir d'un fichier xml
+     *
+     * @param lienLivraisons ficheir xml des livraisons
+     */
     public void chargerLivraison(String lienLivraisons){
         if(plan == null)
             mainvue.errorMessage("Veuillez charger un plan avant de charger des livraisons.");
@@ -83,6 +96,11 @@ public class Controler {
         mainvue.resizeMap();
     }
 
+    /**
+     * Renvoie l'instance du plan utilisee
+     *
+     * @return plan
+     */
     public Plan getPlan() {
         return plan;
     }
@@ -91,6 +109,9 @@ public class Controler {
         mainvue.mousePressed(point,e);
     }
 
+    /**
+     * Genere l'ensemble des tournees en utilisant le TSP
+     */
     public void genererTournees() {
         etat = new EtatTournesGeneres(this);
         mainvue.setEtat(etat);
@@ -100,6 +121,12 @@ public class Controler {
         tsp.start();
     }
 
+    /**
+     * Rend une livraison "inactive" la livraison a ete supprimee mais la tournee n'est pas regeneree, le livreur passera donc tout de meme par le point de livraison.
+     * La lviraison est maintenue a l'ecran afin de garder une vision d'ensemble des evenements passes.
+     *
+     * @param n noeud a rendre "inactif"
+     */
     public void supprimerLivraison(Noeud n){
 
         mainvue.supprimerLivraison(n);
@@ -107,11 +134,19 @@ public class Controler {
         this.plan.getLivraisons().remove(n.getId());
     }
 
+    /**
+     * Permet d'annuler l'ajout d'un point de livraison
+     *
+     * @param l livraison a retirer
+     */
     public void revertAjouterLivraison(Livraison l){
         this.plan.getLivraisons().put(l.getNoeud().getId(),l);
         mainvue.revertAjouterLivraison(l);
     }
 
+    /**
+     * Passage dans l'etat ou les clients sont avertis et depart des livreurs
+     */
     public void demarrerTournees() {
         etat = new EtatClientsAvertis(this);
         mainvue.setEtat(etat);
@@ -144,6 +179,11 @@ public class Controler {
         lastDragMousePosition = point;
     }
 
+    /**
+     * Une fois les tournees generees, cette methode permet de les ajouter au plan et de les tracer a l'ecran
+     *
+     * @param tournees tournees generees a tracer et a ajouter au plan
+     */
     public void tourneesGenerees(ArrayList<Tournee> tournees) {
         for (Tournee t : tournees)
             if(t == null){
@@ -155,6 +195,11 @@ public class Controler {
         mainvue.getMapPanel().tracerTournee(tournees);
     }
 
+    /**
+     * Une fois une tournee generee, cette methode permet de l'jaouter au plan et de la tracer a l'ecran
+     *
+     * @param tournee tournee generee
+     */
     public void tourneeGeneree(Tournee tournee) {
         if(tournee == null){
             return;
@@ -201,6 +246,11 @@ public class Controler {
         updatePositionLivreurs(positionLivreur);
     }
 
+    /**
+     * Renvoie l'etat courant dans lequel se trouve l'application
+     *
+     * @return etat
+     */
     public Etat getEtat() {
         return etat;
     }
@@ -220,6 +270,12 @@ public class Controler {
         plan.setNbLivreurs(value);
     }
 
+    /**
+     * Calcul le chemin le plus court pour l'ajout d'une livraison et defini a quel livreur celle-ci s'ajoute en lui ajoutant
+     *
+     * @param n noeud de livraison a ajouter
+     * @param duree duree sur place
+     */
     public void ajouterLivraisonUrgente(Noeud n, int duree) {
 
         AlgoLivraisonUrgente algo = new AlgoLivraisonUrgente();
@@ -267,9 +323,16 @@ public class Controler {
 
         ctrlZ.clean();
     }
+
+    /**
+     * Defini le plan courant de l'application
+     *
+     * @param p plan
+     */
     public void setPlan(Plan p){
         this.plan = p;
     }
+
     public void cleanDeleteNode(){
         mainvue.cleanDeleteNode();
     }

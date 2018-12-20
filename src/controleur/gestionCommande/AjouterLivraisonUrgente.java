@@ -17,7 +17,6 @@ public class AjouterLivraisonUrgente implements Commande {
 
     public void undo(){
         controler.revertAjouterLivraison(livraison);
-        //controler.getPlan().getLivraisonsUrgentes().remove(livraison.getNoeud().getId());
     }
 }
 

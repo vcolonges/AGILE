@@ -150,7 +150,7 @@ public class MapVue extends JPanel {
 
 
         for (Noeud n : controler.getPlan().getNoeuds().values()){
-            double newlatitude = (n.getLatitude()-minLatPlan)* ratioPlanResizedPlan + PADDING;
+            double newlatitude = (maxLatPlan-minLatPlan)*ratioPlanResizedPlan-((n.getLatitude()-minLatPlan)* ratioPlanResizedPlan) + PADDING;
             double newLongitude = (n.getLongitude()-minLongPlan)* ratioPlanResizedPlan + PADDING;
             this.resizePlan.addNoeud(new Noeud(n.getId(),newlatitude,newLongitude));
         }
@@ -203,6 +203,11 @@ public class MapVue extends JPanel {
 
     }
 
+    /**
+     * Defini le controleur de la carte
+     *
+     * @param controler controleur
+     */
     public void setControler(Controler controler) {
         this.controler = controler;
     }
@@ -240,7 +245,6 @@ public class MapVue extends JPanel {
 
     /**
      * Methode a appeler au clic sur la plan
-     * @param point
      * @param e l' evenement du clic
      */
     public void selectNode(MouseEvent e){
@@ -313,11 +317,6 @@ public class MapVue extends JPanel {
      * Supprime une livraison sur la carte
      * @param n le noeud de la livraison
      */
-
-    public void deletePoint(Noeud n){
-        deletedNodes.add(this.resizePlan.getNoeuds().get(n.getId()));
-    }
-
     public void supprimerLivraison(Noeud n){
         resizePlan.getLivraisons().remove(n.getId()); //Suppression de la livraison dans le resize.
 
@@ -386,19 +385,37 @@ public class MapVue extends JPanel {
         return new Point((int)(point.x*(zoomArea.getWidth()/getWidth())+zoomArea.x),(int)(point.y*(zoomArea.getHeight()/getHeight())+zoomArea.y));
     }
 
+    /**
+     * Dessine un point avec la taille globale WIDTH_DOT
+     *
+     * @param p point
+     * @param g graphique utilise
+     */
     private void drawNode(Point p, Graphics g)
     {
         drawNode(p,g,WIDTH_DOT);
-        /*Point pointInZoom = resizedNodeToZoom(p);
-        g.fillOval( pointInZoom.x - WIDTH_DOT / 2,  pointInZoom.y - WIDTH_DOT / 2, WIDTH_DOT, WIDTH_DOT);*/
     }
 
+    /**
+     * Dessine un point en specifiant sa taille
+     *
+     * @param p point
+     * @param g graphique utilise
+     * @param size taille
+     */
     private void drawNode(Point p, Graphics g, int size)
     {
         Point pointInZoom = resizedNodeToZoom(p);
         g.fillOval( pointInZoom.x - WIDTH_DOT / 2,  pointInZoom.y - WIDTH_DOT / 2, size, size);
     }
 
+    /**
+     * Dessine une ligne d'un point p1 a un point p2
+     *
+     * @param p1 point
+     * @param p2 point
+     * @param g graphique  utilise
+     */
     private void drawLine(Point p1, Point p2, Graphics g)
     {
         Point start = resizedNodeToZoom(p1);
@@ -406,6 +423,15 @@ public class MapVue extends JPanel {
         g.drawLine(start.x, start.y, end.x, end.y);
     }
 
+    /**
+     *
+     * Dessine une ligne d'un point p1 a un point p2 en specifiant l'epaisseur
+     *
+     * @param p1 point
+     * @param p2 point
+     * @param g graphique  utilise
+     * @param epaisseur epaisseur
+     */
     private void drawLine(Point p1, Point p2, Graphics g, float epaisseur)
     {
         Point start = resizedNodeToZoom(p1);
@@ -421,23 +447,28 @@ public class MapVue extends JPanel {
     public void updatePositionLivreurs(HashMap<Livreur, Paire<Double, Double>> update) {
         double minLongPlan = controler.getPlan().getMinLong();
         double minLatPlan = controler.getPlan().getMinLat();
+        double maxLatplan = controler.getPlan().getMaxLat();
         positionLivreursOnMap = new HashMap<>();
         this.positionLivreursReal = update;
         for(Map.Entry<Livreur,Paire<Double,Double>> e : update.entrySet())
         {
-            double newLatitude = (e.getValue().getSecond()-minLatPlan)* ratioPlanResizedPlan + PADDING;
+            double newLatitude = (maxLatplan-minLatPlan)*ratioPlanResizedPlan-((e.getValue().getSecond()-minLatPlan)* ratioPlanResizedPlan) + PADDING;
             double newLongitude = (e.getValue().getPremier()-minLongPlan)* ratioPlanResizedPlan + PADDING;
             positionLivreursOnMap.put(e.getKey(),new Point((int)newLongitude,(int)newLatitude));
         }
         repaint();
     }
 
+    /**
+     * Annule l'ajotu d'une livraison
+     *
+     * @param l livraison a supprimer
+     */
     public void revertAjouterLivraison(Livraison l){
         resizePlan.getLivraisons().put(l.getNoeud().getId(),l);
         for(int index=0;index<deletedNodes.size();index++){
             if(deletedNodes.get(index).getId()==l.getNoeud().getId()){
                 deletedNodes.remove(index);
-                //System.out.println("Deleted");
             }
         }
         repaint();

@@ -12,10 +12,19 @@ import java.awt.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+/**
+ * Classe permettant de gerer les differents etats de l'application
+ */
 public class Etat {
+
     protected String label;
     protected Controler  controler;
 
+    /**
+     * Contruction de l'etat a partir du controleur
+     *
+     * @param c controleur
+     */
     Etat(Controler c){this.controler = c;}
 
     /**
@@ -42,6 +51,11 @@ public class Etat {
         return popUpMenu;
     }
 
+    /**
+     * Renvoie le label de l'etat
+     *
+     * @return label
+     */
     public String getLabel() {
         return label;
     }

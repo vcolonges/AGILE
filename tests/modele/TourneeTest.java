@@ -109,7 +109,7 @@ class TourneeTest {
 
     @Test
     void getPositionAt() {
-        //TODO Victor | Anatolii
+        //TODO Theo
     }
 
     @Test
