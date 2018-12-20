@@ -7,7 +7,7 @@ import java.util.Objects;
 public class Livraison {
 
     private Noeud noeud;
-    private int duree; //en secondes
+    private int duree;
     private HashSet<Chemin> chemins;
     private Date heureArrivee;
 

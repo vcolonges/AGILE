@@ -228,16 +228,21 @@ public class Plan {
     @Override
     public Object clone() throws CloneNotSupportedException {
         Plan clonePlan = new Plan();
+
         clonePlan.noeuds = this.noeuds;
         clonePlan.entrepot = this.entrepot;
         clonePlan.nbLivreurs = this.nbLivreurs;
         clonePlan.troncons = this.troncons;
         clonePlan.heureDepart = this.heureDepart;
+        clonePlan.livraisons = this.livraisons;
+        clonePlan.tournees = this.tournees;
+
         clonePlan.livraisons = new HashMap<>();
         for(Map.Entry<Long,Livraison> e : this.livraisons.entrySet())
         {
             clonePlan.livraisons.put(e.getKey(),(Livraison) e.getValue().clone());
         }
+
         clonePlan.tournees = new ArrayList<>();
         for(Tournee t : this.tournees)
         {
