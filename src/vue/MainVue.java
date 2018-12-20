@@ -377,6 +377,9 @@ public class MainVue extends JFrame {
         return new Date(sliderHeure.getValue()*1000);
     }
 
+    /**
+     * Nettoie les noeuds supprimés
+     */
     public void cleanDeleteNode(){
         mapPanel.cleanDeleteNode();
     }

@@ -29,28 +29,22 @@ public class EtatClientsAvertis extends Etat {
         if(!plan.getLivraisons().containsKey(n.getId()) && !plan.getLivraisonsUrgentes().containsKey(n.getId()))
         {
             JMenuItem menuItem = new JMenuItem("Ajouter une livraison");
-            //JMenuItem ctrlz = new JMenuItem("Annuler");
 
-            //ctrlz.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z,KeyEvent.CTRL_MASK));
 
             popUpMenu.add(menuItem);
-            //popUpMenu.add(ctrlz);
+
             menuItem.addActionListener(e -> ajouterLivraisonApresLancement(n));
-            //ctrlz.addActionListener(e-> ctrlz());
+
         }
         else
         {
             super.ajoutInfosLivraisonsToPopUpMenu(popUpMenu, plan, n);
             JMenuItem supprimerLivraison = new JMenuItem("Supprimer une livraison");
-            //JMenuItem ctrlz = new JMenuItem("Annuler");
 
-
-            //ctrlz.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z,KeyEvent.CTRL_MASK));
             popUpMenu.add(supprimerLivraison);
 
-            //popUpMenu.add(ctrlz);
             supprimerLivraison.addActionListener(e -> supprimerLivraisonApresLancement(n));
-            //ctrlz.addActionListener(e-> ctrlz());
+
         }
         return popUpMenu;
     }

@@ -474,6 +474,9 @@ public class MapVue extends JPanel {
         repaint();
     }
 
+    /**
+     * Nettoie les noeuds supprimés
+     */
     public void cleanDeleteNode(){
         deletedNodes.clear();
     }

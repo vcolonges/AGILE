@@ -7,11 +7,16 @@ import java.awt.event.KeyEvent;
 
 
 public class EcouteurDeClavier implements KeyListener {
-
+    /**
+     * Construction de l'ecouteur grace au controleur
+     *
+     * @param controleur controleur
+     */
     Controler controler;
     public EcouteurDeClavier(Controler c) {
         this.controler = c;
     }
+
 
     public void keyPressed(KeyEvent e) {
         if(e.isControlDown() && e.getKeyCode() == KeyEvent.VK_Z){
@@ -25,6 +30,6 @@ public class EcouteurDeClavier implements KeyListener {
     }
 
     public void keyTyped(KeyEvent e) {
-        // on ne fait rien
+
     }
 }

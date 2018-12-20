@@ -152,6 +152,9 @@ public class Controler {
         mainvue.setEtat(etat);
     }
 
+    /**
+     * Dépile une commande après l'avoir annuler via un undo
+     */
     public void ctrlZ(){
         if(!ctrlZ.getCommandes().isEmpty()) {
             ctrlZ.undo();
@@ -290,7 +293,12 @@ public class Controler {
     }
 
 
-
+    /**
+     * Réalise la réaffectation d'un point de livraison à un nouveau livreur
+     * @param p instance actuel du plan sans la modification
+     * @param n noeud de livraison a modifier
+     * @param name nom du livreur
+     */
     public void modifierLivraisonGeneree(Plan p ,Noeud n ,String name){
 
         if(name != null && name.length() > 0) {
@@ -319,6 +327,10 @@ public class Controler {
             }
         }
     }
+
+    /**
+     * Nettoi la pile de commande
+     */
     public void cleanCtrlz(){
 
         ctrlZ.clean();
@@ -333,6 +345,9 @@ public class Controler {
         this.plan = p;
     }
 
+    /**
+     * Nettoi les noeuds supprimer
+     */
     public void cleanDeleteNode(){
         mainvue.cleanDeleteNode();
     }
