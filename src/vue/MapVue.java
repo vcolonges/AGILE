@@ -150,7 +150,7 @@ public class MapVue extends JPanel {
 
 
         for (Noeud n : controler.getPlan().getNoeuds().values()){
-            double newlatitude = (n.getLatitude()-minLatPlan)* ratioPlanResizedPlan + PADDING;
+            double newlatitude = (maxLatPlan-minLatPlan)*ratioPlanResizedPlan-((n.getLatitude()-minLatPlan)* ratioPlanResizedPlan) + PADDING;
             double newLongitude = (n.getLongitude()-minLongPlan)* ratioPlanResizedPlan + PADDING;
             this.resizePlan.addNoeud(new Noeud(n.getId(),newlatitude,newLongitude));
         }
@@ -240,7 +240,6 @@ public class MapVue extends JPanel {
 
     /**
      * Methode a appeler au clic sur la plan
-     * @param point
      * @param e l' evenement du clic
      */
     public void selectNode(MouseEvent e){
@@ -421,11 +420,12 @@ public class MapVue extends JPanel {
     public void updatePositionLivreurs(HashMap<Livreur, Paire<Double, Double>> update) {
         double minLongPlan = controler.getPlan().getMinLong();
         double minLatPlan = controler.getPlan().getMinLat();
+        double maxLatplan = controler.getPlan().getMaxLat();
         positionLivreursOnMap = new HashMap<>();
         this.positionLivreursReal = update;
         for(Map.Entry<Livreur,Paire<Double,Double>> e : update.entrySet())
         {
-            double newLatitude = (e.getValue().getSecond()-minLatPlan)* ratioPlanResizedPlan + PADDING;
+            double newLatitude = (maxLatplan-minLatPlan)*ratioPlanResizedPlan-((e.getValue().getSecond()-minLatPlan)* ratioPlanResizedPlan) + PADDING;
             double newLongitude = (e.getValue().getPremier()-minLongPlan)* ratioPlanResizedPlan + PADDING;
             positionLivreursOnMap.put(e.getKey(),new Point((int)newLongitude,(int)newLatitude));
         }
