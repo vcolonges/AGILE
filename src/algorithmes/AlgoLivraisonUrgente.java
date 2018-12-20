@@ -13,6 +13,12 @@ import java.util.HashMap;
 
 import static modele.Tournee.VITESSE;
 
+/**
+ * Cette classe permet l'ajout des livraisons urgentes au cours de la journee en prenant en compte les tournees
+ * Cette algorithme cherche à linimiser l'heure de retour à l'entrepot du livreur
+ * On s'autorise à modifier les tournees uniquement si elles n'ont pas encore été commencées
+ */
+
 public class AlgoLivraisonUrgente {
 
     private HashMap<Livreur,Date> finTravailleLivreur;
@@ -48,6 +54,17 @@ public class AlgoLivraisonUrgente {
         }
     }
 
+    /**
+     * Cette méthode retourne la Tournee contenant la livraison ajoutée.
+     * Cette Tournee peut etre nouvelle ou une une Tournee existante modifiee
+     * @param livraison
+     * @param livraisonsUrgentes
+     * @param entrepot
+     * @param tournees
+     * @param heureActuelle
+     * @param nbLivreurs
+     * @return
+     */
     public Tournee modifiTournee(Livraison livraison, Collection<Livraison> livraisonsUrgentes, Livraison entrepot, Collection<Tournee> tournees, Date heureActuelle, int nbLivreurs)
     {
         Tournee tournee;
